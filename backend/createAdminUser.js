@@ -5,9 +5,9 @@ const { encripteSenha } = require('./utils/auth'); // Adjusted path for auth.js
 async function createAdminUser() {
     const nome = 'Admin User';
     const cpf = '12345678901';
-    const email = 'admin@example.com';
-    const senha = 'admin123'; // Replace with a strong password
-    const id_cargo = 1; // Assuming 1 is the ID for 'admin' in the cargos table
+    const email = 'adm@example.com';
+    const senha = 'adm123';
+    const cargo_id = 1;
 
     try {
         // Hash the password
@@ -15,8 +15,8 @@ async function createAdminUser() {
 
         // Insert the admin user
         const [result] = await pool.query(
-            'INSERT INTO funcionarios (nome, cpf, email, senha, id_cargo) VALUES (?, ?, ?, ?, ?)',
-            [nome, cpf, email, hashedPassword, id_cargo]
+            'INSERT INTO colaboradores (nome, cpf, email, senha, cargo_id) VALUES (?, ?, ?, ?, ?)',
+            [nome, cpf, email, hashedPassword, cargo_id]
         );
 
         console.log('Admin user created with ID:', result.insertId);

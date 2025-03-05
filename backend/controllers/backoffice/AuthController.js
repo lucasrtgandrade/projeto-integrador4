@@ -3,6 +3,10 @@ const { compareSenha } = require('../../utils/auth')
 
 
 class AuthController {
+    static renderizarPaginaLogin(req, res) {
+        res.render('backoffice/auth/login', { title: 'Login Backoffice'})
+    }
+
     static async acessoBackOffice(req, res) {
         const { email, senha } = req.body;
 
@@ -25,9 +29,9 @@ class AuthController {
                 status: colaborador.status,
             };
             if (colaborador.cargo_id === 1) {
-                return res.status(200).json({ redirect: '/backoffice/administrador/index' });
+                return res.status(200).json({ redirect: 'backoffice/administrador/index' });
             } else if (colaborador.cargo_id === 2) {
-                return res.status(200).json({ redirect: '/backoffice/estoquista/index' });
+                return res.status(200).json({ redirect: 'backoffice/estoquista/index' });
             } else {
                 return res.status(403).json({ error: 'Acesso restrito apenas para funcionários' });
             }

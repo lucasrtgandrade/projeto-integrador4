@@ -15,7 +15,7 @@ app.use(express.static(path.join(__dirname, '../frontend/public')));
 
 app.use(
     session({
-        secret: '123', // Just to test
+        secret: '123', // para teste
         // secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: true,
@@ -24,11 +24,15 @@ app.use(
 );
 
 const indexRouter = require('./routes/index');
-const administradorRouter = require('./routes/backoffice/administradorRouter');
-const authRouter = require('./routes/backoffice/authRouter');
 app.use('/', indexRouter);
+
+const authRouter = require('./routes/backoffice/authRouter');
+const administradorRouter = require('./routes/backoffice/administradorRouter');
+const estoquistaRouter = require('./routes/backoffice/estoquistaRouter')
+app.use('/backoffice/auth', authRouter);
 app.use('/backoffice/administrador', administradorRouter);
-app.use('/auth', authRouter);
+app.use('/backoffice/estoquista', estoquistaRouter)
+
 
 
 const PORT = process.env.PORT || 3000;

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <%- include('../partials/meta') %>
+    <title><%= title %></title>
+</head>
+<body>
+<nav class="nav">
+    <a href="/">
+        <img src="/imagens/logo-horizontal.svg" alt="Logotipo">
+    </a>
+</nav>
+<main class="main">
+    <h1 class="header"><%= title %></h1>
+    <div class="container__img-form">
+        <img src="/imagens/illustracao-backoffice.svg" alt="Ilustracao Backoffice" class="ilustracao">
+        <div class="form__container">
+            <%- include('../partials/feedback') %>
+            <form class="form" action="/backoffice/login" method="POST" id="login-form">
+                <div class="input-label__container">
+                    <label for="email">E-mail</label>
+                    <input type="email" name="email" id="email" placeholder="Digite seu e-mail">
+                </div>
+                <div class="input-label__container">
+                    <label for="senha">Senha</label>
+                    <input type="password" name="senha" id="senha" class="input-text" placeholder="Digite sua senha">
+                </div>
+                <input class="btn-primario" type="submit" value="Login">
+            </form>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/javascript') %>
+</body>
+</html>

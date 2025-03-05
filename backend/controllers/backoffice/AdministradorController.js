@@ -2,15 +2,23 @@ const ColaboradorModel = require('../../models/backoffice/ColaboradorModel')
 const { compareSenha } = require('../../utils/auth')
 
 class AdministradorController {
-    renderizarPaginaIndex(req, res) {
+    static renderizarPaginaIndex(req, res) {
         res.render('backoffice/administrador/index', { title: 'Administrador' } );
     }
 
-    renderizarPaginaColaborador(req, res) {
+    static renderizarPaginaColaborador(req, res) {
         res.render('backoffice/administrador/colaboradores', { title: 'Colaborador' } );
     }
 
-    renderizarPaginaProdutos(req, res) {
+    static renderizarPaginaAdicionarColaborador(req, res) {
+        res.render('backoffice/administrador/adicionar-colaborador')
+    }
+
+    static renderizarPaginaEditarColaborador(req, res) {
+        res.render('backoffice/administrador/editar-colaborador')
+    }
+
+    static renderizarPaginaProdutos(req, res) {
         res.render('backoffice/administrador/produtos', { title: 'Produtos' });
     }
 

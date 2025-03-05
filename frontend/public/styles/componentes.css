@@ -1,35 +1,3 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-:root {
-    --suporte-erro300: #f04251;
-    --suporte-erro800: #aa0e1b;
-    --suporte-aviso300: #f7c23b;
-    --suporte-aviso800: #b08007;
-    --suporte-sucesso500: #85FF00;
-    --suporte-sucesso900: #4CE100;
-    --primaria-500: #007DFC;
-    --primaria-700: #0070E0;
-    --suporte-100: #FFFFFF;
-    --suporte-600: #212529;
-
-    --fonte-primaria: "Open Sans", sans-serif;
-    --fonte-secundaria: "Bitter", serif;
-    --fonte-size-p: 1rem;
-    --fonte-size-l: 3.052rem;
-    --fonte-size-sm: 0.8rem;
-    --fonte-peso-regular: 400;
-    --fonte-peso-bold: 700;
-    --fonte-peso-extrabold: 800;
-}
-
-img {
-    display: block;
-}
-
 .feedback {
     /*display: none;*/
 }
