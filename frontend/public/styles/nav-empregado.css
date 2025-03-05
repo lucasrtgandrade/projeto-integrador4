@@ -1,0 +1,31 @@
+.nav-empregado {
+
+}
+
+a {
+    text-decoration: none;
+}
+
+.nav--container {
+    display: flex;
+    justify-content: space-between;
+    width: 1080px;
+}
+
+
+.nav-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.link-nav {
+    border-bottom: 3px solid var(--suporte-100);
+    font-family: var(--fonte-primaria);
+    color: var(--suporte-100);
+    font-weight: var(--fonte-peso-bold);
+    padding: .5rem;
+}
+
+.link-nav:hover {
+    background-color: var(--primaria-700);
+}
