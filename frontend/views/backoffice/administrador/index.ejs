@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title></title>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
 </head>
 <body>
-<h1>Teste</h1>
+<h1>Administrador</h1>
+<p>Bem-vindo, <strong><%= colaborador %></strong>!</p>
+<p>Cargo ID: <strong><%= cargo_id %></strong></p>
+<a href="/backoffice/administrador/listar-colaboradores">Listar Colaboradores</a>
+<a href="/backoffice/administrador/listar-produtos">Listar Produtos</a>
 </body>
 </html>

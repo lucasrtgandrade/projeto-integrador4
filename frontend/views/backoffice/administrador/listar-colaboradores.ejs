@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Listar Colaboradores</title>
+    <style>
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .modal-buttons {
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .modal-buttons button.sim {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .modal-buttons button.nao {
+            background-color: #f44336;
+            color: white;
+        }
+
+        /* Link Styles */
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Filter and Button Styles */
+        .filter-container {
+            margin-bottom: 20px;
+        }
+
+        .filter-container input {
+            padding: 8px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .add-button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .add-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+<h1>Lista de Colaboradores</h1>
+
+<!-- Filter Input -->
+<div class="filter-container">
+    <label for="filterInput">Filtrar por Nome:</label>
+    <input type="text" id="filterInput" placeholder="Digite o nome do colaborador...">
+</div>
+
+<!-- Add Collaborator Button -->
+<a href="/backoffice/administrador/cadastrar-colaborador" class="add-button">Cadastrar Novo Colaborador</a>
+
+<!-- Modal -->
+<div id="confirmationModal" class="modal">
+    <div class="modal-content">
+        <p id="modalMessage"></p>
+        <div class="modal-buttons">
+            <button id="confirmButton" class="sim">Sim</button>
+            <button id="cancelButton" class="nao">Não</button>
+        </div>
+    </div>
+</div>
+
+<!-- Collaborators Table -->
+<table>
+    <thead>
+    <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Cargo</th>
+        <th>Opções</th>
+        <th>Alterar</th>
+    </tr>
+    </thead>
+    <tbody id="colaboradoresTableBody">
+    <% colaboradores.forEach(function(colaborador) { %>
+        <tr id="colaborador-<%= colaborador.colaborador_id %>">
+            <td><%= colaborador.nome %></td>
+            <td><%= colaborador.email %></td>
+            <td id="status-<%= colaborador.colaborador_id %>">
+                <%= colaborador.status === 1 ? 'Ativo' : 'Inativo' %>
+            </td>
+            <td><%= colaborador.cargo_id %></td>
+            <td>
+                <button onclick="mostrarModal(<%= colaborador.colaborador_id %>, '<%= colaborador.status === 1 ? "desativar" : "ativar" %>')">
+                    <%= colaborador.status === 1 ? 'Desativar' : 'Ativar' %>
+                </button>
+            </td>
+            <td>
+                <a href="/backoffice/administrador/alterar-colaborador/<%= colaborador.colaborador_id %>">Alterar</a>
+            </td>
+        </tr>
+    <% }); %>
+    </tbody>
+</table>
+
+
+
+<script>
+    // Global variable to store the current colaborador_id
+    let currentColaboradorId;
+
+    // Function to show the modal
+    function mostrarModal(colaborador_id, action) {
+        currentColaboradorId = colaborador_id; // Store the colaborador_id
+        const modal = document.getElementById('confirmationModal');
+        const modalMessage = document.getElementById('modalMessage');
+
+        // Set the modal message based on the action
+        if (action === 'desativar') {
+            modalMessage.innerText = 'O colaborador será desativado. Você tem certeza?';
+        } else {
+            modalMessage.innerText = 'O colaborador será ativado. Você tem certeza?';
+        }
+
+        // Show the modal
+        modal.style.display = 'block';
+    }
+
+    // Function to handle the "Sim" button click
+    document.getElementById('confirmButton').addEventListener('click', async function () {
+        const modal = document.getElementById('confirmationModal');
+
+        try {
+            // Call the API to toggle the status
+            const response = await fetch(`/backoffice/administrador/alterar-status-colaborador/${currentColaboradorId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Update the status text and button text
+                const statusCell = document.getElementById(`status-${currentColaboradorId}`);
+                const button = document.querySelector(`#colaborador-${currentColaboradorId} button`);
+
+                if (data.novoStatus === 1) {
+                    statusCell.innerText = 'Ativo';
+                    button.innerText = 'Desativar';
+                } else {
+                    statusCell.innerText = 'Inativo';
+                    button.innerText = 'Ativar';
+                }
+
+                alert(data.mensagem);
+            } else {
+                alert('Erro ao alternar status do colaborador');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao alternar status do colaborador');
+        }
+
+        // Hide the modal
+        modal.style.display = 'none';
+    });
+
+    // Function to handle the "Não" button click
+    document.getElementById('cancelButton').addEventListener('click', function () {
+        const modal = document.getElementById('confirmationModal');
+        modal.style.display = 'none'; // Hide the modal
+    });
+
+    // Close the modal if the user clicks outside of it
+    window.addEventListener('click', function (event) {
+        const modal = document.getElementById('confirmationModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    // Filter Collaborators by Name
+    document.getElementById('filterInput').addEventListener('input', function () {
+        const filterValue = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#colaboradoresTableBody tr');
+
+        rows.forEach(row => {
+            const nome = row.querySelector('td').textContent.toLowerCase();
+            if (nome.includes(filterValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+</body>
+</html>

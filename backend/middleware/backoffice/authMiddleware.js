@@ -1,23 +1,21 @@
-// backend/middleware/backoffice/authMiddleware.js
-function estaAutenticado(req, res, next) {
-    if (req.session && req.session.user) {
-        return next();
-    }
-    res.status(401).json({ error: 'Não autorizado' });
-}
+const { body, validationResult } = require('express-validator');
 
-function isAdmin(req, res, next) {
-    if (req.session.user && req.session.user.id_cargo === 1 && req.session.user.situacao === true) {
-        return next();
-    }
-    res.status(403).json({ error: 'Acesso de administrador não autorizado' });
-}
+// Middleware to validate email
+const validarEmail = (field) => {
+    return [
+        body(field)
+            .trim()
+            .isEmail()
+            .withMessage('O campo "inputEmailColaborador" é obrigatório e deve ser um texto válido.'),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ error: errors.array()[0].msg });
+            }
+            next();
+        }
+    ];
+};
 
-function isEstoquista(req, res, next) {
-    if (req.session.user && req.session.user.id_cargo === 2 && req.session.user.situacao === true) {
-        return next();
-    }
-    res.status(403).json({ error: 'Acesso de estoquista não autorizado' });
-}
-
-module.exports = { estaAutenticado, isAdmin, isEstoquista };
+// Export only the necessary middleware
+module.exports = { validarEmail };

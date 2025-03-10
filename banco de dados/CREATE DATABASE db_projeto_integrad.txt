@@ -1,0 +1,82 @@
+CREATE DATABASE db_projeto_integrador_4sem;
+USE db_projeto_integrador_4sem;
+
+CREATE TABLE cargos (
+	id_cargo INT PRIMARY KEY AUTO_INCREMENT,
+	nome VARCHAR (255) NOT NULL 
+);
+
+INSERT INTO cargos (nome) VALUES ('administrador'), ('estoquista');
+
+CREATE TABLE colaboradores (
+    colaborador_id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(50) NOT NULL,
+    cpf VARCHAR(11) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    status BOOLEAN DEFAULT TRUE,
+    cargo_id INT NOT NULL,
+    FOREIGN KEY (cargo_id) REFERENCES cargos(id_cargo)
+);
+
+CREATE TABLE produtos (
+    produto_id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(200) NOT NULL,
+    descricao VARCHAR(2000) NOT NULL,
+    preco DECIMAL(10,2) NOT NULL,
+    media_avaliacao DECIMAL(2,1) DEFAULT 0.0,
+    total_avaliacao INT DEFAULT 0,
+    qtd_estoque INT NOT NULL,
+    status BOOLEAN DEFAULT TRUE,
+    colaborador_id INT,
+    FOREIGN KEY (colaborador_id) REFERENCES colaboradores(colaborador_id)
+);
+
+INSERT INTO produtos (nome, descricao, preco, qtd_estoque, status, colaborador_id)
+VALUES 
+    ('Ração Premium Cães', 'Ração balanceada para cães adultos', 89.90, 100, 1, 1),
+    ('Ração Premium Gatos', 'Ração completa para gatos adultos', 79.90, 80, 1, 1),
+    ('Brinquedo Mordedor', 'Mordedor resistente para cães', 25.90, 150, 1, 2),
+    ('Arranhador para Gatos', 'Arranhador compacto para gatos', 99.90, 50, 1, 3),
+    ('Shampoo Neutro Cães', 'Shampoo para higiene de cães', 29.90, 120, 1, 1),
+    ('Shampoo Neutro Gatos', 'Shampoo especial para gatos', 32.90, 90, 1, 1),
+    ('Coleira Pequena', 'Coleira ajustável para cães pequenos', 19.90, 110, 1, 2),
+    ('Coleira Grande', 'Coleira reforçada para cães grandes', 24.90, 90, 1, 2),
+    ('Caixa de Transporte', 'Caixa segura para transporte de pets', 159.90, 40, 1, 3),
+    ('Tapete Higiênico', 'Pacote com 30 tapetes para cães', 45.90, 200, 1, 1),
+    ('Cama para Cachorro', 'Cama macia e confortável para cães', 119.90, 35, 1, 2),
+    ('Cama para Gato', 'Cama aconchegante para gatos', 99.90, 40, 1, 2),
+    ('Bebedouro Automático', 'Bebedouro com filtro para pets', 129.90, 30, 1, 3),
+    ('Comedouro Duplo', 'Tigela dupla para ração e água', 49.90, 60, 1, 1),
+    ('Antipulgas Cães', 'Produto antipulgas para cães', 75.90, 75, 1, 1),
+    ('Antipulgas Gatos', 'Produto antipulgas para gatos', 69.90, 70, 1, 1),
+    ('Areia Higiênica', 'Areia sanitária para gatos', 35.90, 180, 1, 2),
+    ('Petiscos Naturais', 'Petiscos saudáveis para cães e gatos', 19.90, 160, 1, 3),
+    ('Osso Mastigável', 'Osso para roer e fortalecer dentes', 14.90, 140, 1, 2),
+    ('Escova de Pelos', 'Escova para remoção de pelos soltos', 39.90, 50, 1, 3),
+    ('Roupa para Cachorro', 'Roupa de inverno para cães', 89.90, 45, 1, 3);
+
+
+CREATE TABLE imagens (
+    imagem_id INT PRIMARY KEY AUTO_INCREMENT,
+    url VARCHAR(255),
+    is_principal BOOLEAN DEFAULT FALSE,
+    produto_id INT,
+    FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
+);
+
+drop table avaliacoes;
+
+CREATE TABLE avaliacoes (
+    avaliacao_id INT PRIMARY KEY AUTO_INCREMENT,
+    avaliacao DECIMAL(2,1) NOT NULL CHECK (avaliacao IN (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)),
+    produto_id INT,
+    FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
+);
+
+CREATE TABLE avaliacoes (
+    avaliacao_id INT PRIMARY KEY AUTO_INCREMENT,
+    avaliacao DECIMAL(2,1) NOT NULL CHECK (avaliacao IN (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)),
+    produto_id INT,
+    FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
+);

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Alterar Colaborador</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            max-width: 400px;
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>Alterar Colaborador</h1>
+
+<!-- Error Message Container -->
+<div id="error-message" class="error-message"></div>
+
+<form id="form-alterar-colaborador">
+
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" value="<%= colaborador.nome %>" required>
+
+
+    <label for="cpf">CPF:</label>
+    <input type="text" id="cpf" name="cpf" value="<%= colaborador.cpf %>" required>
+
+    <label for="senha">Nova Senha:</label>
+    <input type="password" id="senha" name="senha">
+
+    <label for="confirmarSenha">Confirmar Senha:</label>
+    <input type="password" id="confirmarSenha" name="confirmarSenha">
+
+    <label for="cargo_id">Cargo:</label>
+    <select id="cargo_id" name="cargo_id">
+        <option value="1" <%= colaborador.cargo_id === 1 ? 'selected' : '' %>>Administrador</option>
+        <option value="2" <%= colaborador.cargo_id === 2 ? 'selected' : '' %>>Estoquista</option>
+    </select>
+
+    <button type="submit">Salvar Alterações</button>
+</form>
+
+<a href="/backoffice/administrador/listar-colaboradores">Voltar para a lista</a>
+
+<script>
+    document.getElementById('form-alterar-colaborador').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        const colaboradorId = window.location.pathname.split('/').pop();
+
+        try {
+            const response = await fetch(`/backoffice/administrador/alterar-colaborador/${colaboradorId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nome: formData.get('nome'),
+                    cpf: formData.get('cpf'),
+                    senha: formData.get('senha'),
+                    confirmarSenha: formData.get('confirmarSenha'),
+                    cargo_id: formData.get('cargo_id')
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(result.message);
+                window.location.href = '/backoffice/administrador/listar-colaboradores';
+            } else {
+                document.getElementById('error-message').textContent = result.message;
+            }
+        } catch (error) {
+            console.error('Erro ao enviar formulário:', error);
+            document.getElementById('error-message').textContent = 'Erro ao enviar formulário. Tente novamente.';
+        }
+    });
+</script>
+</body>
+</html>

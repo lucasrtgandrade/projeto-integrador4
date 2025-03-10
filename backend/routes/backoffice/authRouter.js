@@ -2,9 +2,8 @@ const express = require('express');
 const router = express.Router();
 const AuthController = require('../../controllers/backoffice/authController');
 
+router.get('/', AuthController.renderizarPaginaLogin);
 
-router.get('/login', AuthController.renderizarPaginaLogin)
-
-router.post('/login', AuthController.acessoBackOffice);
+router.post('/login', AuthController.loginBackOffice);
 
 module.exports = router;

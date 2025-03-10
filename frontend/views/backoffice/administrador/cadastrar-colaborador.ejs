@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Colaborador</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            max-width: 400px;
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>Cadastrar Colaborador</h1>
+<form id="form-cadastrar-colaborador">
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" required>
+
+    <label for="cpf">CPF:</label>
+    <input type="text" id="cpf" name="cpf" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="senha">Senha:</label>
+    <input type="password" id="senha" name="senha" required>
+
+    <label for="confirmarSenha">Confirmar Senha:</label>
+    <input type="password" id="confirmarSenha" name="confirmarSenha" required>
+
+    <label for="cargo_id">Cargo:</label>
+    <select id="cargo_id" name="cargo_id">
+        <option value="1">Administrador</option>
+        <option value="2">Estoquista</option>
+    </select>
+
+    <button type="submit">Cadastrar</button>
+</form>
+
+<script>
+    document.getElementById('form-cadastrar-colaborador').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+
+        try {
+            const response = await fetch('/backoffice/administrador/cadastrar-colaborador', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nome: formData.get('nome'),
+                    cpf: formData.get('cpf'),
+                    email: formData.get('email'),
+                    senha: formData.get('senha'),
+                    confirmarSenha: formData.get('confirmarSenha'),
+                    cargo_id: formData.get('cargo_id')
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(result.message);
+                window.location.href = '/backoffice/administrador/listar-colaboradores';
+            } else {
+                document.getElementById('error-message').textContent = result.message;
+            }
+        } catch (error) {
+            console.error('Erro ao enviar formulário:', error);
+            document.getElementById('error-message').textContent = 'Erro ao enviar formulário. Tente novamente.';
+        }
+    });
+</script>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Produto</title>
+    <style>
+        /* Basic Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form-group input[type="file"] {
+            padding: 5px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-salvar {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-cancelar {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .imagem-container {
+            margin-top: 20px;
+        }
+
+        .imagem-container img {
+            max-width: 100px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<h1>Cadastrar Produto</h1>
+
+<form action="/backoffice/administrador/cadastrar-produto" method="POST" enctype="multipart/form-data">
+    <!-- Product Details -->
+    <div class="form-group">
+        <label for="nome">Nome do Produto:</label>
+        <input type="text" id="nome" name="nome" required>
+    </div>
+
+    <div class="form-group">
+        <label for="descricao">Descrição:</label>
+        <textarea id="descricao" name="descricao" rows="4" required></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="preco">Preço:</label>
+        <input type="number" id="preco" name="preco" step="0.01" required>
+    </div>
+
+    <div class="form-group">
+        <label for="qtd_estoque">Quantidade em Estoque:</label>
+        <input type="number" id="qtd_estoque" name="qtd_estoque" required>
+    </div>
+
+    <!-- Rating Input -->
+    <div class="form-group">
+        <label for="avaliacao">Avaliação:</label>
+        <select id="avaliacao" name="avaliacao" required>
+            <option value="1.0">1.0</option>
+            <option value="1.5">1.5</option>
+            <option value="2.0">2.0</option>
+            <option value="2.5">2.5</option>
+            <option value="3.0">3.0</option>
+            <option value="3.5">3.5</option>
+            <option value="4.0">4.0</option>
+            <option value="4.5">4.5</option>
+            <option value="5.0">5.0</option>
+        </select>
+    </div>
+
+    <!-- Image Upload -->
+    <div class="form-group">
+        <label for="imagens">Imagens do Produto:</label>
+        <input type="file" id="imagens" name="imagens" multiple accept="image/*" required>
+    </div>
+
+    <!-- Default Image Marker -->
+    <div class="form-group">
+        <label>Marcar Imagem Principal:</label>
+        <div id="imagem-container">
+            <!-- Images will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-group">
+        <button type="submit" class="btn btn-salvar">Salvar</button>
+        <a href="/backoffice/administrador/listar-produtos" class="btn btn-cancelar">Cancelar</a>
+    </div>
+</form>
+
+<script>
+    // Function to handle image upload preview
+    document.getElementById('imagens').addEventListener('change', function (event) {
+        const container = document.getElementById('imagem-container');
+        container.innerHTML = ''; // Clear previous images
+
+        const files = event.target.files;
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = 'Imagem do Produto';
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'imagem_principal';
+                radio.value = i; // Use the index to identify the main image
+
+                const label = document.createElement('label');
+                label.appendChild(radio);
+                label.appendChild(img);
+
+                container.appendChild(label);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+</body>
+</html>

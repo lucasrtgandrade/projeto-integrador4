@@ -1,44 +1,55 @@
-const ColaboradorModel = require('../../models/backoffice/ColaboradorModel')
-const { compareSenha } = require('../../utils/auth')
-
+const ColaboradorModel = require('../../models/backoffice/ColaboradorModel');
+const { compareSenha } = require('../../utils/auth');
 
 class AuthController {
     static renderizarPaginaLogin(req, res) {
-        res.render('backoffice/auth/login', { title: 'Login Backoffice'})
+        res.render('backoffice/auth/', { title: 'Login Backoffice' });
     }
 
-    static async acessoBackOffice(req, res) {
+    static async loginBackOffice(req, res) {
         const { email, senha } = req.body;
+
+        if (!email || !senha) {
+            return res.json({ success: false, message: 'Email e senha são obrigatórios' });
+        }
 
         try {
             const colaborador = await ColaboradorModel.encontrarEmail(email);
             if (!colaborador) {
-                return res.status(401).json({ error: 'Email ou senha incorretos' });
+                return res.json({ success: false, message: 'Email não cadastrado' });
             }
-            const isIgual = await compareSenha(senha, colaborador.senha);
-            if (!isIgual) {
-                return res.status(401).json({ error: 'Email ou senha incorretos' });
+
+
+            const senhaValida = await compareSenha(senha, colaborador.senha);
+            if (!senhaValida) {
+                return res.json({ success: false, message: 'Email ou senha inválidos' });
             }
-            if (!colaborador.status) {
-                return res.status(403).json({ error: 'Sua conta está inativada. Entre em contato com um administrador' });
+
+            if (colaborador.status !== 1) {
+                return res.json({ success: false, message: 'Usuário inativo. Entre em contato com o suporte.' });
             }
+
             req.session.user = {
-                colaborador_id: colaborador.colaborador_id,
+                id: colaborador.colaborador_id,
                 email: colaborador.email,
-                cargo_id: colaborador.cargo_id,
-                status: colaborador.status,
+                cargo_id: colaborador.cargo_id
             };
+
+            let rotaDestino = '/';
             if (colaborador.cargo_id === 1) {
-                return res.status(200).json({ redirect: 'backoffice/administrador/index' });
+                rotaDestino = '/backoffice/administrador/';
             } else if (colaborador.cargo_id === 2) {
-                return res.status(200).json({ redirect: 'backoffice/estoquista/index' });
-            } else {
-                return res.status(403).json({ error: 'Acesso restrito apenas para funcionários' });
+                rotaDestino = '/backoffice/estoquista/';
             }
+
+            return res.json({ success: true, message: 'Login realizado com sucesso!', redirect: rotaDestino });
+
         } catch (error) {
-            return res.status(500).json({ error: error.message });
+            console.log('Erro no login:', error);
+            return res.json({ success: false, message: 'Erro no servidor' });
         }
     }
+
 }
 
 module.exports = AuthController;

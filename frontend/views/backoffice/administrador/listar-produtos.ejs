@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Listar Produtos</title>
+    <style>
+        /* Basic Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .filtro-container {
+            margin-bottom: 20px;
+        }
+
+        .filtro-container input {
+            padding: 8px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .botao-adicionar {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .botao-adicionar:hover {
+            background-color: #218838;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        /* Pagination Styles */
+        .paginacao {
+            margin-top: 20px;
+        }
+
+        .paginacao a {
+            margin: 0 5px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        .paginacao a.ativo {
+            background-color: #007BFF;
+            color: white;
+            border-color: #007BFF;
+        }
+
+        .paginacao a:hover:not(.ativo) {
+            background-color: #f2f2f2;
+        }
+
+        .botao-alterar {
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-left: 5px;
+        }
+
+        .botao-alterar:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<h1>Lista de Produtos</h1>
+
+<!-- Filter Input -->
+<div class="filtro-container">
+    <label for="campoPesquisa">Filtrar por Nome:</label>
+    <input type="text" id="campoPesquisa" placeholder="Digite o nome do produto...">
+</div>
+
+<!-- Add Product Button -->
+<a href="/backoffice/administrador/cadastrar-produto" class="botao-adicionar">Cadastrar Novo Produto</a>
+
+<!-- Products Table -->
+<table>
+    <thead>
+    <tr>
+        <th>Código</th>
+        <th>Nome</th>
+        <th>Quantidade</th>
+        <th>Preço</th>
+        <th>Status</th>
+        <th>Opções</th>
+    </tr>
+    </thead>
+    <tbody id="corpoTabelaProdutos">
+    <!-- Products will be dynamically inserted here -->
+    </tbody>
+</table>
+
+<!-- Pagination -->
+<div class="paginacao" id="paginacao">
+    <!-- Pagination links will be dynamically inserted here -->
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirmationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
+    <div style="background-color: white; padding: 20px; border-radius: 5px; text-align: center;">
+        <p id="modalMessage"></p>
+        <button id="confirmButton" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">
+            Confirmar
+        </button>
+        <button id="cancelButton" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+            Cancelar
+        </button>
+    </div>
+</div>
+
+<script>
+    // Global variables to store the current product ID and status
+    let currentProdutoId = null;
+    let currentStatus = null;
+
+    // Function to fetch and display products
+    async function buscarProdutos(pagina = 1, termoPesquisa = '') {
+        try {
+            const resposta = await fetch(`/backoffice/administrador/listar-produtos/api?pagina=${pagina}&termoPesquisa=${termoPesquisa}`);
+            if (!resposta.ok) {
+                throw new Error('Erro ao buscar produtos');
+            }
+            const dados = await resposta.json();
+
+            // Clear the table body
+            const corpoTabela = document.getElementById('corpoTabelaProdutos');
+            corpoTabela.innerHTML = '';
+
+            // Populate the table with products
+            dados.produtos.forEach(produto => {
+                const linha = document.createElement('tr');
+                linha.innerHTML = `
+                    <td>${produto.produto_id}</td>
+                    <td>${produto.nome}</td>
+                    <td>${produto.qtd_estoque}</td>
+                    <td>R$ ${Number(produto.preco).toFixed(2)}</td>
+                    <td id="status-${produto.produto_id}">
+                        ${produto.status ? 'Ativo' : 'Inativo'}
+                    </td>
+                    <td>
+                        <button onclick="mostrarModal(${produto.produto_id}, ${produto.status})">
+                            ${produto.status ? 'Desativar' : 'Reativar'}
+                        </button>
+                    <td>
+                        <button onclick="mostrarModal(${produto.produto_id}, ${produto.status})">
+                            ${produto.status ? 'Desativar' : 'Reativar'}
+                        </button>
+                        <a href="/backoffice/administrador/alterar-produto/${produto.produto_id}" class="botao-alterar">Alterar</a>
+                    </td>
+                    </td>
+                `;
+                corpoTabela.appendChild(linha);
+            });
+
+            // Update pagination
+            const paginacao = document.getElementById('paginacao');
+            paginacao.innerHTML = '';
+
+            for (let i = 1; i <= dados.totalPaginas; i++) {
+                const link = document.createElement('a');
+                link.href = '#';
+                link.innerText = i;
+                link.className = i === dados.pagina ? 'ativo' : '';
+                link.onclick = () => {
+                    buscarProdutos(i, termoPesquisa);
+                    return false; // Prevent default link behavior
+                };
+                paginacao.appendChild(link);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao buscar produtos. Tente novamente.');
+        }
+    }
+
+    // Function to show the confirmation modal
+    function mostrarModal(produtoId, statusAtual) {
+        currentProdutoId = produtoId; // Store the produtoId
+        currentStatus = statusAtual; // Store the current status
+
+        const modal = document.getElementById('confirmationModal');
+        const modalMessage = document.getElementById('modalMessage');
+
+        // Set the modal message based on the status
+        if (statusAtual) {
+            modalMessage.innerText = 'O produto será desativado. Você tem certeza?';
+        } else {
+            modalMessage.innerText = 'O produto será ativado. Você tem certeza?';
+        }
+
+        // Show the modal
+        modal.style.display = 'flex';
+    }
+
+    // Function to handle modal confirmation
+    async function confirmarAlternarStatus() {
+        const modal = document.getElementById('confirmationModal');
+
+        try {
+            // Hide the modal
+            modal.style.display = 'none';
+
+            // Call the alternarStatus function with the stored values
+            await alternarStatus(currentProdutoId, currentStatus);
+        } catch (error) {
+            console.error('Erro ao alternar status do produto:', error);
+            alert('Erro ao alternar status do produto. Tente novamente.');
+        }
+    }
+
+    // Function to handle modal cancellation
+    function cancelarAlternarStatus() {
+        const modal = document.getElementById('confirmationModal');
+
+        // Hide the modal
+        modal.style.display = 'none';
+    }
+
+    // Function to toggle product status
+    async function alternarStatus(produtoId, statusAtual) {
+        try {
+            // Send a POST request to toggle the status
+            const resposta = await fetch(`/backoffice/administrador/alternar-status-produto/${produtoId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: !statusAtual }) // Toggle the status
+            });
+
+            if (!resposta.ok) {
+                throw new Error('Erro ao alternar status do produto');
+            }
+
+            const dados = await resposta.json();
+
+            if (dados.sucesso) {
+                // Refresh the product list to reflect the updated status
+                const termoPesquisa = document.getElementById('campoPesquisa').value;
+                const paginaAtual = 1; // Reset to the first page after status change
+                await buscarProdutos(paginaAtual, termoPesquisa);
+            } else {
+                throw new Error('Erro ao alternar status do produto');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao alternar status do produto. Tente novamente.');
+        }
+    }
+
+    // Add event listeners for modal buttons
+    document.addEventListener('DOMContentLoaded', () => {
+        // Add event listener for the confirm button
+        document.getElementById('confirmButton').addEventListener('click', confirmarAlternarStatus);
+
+        // Add event listener for the cancel button
+        document.getElementById('cancelButton').addEventListener('click', cancelarAlternarStatus);
+
+        // Initial fetch on page load
+        buscarProdutos(1, '');
+    });
+
+    // Dynamic search functionality
+    const campoPesquisa = document.getElementById('campoPesquisa');
+    campoPesquisa.addEventListener('input', () => {
+        const termoPesquisa = campoPesquisa.value;
+        buscarProdutos(1, termoPesquisa);
+    });
+</script>
+</body>
+</html>

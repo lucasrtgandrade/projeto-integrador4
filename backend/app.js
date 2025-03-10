@@ -1,41 +1,38 @@
-// backend/app.js
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-const session = require('express-session');
+const { sessionMiddleware } = require('./middleware/sessionsMiddleware');
 const app = express();
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../frontend/views'));
+
+// Middleware to parse JSON and URL-encoded bodies
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use (sessionMiddleware);
+
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../frontend/views'));
 app.use(express.static(path.join(__dirname, '../frontend/public')));
 
-app.use(
-    session({
-        secret: '123', // para teste
-        // secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: true,
-        cookie: { secure: false }, // True se estiver usando HTTPS
-    })
-);
 
 const indexRouter = require('./routes/index');
 app.use('/', indexRouter);
 
 const authRouter = require('./routes/backoffice/authRouter');
-const administradorRouter = require('./routes/backoffice/administradorRouter');
-const estoquistaRouter = require('./routes/backoffice/estoquistaRouter')
 app.use('/backoffice/auth', authRouter);
+
+const administradorRouter = require('./routes/backoffice/administradorRouter');
 app.use('/backoffice/administrador', administradorRouter);
-app.use('/backoffice/estoquista', estoquistaRouter)
 
-
-
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3030;
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
 });
