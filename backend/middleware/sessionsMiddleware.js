@@ -24,4 +24,11 @@ function exigirAdministrador(req, res, next) {
     }
 }
 
-module.exports = { sessionMiddleware, exigirLogin, exigirAdministrador };
+function exigirEstoquista(req, res, next) {
+    if (req.session.user && req.session.user.cargo_id === 2) { // Estoquista = cargo_id 2
+        return next();
+    }
+    return res.status(403).json({ success: false, message: 'Acesso negado' });
+}
+
+module.exports = { sessionMiddleware, exigirLogin, exigirAdministrador, exigirEstoquista };

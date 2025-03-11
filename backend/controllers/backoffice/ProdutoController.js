@@ -1,18 +1,19 @@
 const ProdutoModel = require('../../models/backoffice/ProdutoModel');
+const path = require('path');
+const fs = require('fs');
 
 class ProdutoController {
     static async buscarDadosProdutos(page = 1, limit = 10, search = '') {
         try {
             const result = await ProdutoModel.listarProdutos(page, limit, search);
 
-            // Converte o preço de string para número
             const produtos = result.produtos.map(produto => ({
                 ...produto,
-                preco: Number(produto.preco) // Converte preco para número
+                preco: Number(produto.preco)
             }));
 
             return {
-                produtos, // Produtos com preço convertido
+                produtos,
                 paginaAtual: result.pagina,
                 totalPaginas: result.totalPaginas,
                 termoPesquisa: search
@@ -24,14 +25,14 @@ class ProdutoController {
     }
 
     static async renderizarPaginaListarProdutos(req, res) {
-        const { page = 1, limit = 10, search = '' } = req.query;
+        const {page = 1, limit = 10, search = ''} = req.query;
 
         try {
             const dadosProdutos = await ProdutoController.buscarDadosProdutos(page, limit, search);
 
             res.render('backoffice/administrador/listar-produtos', {
                 title: 'Listar Produtos',
-                ...dadosProdutos // Espalha os dados no objeto de renderização
+                ...dadosProdutos
             });
         } catch (error) {
             console.error('Erro ao renderizar a página de produtos:', error);
@@ -40,14 +41,14 @@ class ProdutoController {
     }
 
     static async listarProdutosAPI(req, res) {
-        const { pagina = 1, limite = 10, termoPesquisa = '' } = req.query;
+        const {pagina = 1, limite = 10, termoPesquisa = ''} = req.query;
 
         try {
             const resultado = await ProdutoModel.listarProdutos(pagina, limite, termoPesquisa);
-            res.json(resultado); // Return JSON data
+            res.json(resultado);
         } catch (erro) {
             console.error('Erro ao listar produtos:', erro);
-            res.status(500).json({ sucesso: false, mensagem: 'Erro ao listar produtos' });
+            res.status(500).json({sucesso: false, mensagem: 'Erro ao listar produtos'});
         }
     }
 
@@ -58,8 +59,8 @@ class ProdutoController {
     }
 
     static async cadastrarProduto(req, res) {
-        const { nome, descricao, preco, qtd_estoque, avaliacao, imagem_principal } = req.body;
-        const imagens = req.files; // Uploaded files
+        const {nome, descricao, preco, qtd_estoque, avaliacao, imagem_principal} = req.body;
+        const imagens = req.files;
 
         if (!nome || !descricao || !preco || !qtd_estoque || !avaliacao || !imagens || !imagem_principal) {
             return res.status(400).send('Todos os campos são obrigatórios');
@@ -72,10 +73,19 @@ class ProdutoController {
             // Step 2: Insert the product rating into the `avaliacoes` table
             await ProdutoModel.cadastrarAvaliacao(produtoId, avaliacao);
 
-            // Step 3: Insert the images into the database
-            await ProdutoModel.cadastrarImagens(produtoId, imagens, imagem_principal);
+            // Step 3: Rename and save images
+            const imagensRenomeadas = imagens.map((imagem, index) => {
+                const extensao = path.extname(imagem.originalname);
+                const novoNome = `${nome.replace(/\s+/g, '-').toLowerCase()}-${produtoId}-${index + 1}${extensao}`;
+                const novoCaminho = path.join(__dirname, '../../public/uploads', novoNome);
 
-            // Redirect to the product list page
+                fs.renameSync(imagem.path, novoCaminho);
+                return novoNome;
+            });
+
+            // Step 4: Insert renamed images into the database
+            await ProdutoModel.cadastrarImagens(produtoId, imagensRenomeadas, imagem_principal);
+
             res.redirect('/backoffice/administrador/listar-produtos');
         } catch (error) {
             console.error('Erro ao cadastrar produto:', error);
@@ -84,18 +94,15 @@ class ProdutoController {
     }
 
     static async alternarStatusProduto(req, res) {
-        const { produto_id } = req.params;
-        const { status } = req.body;
+        const {produto_id} = req.params;
+        const {status} = req.body;
 
         try {
-            // Toggle the status in the database
             await ProdutoModel.alternarStatus(produto_id, status);
-
-            // Return a success response
-            res.json({ sucesso: true, novoStatus: status });
+            res.json({sucesso: true, novoStatus: status});
         } catch (error) {
             console.error('Erro ao alternar status do produto:', error);
-            res.status(500).json({ sucesso: false, mensagem: 'Erro ao alternar status do produto' });
+            res.status(500).json({sucesso: false, mensagem: 'Erro ao alternar status do produto'});
         }
     }
 
@@ -104,22 +111,47 @@ class ProdutoController {
 
         try {
             const produto = await ProdutoModel.buscarProdutoPorId(produto_id);
-            res.render('backoffice/administrador/alterar-produto', { produto });
+            const imagens = await ProdutoModel.buscarImagensPorProduto(produto_id);
+
+            console.log("Imagens carregadas para o produto:", imagens); // 🛠 Debug log
+
+            res.render('backoffice/administrador/alterar-produto', { produto, imagens });
         } catch (error) {
             console.error('Erro ao buscar produto:', error);
             res.status(500).send('Erro ao carregar a página de alteração de produto');
         }
     }
 
+
     static async alterarProduto(req, res) {
         const { produto_id } = req.params;
-        const { nome, descricao, preco, qtd_estoque } = req.body;
+        const { nome, descricao, preco, qtd_estoque, avaliacao, imagem_principal } = req.body;
+        const novasImagens = req.files; // Uploaded files
 
         try {
-            // Update the product in the model
+            // Update product details
             await ProdutoModel.alterarProduto(produto_id, nome, descricao, preco, qtd_estoque);
+            await ProdutoModel.alterarAvaliacao(produto_id, avaliacao);
 
-            // Return a success response
+            // Update the main image selection
+            if (imagem_principal) {
+                await ProdutoModel.atualizarImagemPrincipal(produto_id, imagem_principal);
+            }
+
+            // Handle new image uploads
+            if (novasImagens && novasImagens.length > 0) {
+                for (let i = 0; i < novasImagens.length; i++) {
+                    const extensao = path.extname(novasImagens[i].originalname);
+                    const novoNome = `${nome.replace(/\s+/g, '-').toLowerCase()}-${produto_id}-${i + 1}${extensao}`;
+                    const novoCaminho = path.join(__dirname, '../../public/uploads', novoNome);
+
+                    fs.renameSync(novasImagens[i].path, novoCaminho);
+
+                    // Save new image to the database
+                    await ProdutoModel.cadastrarNovaImagem(produto_id, novoNome);
+                }
+            }
+
             res.json({ sucesso: true });
         } catch (error) {
             console.error('Erro ao alterar produto:', error);
@@ -127,6 +159,28 @@ class ProdutoController {
         }
     }
 
+    static async getProdutoDetalhes(req, res) {
+        const { produto_id } = req.params;
+
+        try {
+            const produto = await ProdutoModel.buscarProdutoPorId(produto_id);
+            const imagens = await ProdutoModel.buscarImagensPorProduto(produto_id);
+
+            if (!produto) {
+                return res.status(404).json({ sucesso: false, mensagem: "Produto não encontrado" });
+            }
+
+            res.json({
+                nome: produto.nome,
+                avaliacao: produto.avaliacao,
+                qtd_estoque: produto.qtd_estoque,
+                imagens
+            });
+        } catch (error) {
+            console.error("Erro ao buscar detalhes do produto:", error);
+            res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar detalhes do produto" });
+        }
+    }
 }
 
 module.exports = ProdutoController;

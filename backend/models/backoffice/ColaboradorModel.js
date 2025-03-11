@@ -1,4 +1,4 @@
-const pool = require('../../db');
+const pool = require('../../config/db');
 const { encripteSenha } = require('../../utils/auth');
 
 class ColaboradorModel {

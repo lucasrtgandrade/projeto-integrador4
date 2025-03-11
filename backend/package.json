@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "../node_modules/.bin/nodemon backend/app.js",
+    "dev": "../node_modules/.bin/nodemon app.js",
+    "init-db": "node config/init-db.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "DANIEL YUJI TAKEMOTO, GILBERTO DE JESUS SILVA, GEORGE GONCALVES RAMOS, LUCAS REATEGUI NITSCHE DE ANDRADE",

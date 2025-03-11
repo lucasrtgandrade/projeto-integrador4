@@ -21,6 +21,8 @@ app.use(bodyParser.json());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../frontend/views'));
 app.use(express.static(path.join(__dirname, '../frontend/public')));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
 
 
 const indexRouter = require('./routes/index');
@@ -31,6 +33,9 @@ app.use('/backoffice/auth', authRouter);
 
 const administradorRouter = require('./routes/backoffice/administradorRouter');
 app.use('/backoffice/administrador', administradorRouter);
+
+const estoquistaRouter = require('./routes/backoffice/estoquistaRouter');
+app.use('/backoffice/estoquista', estoquistaRouter);
 
 const PORT = process.env.PORT || 3030;
 app.listen(PORT, () => {

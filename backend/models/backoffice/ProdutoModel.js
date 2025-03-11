@@ -1,4 +1,4 @@
-const pool = require('../../db');
+const pool = require('../../config/db');
 
 class ProdutoModel {
     static async listarProdutos(pagina = 1, limite = 10, termoPesquisa = '') {
@@ -11,22 +11,21 @@ class ProdutoModel {
             WHERE 1=1
         `;
 
-        // Count query to get the total number of products (remove the status filter)
         let queryContagem = `
             SELECT COUNT(*) as total FROM produtos
             WHERE 1=1
         `;
 
-        // Add search filter if a search term is provided
+
         if (termoPesquisa) {
             query += ` AND nome LIKE ?`;
             queryContagem += ` AND nome LIKE ?`;
         }
 
-        // Add sorting by produto_id in descending order (newest first)
+
         query += ` ORDER BY produto_id DESC`;
 
-        // Add pagination
+
         query += ` LIMIT ? OFFSET ?`;
 
         // Execute the queries
@@ -42,7 +41,6 @@ class ProdutoModel {
         };
     }
 
-    // Insert a new product
     static async cadastrarProduto(nome, descricao, preco, qtd_estoque) {
         const [result] = await pool.query(
             'INSERT INTO produtos (nome, descricao, preco, qtd_estoque, status) VALUES (?, ?, ?, ?, ?)',
@@ -51,7 +49,6 @@ class ProdutoModel {
         return result.insertId; // Return the ID of the newly inserted product
     }
 
-    // Insert a product rating
     static async cadastrarAvaliacao(produtoId, avaliacao) {
         await pool.query(
             'INSERT INTO avaliacoes (avaliacao, produto_id) VALUES (?, ?)',
@@ -59,22 +56,22 @@ class ProdutoModel {
         );
     }
 
-    // Insert product images
     static async cadastrarImagens(produtoId, imagens, imagemPrincipalIndex) {
         if (!Array.isArray(imagens)) {
             throw new Error('Imagens devem ser um array');
         }
 
         for (let i = 0; i < imagens.length; i++) {
-            const isPrincipal = i === imagemPrincipalIndex; // Check if this is the main image
+            const isPrincipal = i === parseInt(imagemPrincipalIndex); // Check if this is the main image
+            const nomeArquivo = imagens[i]; // Make sure this stores the filename, not the whole file object!
+
             await pool.query(
                 'INSERT INTO imagens (url, is_principal, produto_id) VALUES (?, ?, ?)',
-                [imagens[i].filename, isPrincipal, produtoId]
+                [nomeArquivo, isPrincipal, produtoId]
             );
         }
     }
 
-    // Toggle product status
     static async alternarStatus(produtoId, status) {
         await pool.query(
             'UPDATE produtos SET status = ? WHERE produto_id = ?',
@@ -107,6 +104,50 @@ class ProdutoModel {
             throw error;
         }
     }
+
+    static async alterarAvaliacao(produtoId, avaliacao) {
+        await pool.query(
+            'UPDATE avaliacoes SET avaliacao = ? WHERE produto_id = ?',
+            [avaliacao, produtoId]
+        );
+    }
+
+    static async alterarImagem(produtoId, novoNome) {
+        await pool.query(
+            'UPDATE imagens SET url = ? WHERE produto_id = ? AND is_principal = TRUE',
+            [novoNome, produtoId]
+        );
+    }
+
+    static async buscarImagensPorProduto(produtoId) {
+        const [imagens] = await pool.query(
+            'SELECT imagem_id, url, is_principal FROM imagens WHERE produto_id = ?',
+            [produtoId]
+        );
+        return imagens;
+    }
+
+    static async atualizarImagemPrincipal(produtoId, imagemId) {
+        // Set all images to not be principal
+        await pool.query(
+            'UPDATE imagens SET is_principal = FALSE WHERE produto_id = ?',
+            [produtoId]
+        );
+
+        // Set the selected image as principal
+        await pool.query(
+            'UPDATE imagens SET is_principal = TRUE WHERE imagem_id = ?',
+            [imagemId]
+        );
+    }
+
+    static async cadastrarNovaImagem(produtoId, nomeArquivo) {
+        await pool.query(
+            'INSERT INTO imagens (url, is_principal, produto_id) VALUES (?, FALSE, ?)',
+            [nomeArquivo, produtoId]
+        );
+    }
+
 }
 
 module.exports = ProdutoModel;

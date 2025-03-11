@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Listar Produtos - Estoquista</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .filtro-container {
+            margin-bottom: 20px;
+        }
+
+        .filtro-container input {
+            padding: 8px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<h1>Lista de Produtos - Estoquista</h1>
+
+<!-- Filter Input -->
+<div class="filtro-container">
+    <label for="campoPesquisa">Filtrar por Nome:</label>
+    <input type="text" id="campoPesquisa" placeholder="Digite o nome do produto...">
+</div>
+
+<!-- Products Table -->
+<table>
+    <thead>
+    <tr>
+        <th>Código</th>
+        <th>Nome</th>
+        <th>Quantidade</th>
+        <th>Preço</th>
+    </tr>
+    </thead>
+    <tbody id="corpoTabelaProdutos">
+    <!-- Products will be dynamically inserted here -->
+    </tbody>
+</table>
+
+<!-- Pagination -->
+<div class="paginacao" id="paginacao">
+    <!-- Pagination links will be dynamically inserted here -->
+</div>
+
+<script>
+    async function buscarProdutos(pagina = 1, termoPesquisa = '') {
+        try {
+            console.log("📡 Fetching products from API...");
+            const resposta = await fetch(`/backoffice/estoquista/listar-produtos/api?pagina=${pagina}&termoPesquisa=${termoPesquisa}`);
+
+
+            console.log("🔄 API Response Status:", resposta.status); // Debug log
+
+            if (!resposta.ok) {
+                throw new Error('Erro ao buscar produtos');
+            }
+
+            const dados = await resposta.json();
+            console.log("✅ API Response Data:", dados); // Debug log
+
+            // Ensure the table exists before trying to populate it
+            const corpoTabela = document.getElementById('corpoTabelaProdutos');
+            if (!corpoTabela) {
+                console.error("❌ Error: Table body not found!");
+                return;
+            }
+
+            // Clear the table body
+            corpoTabela.innerHTML = '';
+
+            // Check if there are products
+            if (dados.produtos.length === 0) {
+                console.warn("⚠️ No products found!");
+                corpoTabela.innerHTML = `<tr><td colspan="4">Nenhum produto encontrado</td></tr>`;
+                return;
+            }
+
+            // Populate the table with products
+            dados.produtos.forEach(produto => {
+                console.log("🛠 Rendering produto:", produto); // Debug log
+
+                const linha = document.createElement('tr');
+                linha.innerHTML = `
+                    <td>${produto.produto_id}</td>
+                    <td>${produto.nome}</td>
+                    <td>${produto.qtd_estoque}</td>
+                    <td>R$ ${Number(produto.preco).toFixed(2)}</td>
+                `;
+                corpoTabela.appendChild(linha);
+            });
+
+            // Log table after adding rows
+            console.log("📌 Final Table HTML:", corpoTabela.innerHTML);
+
+        } catch (error) {
+            console.error("❌ Error fetching products:", error);
+            alert('Erro ao buscar produtos. Tente novamente.');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        buscarProdutos(1, '');
+
+        // Dynamic search functionality
+        const campoPesquisa = document.getElementById('campoPesquisa');
+        campoPesquisa.addEventListener('input', () => {
+            const termoPesquisa = campoPesquisa.value;
+            buscarProdutos(1, termoPesquisa);
+        });
+    });
+</script>
+
+</body>
+</html>

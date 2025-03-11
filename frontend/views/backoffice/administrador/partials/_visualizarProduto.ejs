@@ -1,0 +1,89 @@
+<!-- Modal for Product Preview -->
+<div id="modalVisualizar" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="fecharModalVisualizar()">&times;</span>
+        <h2>Pré-visualização do Produto</h2>
+
+        <!-- Product Name -->
+        <h3 id="previewNome"></h3>
+
+        <!-- Image Carousel -->
+        <div id="carouselContainer">
+            <button id="prevSlide" onclick="mudarSlide(-1)">&#10094;</button>
+            <div id="carousel">
+                <!-- Images will be inserted dynamically -->
+            </div>
+            <button id="nextSlide" onclick="mudarSlide(1)">&#10095;</button>
+        </div>
+
+        <!-- Star Ratings -->
+        <p>Avaliação: <span id="previewAvaliacao"></span></p>
+
+        <!-- Stock Quantity -->
+        <p>Quantidade em Estoque: <span id="previewEstoque"></span></p>
+
+        <!-- Disabled "Comprar" Button -->
+        <button disabled class="botao-comprar">Comprar</button>
+
+        <!-- Back Button -->
+        <button onclick="fecharModalVisualizar()">Voltar para Editar Produtos</button>
+    </div>
+</div>
+
+<!-- Styles for the Modal -->
+<style>
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        width: 50%;
+    }
+
+    .close {
+        position: absolute;
+        right: 20px;
+        top: 10px;
+        cursor: pointer;
+        font-size: 20px;
+    }
+
+    #carouselContainer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #carousel {
+        display: flex;
+        overflow: hidden;
+        width: 200px;
+        height: 200px;
+    }
+
+    #carousel img {
+        width: 200px;
+        height: 200px;
+        display: none;
+    }
+
+    .botao-comprar {
+        background-color: #ccc;
+        color: black;
+        padding: 10px;
+        border: none;
+        cursor: not-allowed;
+    }
+</style>

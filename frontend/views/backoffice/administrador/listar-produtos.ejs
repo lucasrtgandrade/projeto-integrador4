@@ -143,70 +143,16 @@
     </div>
 </div>
 
+<%- include('./partials/_visualizarProduto') %>
+
+
+
 <script>
     // Global variables to store the current product ID and status
     let currentProdutoId = null;
     let currentStatus = null;
 
-    // Function to fetch and display products
-    async function buscarProdutos(pagina = 1, termoPesquisa = '') {
-        try {
-            const resposta = await fetch(`/backoffice/administrador/listar-produtos/api?pagina=${pagina}&termoPesquisa=${termoPesquisa}`);
-            if (!resposta.ok) {
-                throw new Error('Erro ao buscar produtos');
-            }
-            const dados = await resposta.json();
 
-            // Clear the table body
-            const corpoTabela = document.getElementById('corpoTabelaProdutos');
-            corpoTabela.innerHTML = '';
-
-            // Populate the table with products
-            dados.produtos.forEach(produto => {
-                const linha = document.createElement('tr');
-                linha.innerHTML = `
-                    <td>${produto.produto_id}</td>
-                    <td>${produto.nome}</td>
-                    <td>${produto.qtd_estoque}</td>
-                    <td>R$ ${Number(produto.preco).toFixed(2)}</td>
-                    <td id="status-${produto.produto_id}">
-                        ${produto.status ? 'Ativo' : 'Inativo'}
-                    </td>
-                    <td>
-                        <button onclick="mostrarModal(${produto.produto_id}, ${produto.status})">
-                            ${produto.status ? 'Desativar' : 'Reativar'}
-                        </button>
-                    <td>
-                        <button onclick="mostrarModal(${produto.produto_id}, ${produto.status})">
-                            ${produto.status ? 'Desativar' : 'Reativar'}
-                        </button>
-                        <a href="/backoffice/administrador/alterar-produto/${produto.produto_id}" class="botao-alterar">Alterar</a>
-                    </td>
-                    </td>
-                `;
-                corpoTabela.appendChild(linha);
-            });
-
-            // Update pagination
-            const paginacao = document.getElementById('paginacao');
-            paginacao.innerHTML = '';
-
-            for (let i = 1; i <= dados.totalPaginas; i++) {
-                const link = document.createElement('a');
-                link.href = '#';
-                link.innerText = i;
-                link.className = i === dados.pagina ? 'ativo' : '';
-                link.onclick = () => {
-                    buscarProdutos(i, termoPesquisa);
-                    return false; // Prevent default link behavior
-                };
-                paginacao.appendChild(link);
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Erro ao buscar produtos. Tente novamente.');
-        }
-    }
 
     // Function to show the confirmation modal
     function mostrarModal(produtoId, statusAtual) {
@@ -282,7 +228,66 @@
             alert('Erro ao alternar status do produto. Tente novamente.');
         }
     }
+    async function buscarProdutos(pagina = 1, termoPesquisa = '') {
+        try {
+            const resposta = await fetch(`/backoffice/administrador/listar-produtos/api?pagina=${pagina}&termoPesquisa=${termoPesquisa}`);
+            if (!resposta.ok) {
+                throw new Error('Erro ao buscar produtos');
+            }
+            const dados = await resposta.json();
 
+            // Clear the table body
+            const corpoTabela = document.getElementById('corpoTabelaProdutos');
+            corpoTabela.innerHTML = '';
+
+            // Populate the table with products
+            dados.produtos.forEach(produto => {
+                const linha = document.createElement('tr');
+                linha.innerHTML = `
+                    <td>${produto.produto_id}</td>
+                    <td>${produto.nome}</td>
+                    <td>${produto.qtd_estoque}</td>
+                    <td>R$ ${Number(produto.preco).toFixed(2)}</td>
+                    <td id="status-${produto.produto_id}">
+                        ${produto.status ? 'Ativo' : 'Inativo'}
+                    </td>
+                    <td>
+                        <div class="acoes-container">
+                            <button onclick="mostrarModal(${produto.produto_id}, ${produto.status})">
+                                ${produto.status ? 'Desativar' : 'Reativar'}
+                            </button>
+                            <a href="/backoffice/administrador/alterar-produto/${produto.produto_id}" class="botao-alterar">
+                                Editar
+                            </a>
+                            <button class="botao-visualizar" onclick="visualizarProduto(${produto.produto_id})">
+                                Visualizar
+                            </button>
+                        </div>
+                    </td>
+                `;
+                corpoTabela.appendChild(linha);
+            });
+
+            // Update pagination
+            const paginacao = document.getElementById('paginacao');
+            paginacao.innerHTML = '';
+
+            for (let i = 1; i <= dados.totalPaginas; i++) {
+                const link = document.createElement('a');
+                link.href = '#';
+                link.innerText = i;
+                link.className = i === dados.pagina ? 'ativo' : '';
+                link.onclick = () => {
+                    buscarProdutos(i, termoPesquisa);
+                    return false; // Prevent default link behavior
+                };
+                paginacao.appendChild(link);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao buscar produtos. Tente novamente.');
+        }
+    }
     // Add event listeners for modal buttons
     document.addEventListener('DOMContentLoaded', () => {
         // Add event listener for the confirm button
@@ -301,6 +306,76 @@
         const termoPesquisa = campoPesquisa.value;
         buscarProdutos(1, termoPesquisa);
     });
+
+    let imagensProduto = [];
+    let indiceAtual = 0;
+
+    async function visualizarProduto(produtoId) {
+        try {
+            const response = await fetch(`/backoffice/administrador/produto/${produtoId}`);
+            if (!response.ok) {
+                throw new Error('Erro ao carregar detalhes do produto.');
+            }
+            const produto = await response.json();
+
+            // Set product details in modal
+            document.getElementById('previewNome').innerText = produto.nome;
+            document.getElementById('previewAvaliacao').innerText = `${produto.avaliacao} ★`;
+            document.getElementById('previewEstoque').innerText = produto.qtd_estoque;
+
+            // Reorder images: Move `imagem_principal` to the first position
+            imagensProduto = produto.imagens;
+            const principalIndex = imagensProduto.findIndex(img => img.is_principal);
+            if (principalIndex > -1) {
+                const principalImage = imagensProduto.splice(principalIndex, 1)[0];
+                imagensProduto.unshift(principalImage); // Move principal image to the first position
+            }
+
+            indiceAtual = 0; // Start carousel at index 0
+            atualizarCarrossel();
+
+            // Show modal
+            document.getElementById('modalVisualizar').style.display = 'flex';
+
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao visualizar produto.');
+        }
+    }
+
+
+    function fecharModalVisualizar() {
+        document.getElementById('modalVisualizar').style.display = 'none';
+    }
+
+    function atualizarCarrossel() {
+        const carousel = document.getElementById('carousel');
+        carousel.innerHTML = ''; // Clear previous images
+
+        if (imagensProduto.length === 0) {
+            carousel.innerHTML = '<p>Sem imagens disponíveis</p>';
+            return;
+        }
+
+        imagensProduto.forEach((imagem, index) => {
+            const imgElement = document.createElement('img');
+            imgElement.src = `/uploads/${imagem.url}`;
+            imgElement.style.display = index === indiceAtual ? 'block' : 'none';
+            carousel.appendChild(imgElement);
+        });
+    }
+
+    function mudarSlide(direction) {
+        if (imagensProduto.length === 0) return;
+
+        indiceAtual += direction;
+        if (indiceAtual < 0) {
+            indiceAtual = imagensProduto.length - 1;
+        } else if (indiceAtual >= imagensProduto.length) {
+            indiceAtual = 0;
+        }
+        atualizarCarrossel();
+    }
 </script>
 </body>
 </html>

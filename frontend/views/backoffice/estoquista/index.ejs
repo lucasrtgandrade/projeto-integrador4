@@ -1,9 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title></title>
+    <meta charset="UTF-8">
+    <title>Painel do Estoquista</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .menu {
+            margin-top: 20px;
+        }
+
+        .menu a {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .menu a:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-<h1>Estoquista</h1>
+
+<div class="container">
+    <h1>Bem-vindo, Estoquista!</h1>
+    <p>Escolha uma ação abaixo:</p>
+
+    <div class="menu">
+        <a href="/backoffice/estoquista/listar-produtos">📦 Listar Produtos</a>
+    </div>
+</div>
+
 </body>
 </html>

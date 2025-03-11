@@ -19,7 +19,6 @@ router.get('/alterar-colaborador/:colaborador_id', exigirLogin, exigirAdministra
 router.get('/cadastrar-colaborador', exigirLogin, exigirAdministrador, AdministradorController.renderizarPaginaCadastrarColaborador);
 router.post('/cadastrar-colaborador', exigirLogin, exigirAdministrador, validarCPFMiddleware, validarSenhaMiddleware, AdministradorController.cadastrarColaborador);
 
-
 router.get('/listar-produtos', exigirLogin, exigirAdministrador, ProdutoController.renderizarPaginaListarProdutos);
 router.get('/listar-produtos/api', exigirLogin, exigirAdministrador, ProdutoController.listarProdutosAPI);
 
@@ -29,6 +28,9 @@ router.get('/cadastrar-produto', exigirLogin, exigirAdministrador, ProdutoContro
 router.post('/cadastrar-produto', exigirLogin, exigirAdministrador, upload.array('imagens'), ProdutoController.cadastrarProduto);
 
 router.get('/alterar-produto/:produto_id', ProdutoController.renderizarPaginaAlterarProduto);
-router.put('/alterar-produto/:produto_id', ProdutoController.alterarProduto);
+router.post('/alterar-produto/:produto_id', upload.single('novaImagem'), ProdutoController.alterarProduto);
+
+router.get('/produto/:produto_id', exigirLogin, exigirAdministrador, ProdutoController.getProdutoDetalhes);
+
 
 module.exports = router;
