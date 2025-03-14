@@ -2,13 +2,29 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
+    <link rel="stylesheet" href="/css/estilos-globais.css">
+    <link rel="stylesheet" href="/css/estilos-dashboard.css">
 </head>
 <body>
-<h1>Administrador</h1>
-<p>Bem-vindo, <strong><%= colaborador %></strong>!</p>
-<p>Cargo ID: <strong><%= cargo_id %></strong></p>
-<a href="/backoffice/administrador/listar-colaboradores">Listar Colaboradores</a>
-<a href="/backoffice/administrador/listar-produtos">Listar Produtos</a>
+
+<!-- Barra de Navegação -->
+<nav class="navBarra">
+    <a href="/backoffice/administrador/" class="logoNavegacao">
+        <img src="/imagens/logo-horizontal.svg" alt="Logo do site">
+    </a>
+</nav>
+
+<div class="containerDashboard">
+    <h1>Painel do Administrador</h1>
+    <p>Bem-vindo, <strong><%= colaborador %></strong>!</p>
+
+    <div class="opcoesDashboard">
+        <a href="/backoffice/administrador/listar-colaboradores" class="botaoDashboard">Listar Colaboradores</a>
+        <a href="/backoffice/administrador/listar-produtos" class="botaoDashboard">Listar Produtos</a>
+    </div>
+</div>
+
 </body>
 </html>

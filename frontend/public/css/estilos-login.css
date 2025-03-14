@@ -1,0 +1,53 @@
+/* Container do formulário */
+.containerLogin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+}
+
+.formLoginColaborador {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.formLoginColaborador label {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.formLoginColaborador input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+.formLoginColaborador input[type="submit"] {
+    background-color: #333;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.formLoginColaborador input[type="submit"]:hover {
+    background-color: #555;
+}
+
+/* Feedback */
+.containerFeedback {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.textoFeedback {
+    color: red;
+    font-weight: bold;
+}

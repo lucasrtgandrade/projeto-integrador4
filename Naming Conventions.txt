@@ -1,0 +1,254 @@
+Naming Conventions
+1. Variables and Functions
+
+    Use camelCase for variable and function names.
+
+    Use descriptive names that clearly indicate the purpose of the variable or function.
+
+    Use PT-BR (Portuguese) for variable names to make it beginner-friendly for Portuguese-speaking developers.
+
+Examples:
+
+    colaboradorId (ID of the collaborator)
+
+    nomeColaborador (Name of the collaborator)
+
+    listarColaboradores (Function to list collaborators)
+
+    alterarStatusColaborador (Function to toggle collaborator status)
+
+2. Database Fields
+
+    Use snake_case for database field names.
+
+    Use descriptive names that match the business logic.
+
+Examples:
+
+    colaborador_id (Primary key for collaborators)
+
+    nome (Name of the collaborator)
+
+    email (Email of the collaborator)
+
+    status (Status of the collaborator: 1 for active, 0 for inactive)
+
+3. File Names
+
+    Use kebab-case for file names.
+
+    Use descriptive names that indicate the purpose of the file.
+
+Examples:
+
+    listar-colaboradores.ejs (View to list collaborators)
+
+    cadastrar-colaborador.ejs (View to register a collaborator)
+
+    ColaboradorModel.js (Model for collaborator-related database operations)
+
+4. Classes and Methods
+
+    Use PascalCase for class names.
+
+    Use camelCase for method names.
+
+    Use descriptive names that indicate the purpose of the class or method.
+
+Examples:
+
+    ColaboradorController (Class for collaborator-related logic)
+
+    ColaboradorModel (Class for collaborator-related database operations)
+
+    listarColaboradores (Method to list collaborators)
+
+    alterarStatusColaborador (Method to toggle collaborator status)
+
+Logic and Structure
+1. MVC Architecture
+
+    Model: Handles database operations.
+
+    View: Renders the UI (EJS templates).
+
+    Controller: Handles business logic and communicates between the Model and View.
+
+Example:
+
+    Model: ColaboradorModel.js contains methods like listarColaboradores and alterarStatusColaborador.
+
+    View: listar-colaboradores.ejs renders the list of collaborators.
+
+    Controller: AdministradorController.js contains methods like listarColaboradores and alterarStatusColaborador.
+
+2. Error Handling
+
+    Use try-catch blocks to handle errors in asynchronous functions.
+
+    Return meaningful error messages to the client.
+
+Example:
+javascript
+Copy
+
+static async listarColaboradores(req, res) {
+    try {
+        const colaboradores = await ColaboradorModel.listarColaboradores();
+        res.render('backoffice/administrador/listar-colaboradores', {
+            colaboradores
+        });
+    } catch (error) {
+        console.error('Erro ao listar colaboradores:', error);
+        res.status(500).send('Erro ao listar colaboradores');
+    }
+}
+
+3. Validation
+
+    Validate inputs before processing them (e.g., check if passwords match, validate CPF).
+
+    Use middleware for reusable validation logic.
+
+Example:
+
+    validarCPFMiddleware validates the CPF before saving it to the database.
+
+4. Pagination and Filtering
+
+    Use query parameters (page, limit, search) to handle pagination and filtering.
+
+    Calculate the offset and totalPages for pagination.
+
+Example:
+javascript
+Copy
+
+static async listarColaboradores(page = 1, limit = 10, search = '') {
+    const offset = (page - 1) * limit;
+    let query = 'SELECT * FROM colaboradores WHERE status = TRUE';
+    let countQuery = 'SELECT COUNT(*) as total FROM colaboradores WHERE status = TRUE';
+
+    if (search) {
+        query += ` AND nome LIKE '%${search}%'`;
+        countQuery += ` AND nome LIKE '%${search}%'`;
+    }
+
+    query += ` LIMIT ${limit} OFFSET ${offset}`;
+
+    const [colaboradores] = await pool.query(query);
+    const [total] = await pool.query(countQuery);
+
+    return {
+        colaboradores,
+        total: total[0].total,
+        page,
+        limit,
+        totalPages: Math.ceil(total[0].total / limit)
+    };
+}
+
+5. Status Toggle
+
+    Use a single method to toggle the status of a record (e.g., active/inactive).
+
+    Return the new status and a success message.
+
+Example:
+javascript
+Copy
+
+static async alterarStatusColaborador(colaborador_id) {
+    const [linha] = await pool.query('SELECT status FROM colaboradores WHERE colaborador_id = ?', [colaborador_id]);
+    const atualStatus = linha[0].status;
+    const novoStatus = atualStatus === 1 ? 0 : 1;
+
+    await pool.query('UPDATE colaboradores SET status = ? WHERE colaborador_id = ?', [novoStatus, colaborador_id]);
+
+    return novoStatus;
+}
+
+Example of Consistent Code
+
+Here’s an example of how the naming conventions and logic are applied in the collaborator management system:
+Controller (AdministradorController.js)
+javascript
+Copy
+
+class AdministradorController {
+    static async listarColaboradores(req, res) {
+        const { page = 1, limit = 10, search = '' } = req.query;
+
+        try {
+            const result = await ColaboradorModel.listarColaboradores(page, limit, search);
+            res.render('backoffice/administrador/listar-colaboradores', {
+                colaboradores: result.colaboradores,
+                paginaAtual: result.page,
+                totalPaginas: result.totalPages,
+                termoPesquisa: search
+            });
+        } catch (error) {
+            console.error('Erro ao listar colaboradores:', error);
+            res.status(500).send('Erro ao listar colaboradores');
+        }
+    }
+
+    static async alterarStatusColaborador(req, res) {
+        const { colaborador_id } = req.params;
+
+        try {
+            const novoStatus = await ColaboradorModel.alterarStatusColaborador(colaborador_id);
+            const mensagem = novoStatus === 1 ? 'Colaborador ativado com sucesso!' : 'Colaborador desativado com sucesso!';
+            res.json({ success: true, mensagem, novoStatus });
+        } catch (error) {
+            console.error('Erro ao alternar status do colaborador:', error);
+            res.status(500).json({ success: false, message: 'Erro ao alternar status do colaborador' });
+        }
+    }
+}
+
+Model (ColaboradorModel.js)
+javascript
+Copy
+
+class ColaboradorModel {
+    static async listarColaboradores(page = 1, limit = 10, search = '') {
+        const offset = (page - 1) * limit;
+        let query = 'SELECT * FROM colaboradores WHERE status = TRUE';
+        let countQuery = 'SELECT COUNT(*) as total FROM colaboradores WHERE status = TRUE';
+
+        if (search) {
+            query += ` AND nome LIKE '%${search}%'`;
+            countQuery += ` AND nome LIKE '%${search}%'`;
+        }
+
+        query += ` LIMIT ${limit} OFFSET ${offset}`;
+
+        const [colaboradores] = await pool.query(query);
+        const [total] = await pool.query(countQuery);
+
+        return {
+            colaboradores,
+            total: total[0].total,
+            page,
+            limit,
+            totalPages: Math.ceil(total[0].total / limit)
+        };
+    }
+
+    static async alterarStatusColaborador(colaborador_id) {
+        const [linha] = await pool.query('SELECT status FROM colaboradores WHERE colaborador_id = ?', [colaborador_id]);
+        const atualStatus = linha[0].status;
+        const novoStatus = atualStatus === 1 ? 0 : 1;
+
+        await pool.query('UPDATE colaboradores SET status = ? WHERE colaborador_id = ?', [novoStatus, colaborador_id]);
+
+        return novoStatus;
+    }
+}
+
+Summary
+
+    Naming Conventions: Use camelCase for variables/functions, snake_case for database fields, kebab-case for file names, and PascalCase for classes.
+
+    Logic: Follow MVC architecture, handle errors, validate inputs, and implement reusable methods for pagination, filtering, and status toggling.

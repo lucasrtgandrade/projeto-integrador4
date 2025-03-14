@@ -71,13 +71,22 @@
         overflow: hidden;
         width: 200px;
         height: 200px;
+        position: relative;
     }
 
     #carousel img {
-        width: 200px;
-        height: 200px;
-        display: none;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* ✅ Ensures the image fits without distortion */
+        display: none; /* ✅ Only show one image at a time */
+        position: absolute;
+        transition: opacity 0.5s ease-in-out;
     }
+
+    #carousel img.active {
+        display: block; /* ✅ Show the active image */
+    }
+
 
     .botao-comprar {
         background-color: #ccc;

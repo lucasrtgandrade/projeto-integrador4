@@ -1,9 +1,0 @@
-.nav {
-    background-color: var(--cor-primaria-500);
-    width: 100%;
-}
-
-.nav__container {
-    display: flex;
-    border: 1px solid red;
-}

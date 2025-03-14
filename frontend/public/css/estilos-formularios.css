@@ -1,0 +1,119 @@
+/* Reset e estilos globais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f4f4f4;
+    color: #333;
+    padding: 20px;
+}
+
+/* Navbar */
+.navBarra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 15px 20px;
+}
+
+.logoNavegacao img {
+    height: 40px;
+    transition: opacity 0.3s ease;
+}
+
+.logoNavegacao img:hover {
+    opacity: 0.8;
+}
+
+/* Container do formulário */
+.containerFormulario {
+    max-width: 400px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.error-message {
+    color: red;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Container de imagens */
+#imagem-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Estilo das imagens carregadas */
+#imagem-container img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover; /* Mantém proporções e evita distorção */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Ajuste para os labels que agrupam imagem + radio */
+#imagem-container label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+#imagem-container input[type="radio"] {
+    margin-top: 5px;
+}
+
+
+/* Responsividade */
+@media (max-width: 600px) {
+    .containerFormulario {
+        width: 90%;
+    }
+}

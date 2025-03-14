@@ -3,43 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Alterar Produto</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .form-container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        .form-container input, .form-container textarea {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .form-container button {
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .form-container button:hover {
-            background-color: #218838;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/estilos-globais.css">
+    <link rel="stylesheet" href="/css/estilos-formularios.css">
+    <link rel="stylesheet" href="/css/estilos-listar-produtos.css">
 </head>
 <body>
+
+<!-- Navbar -->
+<nav class="navBarra">
+    <a href="/backoffice/administrador/" class="logoNavegacao">
+        <img src="/imagens/logo-horizontal.svg" alt="Logo do site">
+    </a>
+</nav>
+
 <h1>Alterar Produto</h1>
+
 <h2>Imagens do Produto</h2>
 <div id="imagem-container">
     <% imagens.forEach((imagem, index) => { %>
-        <label>
-            <input type="radio" name="imagem_principal" value="<%= imagem.imagem_id %>" <%= imagem.is_principal ? 'checked' : '' %> >
-            <img src="/uploads/<%= imagem.url %>" alt="Imagem do Produto" style="max-width: 100px;">
+        <label class="imagem-label">
+            <input type="radio" name="imagem_principal" value="<%= imagem.imagem_id %>" <%= imagem.is_principal ? 'checked' : '' %> onchange="atualizarImagemPrincipal(this)">
+            <img src="/uploads/<%= imagem.url %>" alt="Imagem do Produto" class="imagem-preview <%= imagem.is_principal ? 'selecionada' : '' %>">
         </label>
     <% }) %>
 </div>
@@ -77,13 +61,20 @@
         <label for="novaImagem">Adicionar/Alterar Imagens:</label>
         <input type="file" id="novaImagem" name="novaImagem" multiple accept="image/*">
 
-
-        <button type="submit">Salvar Alterações</button>
-
+        <button type="submit" class="botao-salvar">Salvar Alterações</button>
+        <a href="/backoffice/administrador/listar-produtos" class="botao-cancelar">Cancelar</a>
     </form>
 </div>
 
 <script>
+    function atualizarImagemPrincipal(radio) {
+        // Remove highlight from all images
+        document.querySelectorAll('.imagem-preview').forEach(img => img.classList.remove('selecionada'));
+
+        // Highlight selected image
+        radio.nextElementSibling.classList.add('selecionada');
+    }
+
     document.getElementById('formAlterarProduto').addEventListener('submit', async (event) => {
         event.preventDefault();
 
@@ -120,6 +111,33 @@
     });
 </script>
 
+<style>
+    #imagem-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .imagem-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .imagem-preview {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 5px;
+        transition: border 0.3s ease-in-out;
+        border: 2px solid transparent;
+    }
+
+    .imagem-preview.selecionada {
+        border: 2px solid #28a745;
+    }
+</style>
 
 </body>
 </html>

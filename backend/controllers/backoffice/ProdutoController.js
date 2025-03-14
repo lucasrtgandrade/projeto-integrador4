@@ -172,7 +172,7 @@ class ProdutoController {
 
             res.json({
                 nome: produto.nome,
-                avaliacao: produto.avaliacao,
+                media_avaliacao: produto.media_avaliacao, // ✅ Use media_avaliacao instead
                 qtd_estoque: produto.qtd_estoque,
                 imagens
             });
@@ -181,6 +181,7 @@ class ProdutoController {
             res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar detalhes do produto" });
         }
     }
+
 }
 
 module.exports = ProdutoController;

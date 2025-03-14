@@ -1,0 +1,181 @@
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f9f9f9;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Navbar */
+.navBarra {
+    background: #007BFF;
+    padding: 15px;
+    text-align: center;
+}
+
+.navBarra a {
+    color: white;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #007BFF;
+    color: white;
+}
+
+/* Filter Input */
+.filtro-container {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filtro-container input {
+    padding: 8px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Buttons */
+.botao-adicionar {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.botao-adicionar:hover {
+    background-color: #218838;
+}
+
+.botao-visualizar {
+    background-color: #007BFF;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.botao-visualizar:hover {
+    background-color: #0056b3;
+}
+
+/* Pagination */
+.paginacao {
+    margin-top: 20px;
+}
+
+.paginacao a {
+    margin: 0 5px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #007BFF;
+}
+
+.paginacao a.ativo {
+    background-color: #007BFF;
+    color: white;
+    border-color: #007BFF;
+}
+
+.paginacao a:hover:not(.ativo) {
+    background-color: #f2f2f2;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 50%;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.botao-comprar {
+    background-color: #ccc;
+    color: black;
+    padding: 10px;
+    border: none;
+    cursor: not-allowed;
+}
+
+
+#carousel {
+    display: flex;
+    overflow: hidden;
+    width: 200px;
+    height: 200px;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+}
+
+#carousel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* ✅ Ensures the image fits without distortion */
+    border-radius: 8px; /* ✅ Optional: Smooth border */
+    display: none;
+    position: absolute;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#carousel img.active {
+    display: block; /* ✅ Show active image */
+}
+

@@ -22,6 +22,8 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../frontend/views'));
 app.use(express.static(path.join(__dirname, '../frontend/public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 
 
 

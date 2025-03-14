@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Alterar Produto - Estoquista</title>
+    <link rel="stylesheet" href="/css/estilos-globais.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navBarra">
+    <a href="/backoffice/estoquista/" class="logoNavegacao">
+        <img src="/imagens/logo-horizontal.svg" alt="Logo do site">
+    </a>
+</nav>
+
+<div class="container">
+    <h1>Alterar Produto</h1>
+
+    <h2>Imagens do Produto</h2>
+    <div id="imagem-container">
+        <% imagens.forEach((imagem, index) => { %>
+            <label>
+                <input type="radio" name="imagem_principal" value="<%= imagem.imagem_id %>" <%= imagem.is_principal ? 'checked' : '' %> disabled>
+                <img src="/uploads/<%= imagem.url %>" alt="Imagem do Produto" style="max-width: 100px;">
+            </label>
+        <% }) %>
+    </div>
+
+    <h1>Alterar Estoque do Produto</h1>
+
+    <div class="form-container">
+        <form id="formAlterarProduto">
+            <input type="hidden" id="produtoId" name="produtoId" value="<%= produto.produto_id %>">
+
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" value="<%= produto.nome %>" disabled>
+
+            <label for="descricao">Descrição:</label>
+            <textarea id="descricao" name="descricao" disabled><%= produto.descricao %></textarea>
+
+            <label for="preco">Preço:</label>
+            <input type="number" id="preco" name="preco" step="0.01" value="<%= produto.preco %>" disabled>
+
+            <label for="qtd_estoque">Quantidade em Estoque:</label>
+            <input type="number" id="qtd_estoque" name="qtd_estoque" value="<%= produto.qtd_estoque %>" required>
+
+            <button type="submit">Salvar Alterações</button>
+        </form>
+    </div>
+
+</div>
+
+<script>
+    document.getElementById('formAlterarProduto').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const produtoId = document.getElementById('produtoId').value;
+        const qtdEstoque = document.getElementById('qtd_estoque').value;
+
+        try {
+            const response = await fetch(`/backoffice/estoquista/alterar-produto/${produtoId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ qtd_estoque: qtdEstoque })
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao salvar alterações');
+            }
+
+            alert('Estoque atualizado com sucesso!');
+            window.location.href = '/backoffice/estoquista/listar-produtos';
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao salvar alterações. Tente novamente.');
+        }
+    });
+
+</script>
+
+</body>
+</html>

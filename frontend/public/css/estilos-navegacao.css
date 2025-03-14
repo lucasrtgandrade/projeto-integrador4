@@ -1,0 +1,58 @@
+/* Reset e estilos globais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Barra de Navegação */
+nav.navBarra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 15px 20px;
+}
+
+.logoNavegacao img {
+    height: 40px; /* Ajuste conforme necessário */
+    transition: opacity 0.3s ease;
+}
+
+.logoNavegacao img:hover {
+    opacity: 0.8;
+}
+
+.linksNavegacao {
+    display: flex;
+    gap: 15px;
+}
+
+.linksNavegacao a {
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.linksNavegacao a:hover {
+    color: #f4a261;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    nav.navBarra {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .linksNavegacao {
+        margin-top: 10px;
+    }
+}

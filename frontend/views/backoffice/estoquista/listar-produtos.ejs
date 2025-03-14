@@ -3,44 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Listar Produtos - Estoquista</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-
-        .filtro-container {
-            margin-bottom: 20px;
-        }
-
-        .filtro-container input {
-            padding: 8px;
-            width: 300px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        /* Table Styles */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/estilos-globais.css">
+    <link rel="stylesheet" href="/css/estilos-listar-produtos.css">
+    <link rel="stylesheet" href="/css/estilos-globais.css">
 </head>
 <body>
+
+<!-- Navbar -->
+<nav class="navBarra">
+    <a href="/backoffice/estoquista/" class="logoNavegacao">
+        <img src="/imagens/logo-horizontal.svg" alt="Logo do site">
+    </a>
+</nav>
+
 <h1>Lista de Produtos - Estoquista</h1>
 
 <!-- Filter Input -->
@@ -57,85 +32,52 @@
         <th>Nome</th>
         <th>Quantidade</th>
         <th>Preço</th>
+        <th>Opções</th>
     </tr>
     </thead>
+    <tbody id="corpoTabelaProdutos"></tbody>
     <tbody id="corpoTabelaProdutos">
     <!-- Products will be dynamically inserted here -->
     </tbody>
+
 </table>
 
 <!-- Pagination -->
-<div class="paginacao" id="paginacao">
-    <!-- Pagination links will be dynamically inserted here -->
+<div class="paginacao" id="paginacao"></div>
+
+<!-- Modal for Product Preview -->
+<div id="modalVisualizar" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="fecharModalVisualizar()">&times;</span>
+        <h2>Pré-visualização do Produto</h2>
+
+        <!-- Product Name -->
+        <h3 id="previewNome"></h3>
+
+        <!-- Image Carousel -->
+        <div id="carouselContainer">
+            <button id="prevSlide" onclick="mudarSlide(-1)">&#10094;</button>
+            <div id="carousel">
+                <!-- Images will be dynamically added via JavaScript -->
+            </div>
+            <button id="nextSlide" onclick="mudarSlide(1)">&#10095;</button>
+        </div>
+
+        <!-- Stock Quantity -->
+        <p>Quantidade em Estoque: <span id="previewEstoque"></span></p>
+
+        <!-- Disabled "Comprar" Button -->
+        <button disabled class="botao-comprar">Comprar</button>
+
+        <!-- Back Button -->
+        <button onclick="fecharModalVisualizar()">Voltar</button>
+    </div>
 </div>
 
-<script>
-    async function buscarProdutos(pagina = 1, termoPesquisa = '') {
-        try {
-            console.log("📡 Fetching products from API...");
-            const resposta = await fetch(`/backoffice/estoquista/listar-produtos/api?pagina=${pagina}&termoPesquisa=${termoPesquisa}`);
 
 
-            console.log("🔄 API Response Status:", resposta.status); // Debug log
-
-            if (!resposta.ok) {
-                throw new Error('Erro ao buscar produtos');
-            }
-
-            const dados = await resposta.json();
-            console.log("✅ API Response Data:", dados); // Debug log
-
-            // Ensure the table exists before trying to populate it
-            const corpoTabela = document.getElementById('corpoTabelaProdutos');
-            if (!corpoTabela) {
-                console.error("❌ Error: Table body not found!");
-                return;
-            }
-
-            // Clear the table body
-            corpoTabela.innerHTML = '';
-
-            // Check if there are products
-            if (dados.produtos.length === 0) {
-                console.warn("⚠️ No products found!");
-                corpoTabela.innerHTML = `<tr><td colspan="4">Nenhum produto encontrado</td></tr>`;
-                return;
-            }
-
-            // Populate the table with products
-            dados.produtos.forEach(produto => {
-                console.log("🛠 Rendering produto:", produto); // Debug log
-
-                const linha = document.createElement('tr');
-                linha.innerHTML = `
-                    <td>${produto.produto_id}</td>
-                    <td>${produto.nome}</td>
-                    <td>${produto.qtd_estoque}</td>
-                    <td>R$ ${Number(produto.preco).toFixed(2)}</td>
-                `;
-                corpoTabela.appendChild(linha);
-            });
-
-            // Log table after adding rows
-            console.log("📌 Final Table HTML:", corpoTabela.innerHTML);
-
-        } catch (error) {
-            console.error("❌ Error fetching products:", error);
-            alert('Erro ao buscar produtos. Tente novamente.');
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        buscarProdutos(1, '');
-
-        // Dynamic search functionality
-        const campoPesquisa = document.getElementById('campoPesquisa');
-        campoPesquisa.addEventListener('input', () => {
-            const termoPesquisa = campoPesquisa.value;
-            buscarProdutos(1, termoPesquisa);
-        });
-    });
-</script>
+<!-- Include the JavaScript -->
+<script src="/javascript/listarProdutosEstoquista.js"></script>
 
 </body>
 </html>

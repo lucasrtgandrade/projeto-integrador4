@@ -22,16 +22,19 @@ document.getElementById('form-login-colaborador').addEventListener('submit', (e)
         .then(response => response.json())
         .then(dados => {
             if (dados.success) {
-                // Se o login for bem-sucedido, redireciona para a página apropriada
-                window.location.href = dados.redirect; // redireciona para a URL passada do backend
+                textFeedbackFrontEnd.style.color = 'green';
                 textFeedbackFrontEnd.innerHTML = 'Login realizado com sucesso!';
+                setTimeout(() => {
+                    window.location.href = dados.redirect; // Redireciona para a URL definida pelo backend
+                }, 1500);
             } else {
-                // Se não for bem-sucedido, exibe a mensagem de erro
+                textFeedbackFrontEnd.style.color = 'red';
                 textFeedbackFrontEnd.innerHTML = dados.message || 'Email ou senha inválidos';
             }
         })
         .catch(error => {
             console.log('Erro:', error);
-            textFeedbackFrontEnd.innerHTML = 'Erros acontecem';
+            textFeedbackFrontEnd.style.color = 'red';
+            textFeedbackFrontEnd.innerHTML = 'Erro ao conectar ao servidor';
         });
 });

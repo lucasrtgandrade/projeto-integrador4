@@ -148,6 +148,22 @@ class ProdutoModel {
         );
     }
 
+    static async atualizarEstoque(produto_id, qtd_estoque) {
+        const query = 'UPDATE produtos SET qtd_estoque = ? WHERE produto_id = ?';
+        await pool.query(query, [qtd_estoque, produto_id]);
+    }
+
+    static async alterarEstoque(produtoId, qtdEstoque) {
+        try {
+            const query = 'UPDATE produtos SET qtd_estoque = ? WHERE produto_id = ?';
+            await pool.query(query, [qtdEstoque, produtoId]);
+            return true;
+        } catch (error) {
+            console.error("Erro ao atualizar estoque:", error);
+            throw error;
+        }
+    }
+
 }
 
 module.exports = ProdutoModel;
