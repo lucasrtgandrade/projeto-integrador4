@@ -111,6 +111,38 @@ class AdministradorController {
             res.status(500).json({ success: false, message: error.message || 'Erro ao cadastrar colaborador' });
         }
     }
+
+    static async renderizarPaginaListarProdutos(req, res) {
+        try {
+            res.render('backoffice/administrador/listar-produtos', {
+                title: 'Lista de Produtos',
+                colaborador: req.session.user?.email || 'Visitante',
+                cargo_id: req.session.user?.cargo_id || null
+            });
+        } catch (error) {
+            console.error('Erro ao renderizar página de produtos:', error);
+            res.status(500).send('Erro ao carregar a página de produtos');
+        }
+    }
+
+    static async listarProdutosAPI(req, res) {
+        const { page = 1, limit = 10, search = '' } = req.query;
+
+        try {
+            const resultado = await ProdutoModel.listarProdutos(page, limit, search);
+
+            res.json({
+                success: true,
+                produtos: resultado.produtos,
+                paginaAtual: resultado.page,
+                totalPaginas: resultado.totalPages,
+                total: resultado.total
+            });
+        } catch (error) {
+            console.error('Erro ao listar produtos via API:', error);
+            res.status(500).json({ success: false, message: 'Erro ao listar produtos' });
+        }
+    }
 }
 
 module.exports = AdministradorController;

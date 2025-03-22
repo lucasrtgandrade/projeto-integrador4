@@ -44,6 +44,26 @@ nav.navBarra {
     color: #f4a261;
 }
 
+/* Estilo para o ícone do carrinho */
+.iconeCarrinho {
+    width: 24px; /* Ajuste o tamanho conforme necessário */
+    height: 24px;
+    vertical-align: middle; /* Alinha o ícone com o texto */
+    margin-left: 10px; /* Espaçamento à esquerda */
+}
+
+/* Estilo para o link de login */
+.loginLink {
+    margin-left: 20px; /* Espaçamento à esquerda */
+    color: #333; /* Cor do texto */
+    text-decoration: none; /* Remove sublinhado */
+    font-weight: bold; /* Texto em negrito */
+}
+
+.loginLink:hover {
+    color: #007BFF; /* Cor ao passar o mouse */
+}
+
 /* Responsividade */
 @media (max-width: 600px) {
     nav.navBarra {

@@ -27,11 +27,20 @@ async function visualizarProduto(produtoId) {
 
         const produto = await response.json();
 
-        document.getElementById('previewNome').innerText = produto.nome;
-        document.getElementById('previewAvaliacao').innerText = produto.media_avaliacao !== undefined
+        // Check if elements exist before updating
+        const previewNome = document.getElementById('previewNome');
+        const previewAvaliacao = document.getElementById('previewAvaliacao');
+        const previewEstoque = document.getElementById('previewEstoque');
+
+        if (!previewNome || !previewAvaliacao || !previewEstoque) {
+            throw new Error('Elementos do modal não encontrados no DOM.');
+        }
+
+        previewNome.innerText = produto.nome;
+        previewAvaliacao.innerText = produto.media_avaliacao !== undefined
             ? produto.media_avaliacao.toFixed(1)
             : 'N/A';
-        document.getElementById('previewEstoque').innerText = produto.qtd_estoque;
+        previewEstoque.innerText = produto.qtd_estoque;
 
         imagensProduto = produto.imagens;
         indiceAtual = 0;
@@ -44,12 +53,6 @@ async function visualizarProduto(produtoId) {
         alert('Erro ao visualizar produto.');
     }
 }
-
-
-
-
-
-
 
 function fecharModalVisualizar() {
     document.getElementById('modalVisualizar').style.display = 'none';
@@ -69,8 +72,6 @@ function atualizarCarrossel() {
         carousel.appendChild(imgElement);
     });
 }
-
-
 
 function mudarSlide(direction) {
     if (imagensProduto.length === 0) return;

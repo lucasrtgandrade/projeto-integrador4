@@ -4,6 +4,15 @@ require('dotenv').config({ path: './.env' });
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt'); // Para hashing de senha
 
+// Verifica se as variáveis de ambiente necessárias estão definidas
+const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
+for (const envVar of requiredEnvVars) {
+    if (!process.env[envVar]) {
+        console.error(`Erro: A variável de ambiente ${envVar} não está definida.`);
+        process.exit(1);
+    }
+}
+
 // Configurações do banco de dados a partir do .env
 const dbConfig = {
     host: process.env.DB_HOST,
@@ -11,13 +20,6 @@ const dbConfig = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
 };
-
-// Cria uma conexão com o servidor MySQL
-const connection = mysql.createConnection({
-    host: dbConfig.host,
-    user: dbConfig.user,
-    password: dbConfig.password,
-});
 
 // Função para hashear a senha
 async function encriptarSenha(senha) {
@@ -50,89 +52,171 @@ async function criarUsuarioAdmin(pool) {
 }
 
 // Função para executar queries SQL
-async function executarQuery(query) {
-    return new Promise((resolve, reject) => {
-        connection.query(query, (err, results) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(results);
-            }
-        });
-    });
+async function executarQuery(query, connection) {
+    try {
+        const [results] = await connection.query(query);
+        return results;
+    } catch (err) {
+        console.error('Erro ao executar query:', err);
+        throw err;
+    }
 }
 
-// Conecta ao servidor MySQL e inicializa o banco de dados
-connection.connect(async (err) => {
-    if (err) {
-        console.error('Erro ao conectar ao MySQL:', err);
-        return;
-    }
-
-    console.log('Conectado ao servidor MySQL');
-
+// Função para criar o banco de dados
+async function criarBancoDeDados(connection) {
     try {
-        // Cria o banco de dados
-        await executarQuery(`CREATE DATABASE IF NOT EXISTS ${dbConfig.database}`);
+        await executarQuery(`CREATE DATABASE IF NOT EXISTS ${dbConfig.database}`, connection);
         console.log(`Banco de dados "${dbConfig.database}" criado ou já existe`);
 
-        // Usa o banco de dados criado
-        await executarQuery(`USE ${dbConfig.database}`);
+        await executarQuery(`USE ${dbConfig.database}`, connection);
         console.log(`Usando banco de dados "${dbConfig.database}"`);
+    } catch (err) {
+        console.error('Erro ao criar ou usar o banco de dados:', err);
+        throw err;
+    }
+}
 
-        // Cria as tabelas
-        const queriesCriarTabelas = [
-            `CREATE TABLE IF NOT EXISTS cargos (
-        id_cargo INT PRIMARY KEY AUTO_INCREMENT,
-        nome VARCHAR(255) NOT NULL
-      );`,
-            `CREATE TABLE IF NOT EXISTS colaboradores (
-        colaborador_id INT PRIMARY KEY AUTO_INCREMENT,
-        nome VARCHAR(50) NOT NULL,
-        cpf VARCHAR(11) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        senha VARCHAR(255) NOT NULL,
-        status BOOLEAN DEFAULT TRUE,
-        cargo_id INT NOT NULL,
-        FOREIGN KEY (cargo_id) REFERENCES cargos(id_cargo)
-      );`,
-            `CREATE TABLE IF NOT EXISTS produtos (
-        produto_id INT PRIMARY KEY AUTO_INCREMENT,
-        nome VARCHAR(200) NOT NULL,
-        descricao VARCHAR(2000) NOT NULL,
-        preco DECIMAL(10,2) NOT NULL,
-        media_avaliacao DECIMAL(2,1) DEFAULT 0.0,
-        total_avaliacao INT DEFAULT 0,
-        qtd_estoque INT NOT NULL,
-        status BOOLEAN DEFAULT TRUE,
-        colaborador_id INT,
-        FOREIGN KEY (colaborador_id) REFERENCES colaboradores(colaborador_id)
-      );`,
-            `CREATE TABLE IF NOT EXISTS imagens (
-        imagem_id INT PRIMARY KEY AUTO_INCREMENT,
-        url VARCHAR(255),
-        is_principal BOOLEAN DEFAULT FALSE,
-        produto_id INT,
-        FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
-      );`,
-            `CREATE TABLE IF NOT EXISTS avaliacoes (
-        avaliacao_id INT PRIMARY KEY AUTO_INCREMENT,
-        avaliacao DECIMAL(2,1) NOT NULL CHECK (avaliacao IN (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)),
-        produto_id INT,
-        FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
-      );`,
-        ];
+// Função para criar as tabelas
+async function criarTabelas(connection) {
+    const queriesCriarTabelas = [
+        `CREATE TABLE IF NOT EXISTS cargos (
+                                               id_cargo INT PRIMARY KEY AUTO_INCREMENT,
+                                               nome VARCHAR(255) NOT NULL
+         );`,
+        `CREATE TABLE IF NOT EXISTS colaboradores (
+                                                      colaborador_id INT PRIMARY KEY AUTO_INCREMENT,
+                                                      nome VARCHAR(50) NOT NULL,
+                                                      cpf VARCHAR(11) NOT NULL,
+                                                      email VARCHAR(255) NOT NULL,
+                                                      senha VARCHAR(255) NOT NULL,
+                                                      status BOOLEAN DEFAULT TRUE,
+                                                      cargo_id INT NOT NULL,
+                                                      FOREIGN KEY (cargo_id) REFERENCES cargos(id_cargo)
+         );`,
+        `CREATE TABLE IF NOT EXISTS produtos (
+                                                 produto_id INT PRIMARY KEY AUTO_INCREMENT,
+                                                 nome VARCHAR(200) NOT NULL,
+                                                 descricao VARCHAR(2000) NOT NULL,
+                                                 preco DECIMAL(10,2) NOT NULL,
+                                                 media_avaliacao DECIMAL(2,1) DEFAULT 0.0,
+                                                 total_avaliacao INT DEFAULT 0,
+                                                 qtd_estoque INT NOT NULL,
+                                                 status BOOLEAN DEFAULT TRUE,
+                                                 colaborador_id INT,
+                                                 FOREIGN KEY (colaborador_id) REFERENCES colaboradores(colaborador_id)
+         );`,
+        `CREATE TABLE IF NOT EXISTS imagens (
+                                                imagem_id INT PRIMARY KEY AUTO_INCREMENT,
+                                                url VARCHAR(255),
+                                                is_principal BOOLEAN DEFAULT FALSE,
+                                                produto_id INT,
+                                                FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
+         );`,
+        `CREATE TABLE IF NOT EXISTS avaliacoes (
+                                                   avaliacao_id INT PRIMARY KEY AUTO_INCREMENT,
+                                                   avaliacao DECIMAL(2,1) NOT NULL CHECK (avaliacao IN (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)),
+                                                   produto_id INT,
+                                                   FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
+         );`,
+        `CREATE TABLE IF NOT EXISTS clientes (
+                                                 id_cliente INT PRIMARY KEY AUTO_INCREMENT,
+                                                 nome VARCHAR(255) NOT NULL,
+                                                 email VARCHAR(255) NOT NULL UNIQUE,
+                                                 senha VARCHAR(255) NOT NULL,
+                                                 criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+         );`,
+        `CREATE TABLE IF NOT EXISTS fretes (
+                                               frete_id INT PRIMARY KEY AUTO_INCREMENT,
+                                               nome VARCHAR(255) NOT NULL,
+                                               descricao VARCHAR(2000),
+                                               custo DECIMAL(10,2) NOT NULL,
+                                               prazo_entrega INT
+         );`,
+        `CREATE TABLE IF NOT EXISTS carrinhos (
+                                                  id_carrinho INT PRIMARY KEY AUTO_INCREMENT,
+                                                  id_cliente INT, -- Null para clientes não logados
+                                                  id_cliente_sessao VARCHAR(255), -- Para clientes não logados
+                                                  frete_id INT, -- Referência ao méodo de frete escolhido
+                                                  FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente),
+                                                  FOREIGN KEY (frete_id) REFERENCES fretes(frete_id)
+         );`,
+        `CREATE TABLE IF NOT EXISTS itens_carrinho (
+            id_item_carrinho INT PRIMARY KEY AUTO_INCREMENT,
+            id_carrinho INT NOT NULL,
+            produto_id INT NOT NULL, -- Referencia produto_id na tabela produtos
+            quantidade INT NOT NULL DEFAULT 1,
+            FOREIGN KEY (id_carrinho) REFERENCES carrinhos(id_carrinho),
+            FOREIGN KEY (produto_id) REFERENCES produtos(produto_id) -- Corrigido para produto_id
+        );`,
+    ];
 
+    try {
         for (const query of queriesCriarTabelas) {
-            await executarQuery(query);
+            await executarQuery(query, connection);
         }
         console.log('Tabelas criadas ou já existem');
+    } catch (err) {
+        console.error('Erro ao criar tabelas:', err);
+        throw err;
+    }
+}
 
-        // Insere dados iniciais (e.g., cargos)
+// Função para inserir dados iniciais
+async function inserirDadosIniciais(connection) {
+    try {
+        // Insere cargos iniciais
         await executarQuery(`
-      INSERT IGNORE INTO cargos (nome) VALUES ('administrador'), ('estoquista');
-    `);
+            INSERT IGNORE INTO cargos (nome) VALUES ('administrador'), ('estoquista');
+        `, connection);
+
+        // Insere métodos de frete iniciais
+        await executarQuery(`
+            INSERT IGNORE INTO fretes (nome, descricao, custo, prazo_entrega)
+            VALUES 
+                ('Entrega Padrão', 'Entrega em até 5 dias úteis', 10.00, 5),
+                ('Entrega Expressa', 'Entrega em até 2 dias úteis', 20.00, 2),
+                ('Retirada na Loja', 'Retire seu pedido na loja mais próxima', 0.00, 0);
+        `, connection);
+
         console.log('Dados iniciais inseridos ou já existem');
+    } catch (err) {
+        console.error('Erro ao inserir dados iniciais:', err);
+        throw err;
+    }
+}
+
+// Função principal para inicializar o banco de dados
+async function inicializarBancoDeDados() {
+    let connection;
+    try {
+        // Conecta ao servidor MySQL sem especificar o banco de dados
+        connection = await mysql.createConnection({
+            host: dbConfig.host,
+            user: dbConfig.user,
+            password: dbConfig.password,
+        }).promise();
+
+        console.log('Conectado ao servidor MySQL');
+
+        // Cria o banco de dados
+        await criarBancoDeDados(connection);
+
+        // Reconecta ao banco de dados específico
+        await connection.end(); // Fecha a conexão inicial
+        connection = await mysql.createConnection({
+            host: dbConfig.host,
+            user: dbConfig.user,
+            password: dbConfig.password,
+            database: dbConfig.database,
+        }).promise();
+
+        console.log(`Conectado ao banco de dados "${dbConfig.database}"`);
+
+        // Cria as tabelas
+        await criarTabelas(connection);
+
+        // Insere dados iniciais
+        await inserirDadosIniciais(connection);
 
         // Cria um pool de conexões para criar o usuário administrador
         const pool = mysql.createPool({
@@ -149,9 +233,17 @@ connection.connect(async (err) => {
         await criarUsuarioAdmin(pool);
 
         // Fecha o pool de conexões
-        pool.end();
-        connection.end(); // Fecha a conexão inicial
+        await pool.end();
+        console.log('Banco de dados inicializado com sucesso!');
     } catch (err) {
         console.error('Erro durante a inicialização do banco de dados:', err);
+    } finally {
+        // Fecha a conexão
+        if (connection) {
+            await connection.end();
+        }
     }
-});
+}
+
+// Executa a função principal
+inicializarBancoDeDados();

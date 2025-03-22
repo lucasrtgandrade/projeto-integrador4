@@ -1,0 +1,54 @@
+/* Container for product cards */
+.produtos-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Individual product card */
+.produto-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    padding: 15px;
+    text-align: center;
+}
+
+/* Product image */
+.produto-imagem img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Product name */
+.produto-nome {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+/* Product price */
+.produto-preco {
+    font-size: 16px;
+    color: #333;
+    margin: 10px 0;
+}
+
+/* Detalhes button */
+.botao-detalhes {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.botao-detalhes:hover {
+    background-color: #0056b3;
+}

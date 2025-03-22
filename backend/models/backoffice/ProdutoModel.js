@@ -164,6 +164,53 @@ class ProdutoModel {
         }
     }
 
+    static async listarProdutosParaHome(pagina = 1, limite = 10, termoPesquisa = '') {
+        const offset = (pagina - 1) * limite;
+
+        // Base query to fetch products with their main image
+        let query = `
+        SELECT p.produto_id, p.nome, p.descricao, CAST(p.preco AS DECIMAL(10,2)) as preco, p.qtd_estoque, p.status,
+               i.url as imagem_principal
+        FROM produtos p
+        LEFT JOIN imagens i ON p.produto_id = i.produto_id AND i.is_principal = TRUE
+        WHERE 1=1
+    `;
+
+        let queryContagem = `
+        SELECT COUNT(*) as total FROM produtos
+        WHERE 1=1
+    `;
+
+        if (termoPesquisa) {
+            query += ` AND p.nome LIKE ?`;
+            queryContagem += ` AND nome LIKE ?`;
+        }
+
+        query += ` ORDER BY p.produto_id DESC`;
+        query += ` LIMIT ? OFFSET ?`;
+
+        // Execute the queries
+        const [produtos] = await pool.query(query, termoPesquisa ? [`%${termoPesquisa}%`, limite, offset] : [limite, offset]);
+        const [total] = await pool.query(queryContagem, termoPesquisa ? [`%${termoPesquisa}%`] : []);
+
+        // Log the preco values for debugging
+        console.log('Produtos:', produtos);
+
+        // Add a default image if imagem_principal is null
+        const produtosComImagens = produtos.map(produto => ({
+            ...produto,
+            imagens: produto.imagem_principal ? [{ url: produto.imagem_principal }] : [{ url: 'default-image.jpg' }] // Use a default image if no main image exists
+        }));
+
+        return {
+            produtos: produtosComImagens,
+            total: total[0].total,
+            pagina,
+            limite,
+            totalPaginas: Math.ceil(total[0].total / limite)
+        };
+    }
+
 }
 
 module.exports = ProdutoModel;
