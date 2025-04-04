@@ -92,6 +92,19 @@ class ProdutoModel {
         }
     }
 
+    static async buscarProdutoAtivoPorId(produtoId) {
+        try {
+            const [resultado] = await pool.query(
+                'SELECT produto_id, nome, descricao, preco, qtd_estoque FROM produtos WHERE produto_id = ? AND status = 1',
+                [produtoId]
+            );
+            return resultado[0] || null;
+        } catch (error) {
+            console.error('Erro ao buscar produto ativo por ID:', error);
+            throw error;
+        }
+    }
+
     // Update a product
     static async alterarProduto(produtoId, nome, descricao, preco, qtd_estoque) {
         try {
@@ -121,7 +134,10 @@ class ProdutoModel {
 
     static async buscarImagensPorProduto(produtoId) {
         const [imagens] = await pool.query(
-            'SELECT imagem_id, url, is_principal FROM imagens WHERE produto_id = ?',
+            `SELECT imagem_id, url, is_principal 
+         FROM imagens 
+         WHERE produto_id = ? 
+         ORDER BY is_principal DESC`, // Main image (is_principal = TRUE) comes first
             [produtoId]
         );
         return imagens;
@@ -173,12 +189,12 @@ class ProdutoModel {
                i.url as imagem_principal
         FROM produtos p
         LEFT JOIN imagens i ON p.produto_id = i.produto_id AND i.is_principal = TRUE
-        WHERE 1=1
+        WHERE p.status = 1
     `;
 
         let queryContagem = `
         SELECT COUNT(*) as total FROM produtos
-        WHERE 1=1
+        WHERE status = 1
     `;
 
         if (termoPesquisa) {
@@ -210,6 +226,39 @@ class ProdutoModel {
             totalPaginas: Math.ceil(total[0].total / limite)
         };
     }
+
+    static async buscarProdutoComImagens(produtoId) {
+        try {
+            // Fetch product details
+            const [produto] = await pool.query(
+                `SELECT p.produto_id, p.nome, p.descricao, CAST(p.preco AS DECIMAL(10,2)) as preco, p.qtd_estoque, p.status
+                 FROM produtos p
+                 WHERE p.produto_id = ?`,
+                [produtoId]
+            );
+
+            if (produto.length === 0) {
+                return null; // Product not found
+            }
+
+            // Fetch associated images
+            const [imagens] = await pool.query(
+                `SELECT imagem_id, url, is_principal
+             FROM imagens
+             WHERE produto_id = ?`,
+                [produtoId]
+            );
+
+            return {
+                ...produto[0], // Spread product details
+                imagens: imagens // Add images array
+            };
+        } catch (error) {
+            console.error('Erro ao buscar produto com imagens:', error);
+            throw error;
+        }
+    }
+
 
 }
 

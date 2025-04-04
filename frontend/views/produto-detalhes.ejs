@@ -1,0 +1,82 @@
+<!-- ✅ frontend/views/produto-detalhes.ejs -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Produto</title>
+    <link rel="stylesheet" href="/css/estilos-navegacao.css">
+    <link rel="stylesheet" href="/css/estilos-produto-detalhes.css">
+</head>
+<body>
+<%- include('partials/nav-user') %>
+
+<main>
+    <h1><%= produto.nome %></h1>
+
+    <div id="carouselContainer">
+        <button id="prevSlide" onclick="mudarSlide(-1)">&#10094;</button>
+        <div id="carousel">
+            <script>
+                let imagensProduto = <%- JSON.stringify(produto.imagens) %>;
+                const principalIndex = imagensProduto.findIndex(img => img.is_principal);
+                if (principalIndex > -1) {
+                    const principalImage = imagensProduto.splice(principalIndex, 1)[0];
+                    imagensProduto.unshift(principalImage);
+                }
+                const carousel = document.getElementById('carousel');
+                imagensProduto.forEach((imagem, index) => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = `/uploads/${imagem.url}`;
+                    imgElement.alt = `<%= produto.nome %>`;
+                    imgElement.classList.add('carousel-image');
+                    if (index === 0) imgElement.classList.add('active');
+                    carousel.appendChild(imgElement);
+                });
+            </script>
+        </div>
+        <button id="nextSlide" onclick="mudarSlide(1)">&#10095;</button>
+    </div>
+
+    <p><%= produto.descricao %></p>
+    <p class="produto-preco">R$ <%= (Number(produto.preco) || 0.00).toFixed(2) %></p>
+
+    <button class="botao-comprar" onclick="adicionarAoCarrinho(<%= produto.produto_id %>)">
+        Comprar
+    </button>
+</main>
+
+<script>
+    let indiceAtual = 0;
+    function mudarSlide(direction) {
+        const imagens = document.querySelectorAll('.carousel-image');
+        indiceAtual += direction;
+        if (indiceAtual < 0) indiceAtual = imagens.length - 1;
+        else if (indiceAtual >= imagens.length) indiceAtual = 0;
+        imagens.forEach((imagem, index) => {
+            imagem.style.display = index === indiceAtual ? 'block' : 'none';
+        });
+    }
+
+    async function adicionarAoCarrinho(produtoId) {
+        const carrinhoId = <%- JSON.stringify(carrinho_id || 0) %>;
+        try {
+            const resposta = await fetch(`/clientes/api/carrinhos/${carrinhoId}/itens`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ produto_id: produtoId, quantidade: 1 })
+            });
+            if (resposta.ok) {
+                window.location.href = '/clientes/carrinho';
+            } else {
+                const erro = await resposta.json();
+                alert('Erro ao adicionar ao carrinho: ' + erro.mensagem);
+            }
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+            alert('Erro ao adicionar ao carrinho.');
+        }
+    }
+</script>
+</body>
+</html>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página Inicial</title>
     <link rel="stylesheet" href="/css/estilos-navegacao.css">
-    <link rel="stylesheet" href="/css/estilos-produtos.css"> <!-- Add a new CSS file for product cards -->
+    <link rel="stylesheet" href="/css/estilos-produtos.css">
 </head>
 <body>
 
@@ -33,13 +33,13 @@
                     <p class="produto-preco">R$ <%= (Number(produto.preco) || 0.00).toFixed(2) %></p>
 
                     <!-- Detalhes Button -->
-                    <button class="botao-detalhes" onclick="verDetalhes(<%= produto.produto_id %>)">
+                    <button class="botao-detalhes" onclick="window.location.href='/clientes/produto/<%= produto.produto_id %>'">
                         Detalhes
                     </button>
                 </div>
             <% }) %>
         <% } else { %>
-            <p>Nenhum produto encontrado.</p>
+            <p>Nenhum produto ativo encontrado.</p>
         <% } %>
     </div>
 </main>
@@ -50,5 +50,6 @@
         alert(`Detalhes do produto ${produtoId} ainda não implementados.`);
     }
 </script>
+
 </body>
 </html>

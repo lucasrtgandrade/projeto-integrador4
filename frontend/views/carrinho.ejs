@@ -1,0 +1,154 @@
+<!-- ✅ frontend/views/carrinho.ejs -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Carrinho</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/estilos-navegacao.css">
+    <link rel="stylesheet" href="/css/estilos-carrinho.css">
+</head>
+<body>
+<%- include('partials/nav-user') %>
+
+<main>
+    <h1>Meu Carrinho</h1>
+
+    <% if (itens.length > 0) { %>
+        <table class="tabela-carrinho">
+            <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Preço Unitário</th>
+                <th>Total</th>
+                <th>Ação</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% let totalGeral = 0; %>
+            <% itens.forEach(item => {
+                const preco = Number(item.preco);
+                const totalItem = preco * item.quantidade;
+                totalGeral += totalItem;
+            %>
+            <tr>
+                <td><%= item.nome %></td>
+                <td>
+                    <button onclick="alterarQuantidade(<%= item.id_item_carrinho %>, <%= item.quantidade - 1 %>)" <%= item.quantidade <= 1 ? 'disabled' : '' %>>-</button>
+                    <span id="quantidade-<%= item.id_item_carrinho %>"><%= item.quantidade %></span>
+                    <button onclick="alterarQuantidade(<%= item.id_item_carrinho %>, <%= item.quantidade + 1 %>)">+</button>
+                </td>
+                <td>R$ <%= preco.toFixed(2) %></td>
+                <td id="total-item-<%= item.id_item_carrinho %>">R$ <%= totalItem.toFixed(2) %></td>
+                <td>
+                    <button onclick="removerItem(<%= item.id_item_carrinho %>)" class="botao-remover">Remover</button>
+                </td>
+            </tr>
+            <% }) %>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="4"><strong>Total Geral</strong></td>
+                <td><strong id="subtotal">R$ <%= totalGeral.toFixed(2) %></strong></td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <label for="frete-select"><strong>Escolher Frete:</strong></label>
+                    <select id="frete-select" onchange="calcularTotalComFrete()">
+                        <option value="">Selecione...</option>
+                    </select>
+                </td>
+                <td id="frete-custo">R$ 0.00</td>
+            </tr>
+            <tr>
+                <td colspan="4"><strong>Total com Frete</strong></td>
+                <td><strong id="total-com-frete">R$ <%= totalGeral.toFixed(2) %></strong></td>
+            </tr>
+            </tfoot>
+        </table>
+
+        <div class="botoes-carrinho">
+            <a href="/" class="botao-voltar">Continuar Comprando</a>
+            <button disabled class="botao-finalizar">Finalizar Compra (em construção)</button>
+        </div>
+    <% } else { %>
+        <p>Seu carrinho está vazio.</p>
+        <a href="/" class="botao-voltar">Voltar para a Loja</a>
+    <% } %>
+</main>
+
+<% const carrinhoIdJS = Number(carrinho_id) || 0; %>
+<script>
+    const carrinhoId = <%- JSON.stringify(carrinhoIdJS) %>;
+    let subtotal = <%= totalGeral.toFixed(2) %>;
+
+    async function alterarQuantidade(itemId, novaQuantidade) {
+        if (!carrinhoId) return alert('Carrinho não encontrado!');
+
+        try {
+            const resposta = await fetch(`/clientes/api/carrinhos/${carrinhoId}/itens/${itemId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quantidade: novaQuantidade })
+            });
+
+            if (resposta.ok) {
+                window.location.reload();
+            } else {
+                const erro = await resposta.json();
+                alert('Erro ao atualizar: ' + erro.mensagem);
+            }
+        } catch (error) {
+            alert('Erro na requisição');
+        }
+    }
+
+    async function removerItem(itemId) {
+        if (!carrinhoId) return alert('Carrinho não encontrado!');
+        if (!confirm('Tem certeza que deseja remover este item?')) return;
+
+        try {
+            const resposta = await fetch(`/clientes/api/carrinhos/${carrinhoId}/itens/${itemId}`, {
+                method: 'DELETE'
+            });
+
+            if (resposta.ok) {
+                window.location.reload();
+            } else {
+                const erro = await resposta.json();
+                alert('Erro ao remover: ' + erro.mensagem);
+            }
+        } catch (error) {
+            alert('Erro na requisição');
+        }
+    }
+
+    async function carregarFretes() {
+        try {
+            const resposta = await fetch('/clientes/api/frete');
+            const fretes = await resposta.json();
+            const select = document.getElementById('frete-select');
+
+            fretes.forEach(frete => {
+                const option = document.createElement('option');
+                option.value = frete.custo;
+                option.textContent = `${frete.nome} - R$ ${frete.custo.toFixed(2)} (${frete.prazo_entrega} dias)`;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Erro ao carregar fretes:', error);
+        }
+    }
+
+    function calcularTotalComFrete() {
+        const freteSelect = document.getElementById('frete-select');
+        const freteCusto = parseFloat(freteSelect.value || 0);
+        document.getElementById('frete-custo').innerText = `R$ ${freteCusto.toFixed(2)}`;
+        document.getElementById('total-com-frete').innerText = `R$ ${(subtotal + freteCusto).toFixed(2)}`;
+    }
+
+    window.onload = carregarFretes;
+</script>
+</body>
+</html>

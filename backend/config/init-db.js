@@ -1,10 +1,9 @@
-// Carrega as variáveis de ambiente do arquivo .env
 require('dotenv').config({ path: './.env' });
 
 const mysql = require('mysql2');
-const bcrypt = require('bcrypt'); // Para hashing de senha
+const bcrypt = require('bcrypt');
 
-// Verifica se as variáveis de ambiente necessárias estão definidas
+
 const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
 for (const envVar of requiredEnvVars) {
     if (!process.env[envVar]) {
@@ -13,7 +12,6 @@ for (const envVar of requiredEnvVars) {
     }
 }
 
-// Configurações do banco de dados a partir do .env
 const dbConfig = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -21,25 +19,22 @@ const dbConfig = {
     database: process.env.DB_NAME,
 };
 
-// Função para hashear a senha
 async function encriptarSenha(senha) {
     const saltRounds = 10;
     return await bcrypt.hash(senha, saltRounds);
 }
 
-// Função para criar o usuário administrador
+
 async function criarUsuarioAdmin(pool) {
     const nome = 'Teste Adm';
     const cpf = '12345678901';
     const email = 'teste_adm@example.com';
     const senha = '123';
-    const cargoId = 1; // ID do cargo 'administrador'
+    const cargoId = 1;
 
     try {
-        // Hashear a senha
         const senhaHash = await encriptarSenha(senha);
 
-        // Inserir o usuário administrador
         const [resultado] = await pool.query(
             'INSERT INTO colaboradores (nome, cpf, email, senha, cargo_id) VALUES (?, ?, ?, ?, ?)',
             [nome, cpf, email, senhaHash, cargoId]
@@ -51,7 +46,6 @@ async function criarUsuarioAdmin(pool) {
     }
 }
 
-// Função para executar queries SQL
 async function executarQuery(query, connection) {
     try {
         const [results] = await connection.query(query);
@@ -62,7 +56,6 @@ async function executarQuery(query, connection) {
     }
 }
 
-// Função para criar o banco de dados
 async function criarBancoDeDados(connection) {
     try {
         await executarQuery(`CREATE DATABASE IF NOT EXISTS ${dbConfig.database}`, connection);

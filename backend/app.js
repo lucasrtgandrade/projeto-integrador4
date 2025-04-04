@@ -32,6 +32,9 @@ app.use('/backoffice/administrador', administradorRouter);
 const estoquistaRouter = require('./routes/backoffice/estoquistaRouter');
 app.use('/backoffice/estoquista', estoquistaRouter);
 
+const clienteRoutes = require('./routes/cliente/ClienteRoutes');
+app.use('/clientes', clienteRoutes);
+
 // Error-handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
