@@ -113,10 +113,27 @@ async function criarTabelas(connection) {
          );`,
         `CREATE TABLE IF NOT EXISTS clientes (
                                                  id_cliente INT PRIMARY KEY AUTO_INCREMENT,
-                                                 nome VARCHAR(255) NOT NULL,
+                                                 nome_completo VARCHAR(255) NOT NULL,
+                                                 cpf VARCHAR(11) NOT NULL UNIQUE,
                                                  email VARCHAR(255) NOT NULL UNIQUE,
                                                  senha VARCHAR(255) NOT NULL,
-                                                 criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                                                 data_nascimento DATE NOT NULL,
+                                                 genero VARCHAR(20),
+                                                 status BOOLEAN DEFAULT TRUE
+         );`,
+        `CREATE TABLE IF NOT EXISTS enderecos (
+            id_endereco INT PRIMARY KEY AUTO_INCREMENT,
+            id_cliente INT NOT NULL,
+            cep VARCHAR(8) NOT NULL,
+            logradouro VARCHAR(255) NOT NULL,
+            numero VARCHAR(10) NOT NULL,
+            complemento VARCHAR(100),
+            bairro VARCHAR(100) NOT NULL,
+            cidade VARCHAR(100) NOT NULL,
+            uf CHAR(2) NOT NULL,
+            tipo ENUM('FATURAMENTO', 'ENTREGA') NOT NULL,
+            padrao BOOLEAN DEFAULT FALSE,
+            FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
          );`,
         `CREATE TABLE IF NOT EXISTS fretes (
                                                frete_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -127,20 +144,26 @@ async function criarTabelas(connection) {
          );`,
         `CREATE TABLE IF NOT EXISTS carrinhos (
                                                   id_carrinho INT PRIMARY KEY AUTO_INCREMENT,
-                                                  id_cliente INT, -- Null para clientes não logados
-                                                  id_cliente_sessao VARCHAR(255), -- Para clientes não logados
-                                                  frete_id INT, -- Referência ao méodo de frete escolhido
+                                                  id_cliente INT,
+                                                  id_cliente_sessao VARCHAR(255),
+                                                  frete_id INT,
                                                   FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente),
                                                   FOREIGN KEY (frete_id) REFERENCES fretes(frete_id)
          );`,
         `CREATE TABLE IF NOT EXISTS itens_carrinho (
             id_item_carrinho INT PRIMARY KEY AUTO_INCREMENT,
             id_carrinho INT NOT NULL,
-            produto_id INT NOT NULL, -- Referencia produto_id na tabela produtos
+            produto_id INT NOT NULL,
             quantidade INT NOT NULL DEFAULT 1,
             FOREIGN KEY (id_carrinho) REFERENCES carrinhos(id_carrinho),
-            FOREIGN KEY (produto_id) REFERENCES produtos(produto_id) -- Corrigido para produto_id
+            FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
         );`,
+        `CREATE TABLE IF NOT EXISTS sessoes
+         (
+             id_sessao  VARCHAR(255) PRIMARY KEY,
+             id_cliente INT NOT NULL,
+             FOREIGN KEY (id_cliente) REFERENCES clientes (id_cliente)
+         );`
     ];
 
     try {
