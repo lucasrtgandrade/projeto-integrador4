@@ -134,6 +134,58 @@ class ClienteController {
         });
     }
 
+    static async logar(req, res) {
+        const { email, senha } = req.body;
+
+        try {
+            const cliente = await ClienteModel.encontrarEmail(email);
+
+            if (!cliente) {
+                return res.status(400).json({ mensagem: 'E-mail não encontrado.' });
+            }
+
+            const senhaCorreta = await bcrypt.compare(senha, cliente.senha);
+
+            if (!senhaCorreta) {
+                return res.status(401).json({ mensagem: 'Senha incorreta.' });
+            }
+
+            req.session.user = {
+                id: cliente.cliente_id,
+                nome: cliente.nome_completo,
+                email: cliente.email
+            };
+
+            return res.status(200).json({ mensagem: 'Login realizado com sucesso!' });
+
+        } catch (error) {
+            console.error('Erro ao realizar login:', error);
+            return res.status(500).json({ mensagem: 'Erro interno ao tentar fazer login.' });
+        }
+    }
+
+    static renderizarHome(req, res) {
+        if (!req.session.user) {
+            return res.redirect('/clientes/login');
+        }
+
+        res.render('cliente-home', {
+            nomeCliente: req.session.user.nome
+        });
+    }
+
+    static logout(req, res) {
+        req.session.destroy(err => {
+            if (err) {
+                console.error('Erro ao encerrar a sessão:', err);
+                return res.status(500).send('Erro ao encerrar a sessão.');
+            }
+
+            res.redirect('/clientes/login');
+        });
+    }
+
+
 }
 
 module.exports = ClienteController;

@@ -6,12 +6,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login de Clientes</title>
     <link rel="stylesheet" href="/css/estilos-navegacao.css">
+    <link rel="stylesheet" href="/css/estilos-cadastro_cliente.css">
 </head>
 <body>
 <%- include('partials/nav-user') %>
 <main class="main">
     <h1>Login</h1>
-    <form></form>
+    <form id="formLoginCliente" method="POST">
+        <fieldset class="fieldset">
+            <legend>Dados para login</legend>
+            <div class="fieldset__item">
+                <label for="email_login">Digite o seu E-mail:</label>
+                <input type="email" name="email" id="email_login" required>
+                <p id="emailMensagem"></p>
+            </div>
+            <div class="fieldset__item">
+                <label for="senha_login">Digite a sua senha:</label>
+                <input type="password" name="senha" id="senha_login" required>
+                <p id="senhaMensagem"></p>
+            </div>
+            <button type="submit">Entrar</button>
+        </fieldset>
+    </form>
+
+    <script>
+        document.getElementById('formLoginCliente').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email_login').value;
+            const senha = document.getElementById('senha_login').value;
+
+            const emailMensagem = document.getElementById('emailMensagem');
+            const senhaMensagem = document.getElementById('senhaMensagem');
+
+            emailMensagem.textContent = '';
+            senhaMensagem.textContent = '';
+
+            let emailValido = email !== '';
+            let senhaValida = senha !== '';
+
+            if (!emailValido) {
+                emailMensagem.textContent = 'E-mail inválido.';
+                emailMensagem.style.color = 'red';
+            }
+
+            if (!senhaValida) {
+                senhaMensagem.textContent = 'Senha inválida.';
+                senhaMensagem.style.color = 'red';
+            }
+
+            if (!emailValido || !senhaValida) return;
+
+            try {
+                const resposta = await fetch('/clientes/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha })
+                });
+
+                const dados = await resposta.json();
+
+                emailMensagem.textContent = '';
+                senhaMensagem.textContent = '';
+
+                if (!resposta.ok) {
+                    if (dados.mensagem?.includes('E-mail')) {
+                        emailMensagem.textContent = dados.mensagem;
+                        emailMensagem.style.color = 'red';
+                    } else if (dados.mensagem?.includes('Senha')) {
+                        senhaMensagem.textContent = dados.mensagem;
+                        senhaMensagem.style.color = 'red';
+                    } else {
+                        emailMensagem.textContent = dados.mensagem || 'Erro ao logar';
+                        emailMensagem.style.color = 'red';
+                    }
+                    return;
+                }
+
+                emailMensagem.textContent = 'Login realizado com sucesso!';
+                emailMensagem.style.color = 'green';
+
+                window.location.href = '/clientes/home';
+
+                document.getElementById('formLoginCliente').reset();
+            } catch (e) {
+                console.log(e);
+            }
+        });
+    </script>
 </main>
 </body>
 </html>

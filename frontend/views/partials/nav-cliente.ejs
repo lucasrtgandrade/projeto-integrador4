@@ -1,0 +1,75 @@
+<nav class="navBarra">
+    <!-- Logo -->
+    <a href="/clientes/home" class="logoNavegacao">
+        <img src="/imagens/logo-horizontal.svg" alt="Logo do site">
+    </a>
+
+    <!-- Links de Navegação -->
+    <div class="linksNavegacao">
+        <a href="/clientes/carrinho" class="carrinhoLink">
+            <img src="/imagens/icone-carrinho.svg" alt="Carrinho de Compras" class="iconeCarrinho">
+        </a>
+
+        <a href="/clientes/editar" class="editarLink">Editar Cadastro</a>
+
+        <button id="botaoLogout" class="logoutLink">Sair</button>
+    </div>
+
+    <!-- Modal de confirmação -->
+    <div id="modalLogout" class="modal-logout oculto">
+        <div class="modal-conteudo">
+            <p>Deseja realmente sair?</p>
+            <form action="/clientes/logout" method="POST">
+                <button type="submit">Sim, quero sair</button>
+                <button type="button" id="cancelarLogout">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .modal-logout {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-conteudo {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .oculto {
+            display: none;
+        }
+
+        .modal-conteudo button {
+            margin: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const botaoLogout = document.getElementById('botaoLogout');
+            const modal = document.getElementById('modalLogout');
+            const cancelar = document.getElementById('cancelarLogout');
+
+            botaoLogout.addEventListener('click', () => {
+                modal.classList.remove('oculto');
+            });
+
+            cancelar.addEventListener('click', () => {
+                modal.classList.add('oculto');
+            });
+        });
+    </script>
+</nav>

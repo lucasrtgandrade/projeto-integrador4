@@ -24,10 +24,17 @@ router.get('/cadastro', ClienteController.renderizarPaginaCadastroCliente);
 
 router.post('/cadastrar', validarCPFMiddleware, ClienteController.cadastrarCliente.bind(ClienteController));
 
-router.get('/login', ClienteController.renderizarPaginaLogin);
-
 router.get('/verificar-email', ClienteController.verificarEmailEmTempoReal);
 
 router.get('/verificar-cpf', ClienteController.verificarCpfEmTempoReal);
+
+router.get('/login', ClienteController.renderizarPaginaLogin);
+
+router.post('/login', ClienteController.logar);
+
+router.get('/home', ClienteController.renderizarHome);
+
+router.post('/logout', ClienteController.logout);
+
 
 module.exports = router;
