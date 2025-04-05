@@ -30,7 +30,4 @@ router.get('/verificar-email', ClienteController.verificarEmailEmTempoReal);
 
 router.get('/verificar-cpf', ClienteController.verificarCpfEmTempoReal);
 
-
-
-
 module.exports = router;
