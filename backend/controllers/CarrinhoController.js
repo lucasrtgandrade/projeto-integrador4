@@ -35,7 +35,7 @@ class CarrinhoController {
             res.render('carrinho', {
                 carrinho_id: carrinhoId,
                 itens,
-                totalGeral // <-- Adiciona essa linha aqui!
+                totalGeral
             });
         } catch (erro) {
             console.error('Erro ao exibir carrinho:', erro);

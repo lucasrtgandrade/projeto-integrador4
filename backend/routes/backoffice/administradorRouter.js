@@ -3,7 +3,7 @@ const router = express.Router();
 const AdministradorController = require('../../controllers/backoffice/AdministradorController');
 const ProdutoController = require('../../controllers/backoffice/ProdutoController');
 const { exigirLogin, exigirAdministrador } = require('../../middleware/sessionsMiddleware');
-const validarCPFMiddleware = require('../../middleware/cpfMiddleware');
+const { validarCPFMiddleware } = require('../../middleware/cpfMiddleware');
 const validarSenhaMiddleware = require('../../middleware/senhaMiddleware');
 const upload = require('../../config/multer');
 

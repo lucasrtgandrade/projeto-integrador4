@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cadastro de Clientes</title>
+    <link rel="stylesheet" href="/css/estilos-navegacao.css">
+    <link rel="stylesheet" href="/css/estilos-cadastro_cliente.css">
+</head>
+<body>
+<%- include('partials/nav-user') %>
+<main class="main">
+    <h1>Cadastro</h1>
+    <form id="formCadastroCliente" class="form">
+        <fieldset class="fieldset">
+            <legend>Dados do Cliente</legend>
+            <div class="fieldset__item">
+                <label for="email_cadastro">Digite o seu e-mail:</label>
+                <input type="email" name="email" id="email_cadastro" required>
+                <p id="emailMensagem"></p>
+            </div>
+            <div class="fieldset__item">
+                <label for="nome_cadastro">Digite o seu nome:</label>
+                <input type="text" name="nome_completo" id="nome_cadastro" required>
+                <p id="nomeMensagem"></p>
+            </div>
+            <div class="fieldset__item">
+                <label for="cpf_cadastro">Digite o seu CPF:</label>
+                <input type="text" name="cpf" id="cpf_cadastro" required>
+                <p id="cpfMensagem"></p>
+            </div>
+            <div class="fieldset__item">
+                <label for="senha_cadastro">Digite a sua senha:</label>
+                <input type="password" name="senha" id="senha_cadastro" required>
+                <p id="senhaMensagem"></p>
+            </div>
+            <div class="fieldset__item">
+                <label for="data_nascimento">Data de nascimento:</label>
+                <input type="date" name="data_nascimento" id="data_nascimento" required>
+                <p id="dataMensagem"></p>
+            </div>
+            <div class="fieldset__item">
+                <label for="genero">Gênero:</label>
+                <select name="genero" id="genero" required>
+                    <option value="">Selecione</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Feminino">Feminino</option>
+                    <option value="Outro">Outro</option>
+                    <option value="Prefiro não informar">Prefiro não informar</option>
+                </select>
+                <p id="generoMensagem"></p>
+            </div>
+        </fieldset>
+        <fieldset class="fieldset">
+            <legend>Endereço de Faturamento</legend>
+            <div class="fieldset__item">
+                <label for="cep_faturamento">CEP:</label>
+                <input type="text" id="cep_faturamento" name="cep" required>
+                <p id="cepMensagem"></p>
+            </div>
+
+            <div class="fieldset__item">
+                <label for="logradouro">Logradouro:</label>
+                <input type="text" id="logradouro" name="logradouro" readonly>
+            </div>
+
+            <div class="fieldset__item">
+                <label for="numero">Número:</label>
+                <input type="text" id="numero" name="numero" required>
+            </div>
+
+            <div class="fieldset__item">
+                <label for="complemento">Complemento:</label>
+                <input type="text" id="complemento" name="complemento">
+            </div>
+
+            <div class="fieldset__item">
+                <label for="bairro">Bairro:</label>
+                <input type="text" id="bairro" name="bairro" readonly>
+            </div>
+
+            <div class="fieldset__item">
+                <label for="cidade">Cidade:</label>
+                <input type="text" id="cidade" name="cidade" readonly>
+            </div>
+
+            <div class="fieldset__item">
+                <label for="uf">UF:</label>
+                <input type="text" id="uf" name="uf" readonly>
+            </div>
+        </fieldset>
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <script>
+        document.getElementById('formCadastroCliente').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const nome = document.getElementById('nome_cadastro').value.trim();
+            const email = document.getElementById('email_cadastro').value.trim();
+            const cpf = document.getElementById('cpf_cadastro').value.trim();
+            const senha = document.getElementById('senha_cadastro').value.trim();
+            const dataNascimento = document.getElementById('data_nascimento').value;
+            const genero = document.getElementById('genero').value;
+            const cep = document.getElementById('cep_faturamento').value.trim();
+            const numero = document.getElementById('numero').value.trim();
+            const logradouro = document.getElementById('logradouro').value.trim();
+            const bairro = document.getElementById('bairro').value.trim();
+            const cidade = document.getElementById('cidade').value.trim();
+            const uf = document.getElementById('uf').value.trim();
+
+            const nomeMensagem = document.getElementById('nomeMensagem');
+            const emailMensagem = document.getElementById('emailMensagem');
+            const cpfMensagem = document.getElementById('cpfMensagem');
+            const senhaMensagem = document.getElementById('senhaMensagem');
+            const dataMensagem = document.getElementById('dataMensagem');
+            const generoMensagem = document.getElementById('generoMensagem');
+
+            nomeMensagem.textContent = '';
+            emailMensagem.textContent = '';
+            cpfMensagem.textContent = '';
+            senhaMensagem.textContent = '';
+            dataMensagem.textContent = '';
+            generoMensagem.textContent = '';
+
+            const regexNome = /^(?=(?:\b[a-zA-ZÀ-ÿ]{3,}\b\s*){2,})[a-zA-ZÀ-ÿ\s]+$/;
+            const regexCpf = /^(\d{3}\.){2}\d{3}-\d{2}$|^\d{11}$/;
+
+            let nomeValido = regexNome.test(nome);
+            let emailValido = email !== '';
+            let cpfValido = regexCpf.test(cpf);
+            let senhaValida = senha !== '';
+            let dataValida = dataNascimento !== '';
+            let generoValido = genero !== '';
+            let enderecoValido = cep && logradouro && numero && bairro && cidade && uf;
+
+            if (!nomeValido) {
+                nomeMensagem.textContent = 'Nome inválido. Digite pelo menos duas palavras com no mínimo 3 letras.';
+                nomeMensagem.style.color = 'red';
+            }
+
+            if (!emailValido) {
+                emailMensagem.textContent = 'Email inválido.';
+                emailMensagem.style.color = 'red';
+            }
+
+            if (!cpfValido) {
+                cpfMensagem.textContent = 'CPF inválido. Formato esperado: 000.000.000-00 ou apenas números.';
+                cpfMensagem.style.color = 'red';
+            }
+
+            if (!senhaValida) {
+                senhaMensagem.textContent = 'Senha inválida';
+                senhaMensagem.style.color = 'red';
+            }
+
+            if (!dataValida) {
+                dataMensagem.textContent = 'Data de nascimento obrigatória.';
+                dataMensagem.style.color = 'red';
+            }
+
+            if (!generoValido) {
+                generoMensagem.textContent = 'Gênero obrigatório.';
+                generoMensagem.style.color = 'red';
+            }
+
+            if (!enderecoValido) {
+                cepMensagem.textContent = 'Preencha todos os campos do endereço.';
+                cepMensagem.style.color = 'red';
+                return;
+            }
+
+            if (!nomeValido || !emailValido || !cpfValido || !senhaValida || !dataValida || !generoValido) return;
+
+
+            try {
+                const resposta = await fetch('/clientes/cadastrar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email,
+                        nome_completo: nome,
+                        cpf: cpf.replace(/\D/g, ''),
+                        senha,
+                        data_nascimento: dataNascimento,
+                        genero,
+                        cep: document.getElementById('cep_faturamento').value,
+                        logradouro: document.getElementById('logradouro').value,
+                        numero: document.getElementById('numero').value,
+                        complemento: document.getElementById('complemento').value,
+                        bairro: document.getElementById('bairro').value,
+                        cidade: document.getElementById('cidade').value,
+                        uf: document.getElementById('uf').value,
+                    })
+                });
+
+                const dados = await resposta.json();
+
+
+                nomeMensagem.textContent = '';
+                emailMensagem.textContent = '';
+                cpfMensagem.textContent = '';
+                senhaMensagem.textContent = '';
+
+
+                if (!resposta.ok) {
+                    if (dados.mensagem?.includes('CPF')) {
+                        cpfMensagem.textContent = dados.mensagem;
+                        cpfMensagem.style.color = 'red';
+                    } else if (dados.mensagem?.includes('E-mail')) {
+                        emailMensagem.textContent = dados.mensagem;
+                        emailMensagem.style.color = 'red';
+                    } else if (dados.mensagem?.includes('Senha')) {
+                        senhaMensagem.textContent = dados.mensagem;
+                        senhaMensagem.style.color = 'red';
+                    } else {
+                        emailMensagem.textContent = dados.mensagem || 'Erro ao cadastrar.';
+                        emailMensagem.style.color = 'red';
+                    }
+                    return;
+                }
+
+                emailMensagem.textContent = 'Cliente cadastrado com sucesso!';
+                emailMensagem.style.color = 'green';
+
+                setTimeout(() => {
+                    window.location.href = '/clientes/login';
+                }, 1000);
+
+                document.getElementById('formCadastroCliente').reset();
+
+            } catch (err) {
+                cpfMensagem.textContent = 'Erro interno ao processar o CPF.';
+                cpfMensagem.style.color = 'orange';
+            }
+        });
+    </script>
+
+    <script>
+        document.getElementById('email_cadastro').addEventListener('blur', async function () {
+            const email = this.value.trim();
+            const emailMensagem = document.getElementById('emailMensagem');
+
+            if (!email) return;
+
+            try {
+                const resposta = await fetch(`/clientes/verificar-email?email=${encodeURIComponent(email)}`);
+                const dados = await resposta.json();
+
+                emailMensagem.textContent = dados.mensagem;
+                emailMensagem.style.color = dados.existe ? 'red' : 'green';
+            } catch (err) {
+                emailMensagem.textContent = 'Erro ao verificar o e-mail.';
+                emailMensagem.style.color = 'orange';
+            }
+        });
+
+        document.getElementById('cpf_cadastro').addEventListener('blur', async function () {
+            const cpf = this.value.replace(/\D/g, '');
+            const cpfMensagem = document.getElementById('cpfMensagem');
+
+            if (!cpf || cpf.length !== 11) return;
+
+            try {
+                const resposta = await fetch(`/clientes/verificar-cpf?cpf=${cpf}`);
+                const dados = await resposta.json();
+
+                cpfMensagem.textContent = dados.mensagem;
+                cpfMensagem.style.color = dados.existe ? 'red' : 'green';
+            } catch (err) {
+                cpfMensagem.textContent = 'Erro ao verificar o CPF.';
+                cpfMensagem.style.color = 'orange';
+            }
+        });
+    </script>
+
+
+    <script>
+        document.getElementById('cep_faturamento').addEventListener('blur', async function () {
+            const cep = this.value.replace(/\D/g, '');
+            const cepMensagem = document.getElementById('cepMensagem');
+
+            if (cep.length !== 8) {
+                cepMensagem.textContent = 'CEP inválido.';
+                cepMensagem.style.color = 'red';
+                return;
+            }
+
+            try {
+                const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const dados = await resposta.json();
+
+                if (dados.erro) {
+                    cepMensagem.textContent = 'CEP não encontrado.';
+                    cepMensagem.style.color = 'red';
+                    return;
+                }
+
+                document.getElementById('logradouro').value = dados.logradouro;
+                document.getElementById('bairro').value = dados.bairro;
+                document.getElementById('cidade').value = dados.localidade;
+                document.getElementById('uf').value = dados.uf;
+                cepMensagem.textContent = '';
+            } catch (error) {
+                cepMensagem.textContent = 'Erro ao buscar o CEP.';
+                cepMensagem.style.color = 'orange';
+            }
+        });
+    </script>
+
+
+
+
+
+</main>
+</body>
+</html>

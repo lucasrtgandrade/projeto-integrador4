@@ -1,0 +1,23 @@
+.main {
+    border: 1px solid blue;
+    max-width: 734px;
+    margin: 0 auto;
+}
+
+.form {
+    border: 1px solid red;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.fieldset__item {
+    display: flex;
+    flex-direction: column;
+}

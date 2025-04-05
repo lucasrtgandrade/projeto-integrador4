@@ -1,26 +1,36 @@
 const express = require('express');
 const router = express.Router();
+const { validarCPFMiddleware } = require('../../middleware/cpfMiddleware');
+
 
 const ProdutoController = require('../../controllers/backoffice/ProdutoController');
 const CarrinhoController = require('../../controllers/CarrinhoController');
-const FreteController = require('../../controllers/FreteController'); // ✅ importante
+const FreteController = require('../../controllers/FreteController');
+const ClienteController = require("../../controllers/ClienteController");
 
-// Página de detalhes do produto
 router.get('/produto/:id', ProdutoController.renderizarPaginaDetalhesProduto);
 
-// Página do carrinho
 router.get('/carrinho', CarrinhoController.exibirCarrinho);
 
-// Adicionar item ao carrinho
 router.post('/api/carrinhos/:carrinho_id/itens', CarrinhoController.adicionarItem);
 
-// Atualizar quantidade
 router.put('/api/carrinhos/:carrinho_id/itens/:item_id', CarrinhoController.atualizarQuantidadeItem);
 
-// Remover item
 router.delete('/api/carrinhos/:carrinho_id/itens/:item_id', CarrinhoController.removerItem);
 
-// ✅ Rota para frete
 router.get('/api/frete', FreteController.listarOpcoes);
+
+router.get('/cadastro', ClienteController.renderizarPaginaCadastroCliente);
+
+router.post('/cadastrar', validarCPFMiddleware, ClienteController.cadastrarCliente.bind(ClienteController));
+
+router.get('/login', ClienteController.renderizarPaginaLogin);
+
+router.get('/verificar-email', ClienteController.verificarEmailEmTempoReal);
+
+router.get('/verificar-cpf', ClienteController.verificarCpfEmTempoReal);
+
+
+
 
 module.exports = router;
