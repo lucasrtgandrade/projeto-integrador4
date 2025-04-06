@@ -35,5 +35,16 @@ router.get('/home', ClienteController.renderizarHome);
 
 router.post('/logout', ClienteController.logout);
 
+router.get('/editar-perfil', ClienteController.renderizarPaginaEditar);
+
+router.put('/editar', ClienteController.atualizarCliente);
+
+router.get('/adicionar-endereco', ClienteController.renderizarPaginaAdicionarEndereco);
+
+router.post('/endereco', ClienteController.adicionarEnderecoEntrega);
+
+router.get('/enderecos', ClienteController.listarEnderecosEntrega);
+
+router.put('/enderecos/:id/padrao', ClienteController.definirEnderecoPadrao);
 
 module.exports = router;

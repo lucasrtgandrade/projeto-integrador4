@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Adicionar Endereço</title>
+    <link rel="stylesheet" href="/css/estilos-navegacao.css">
+</head>
+<body>
+<%- include('partials/nav-cliente') %>
+
+<main class="main">
+    <h1>Adicionar Endereço de Entrega</h1>
+
+    <form id="formEndereco">
+        <fieldset class="fieldset">
+            <legend>Endereço</legend>
+
+            <div class="fieldset__item">
+                <label for="cep">CEP:</label>
+                <input type="text" name="cep" id="cep" required>
+                <p id="cepMensagem"></p>
+            </div>
+
+            <div class="fieldset__item">
+                <label for="logradouro">Logradouro:</label>
+                <input type="text" name="logradouro" id="logradouro" readonly required>
+            </div>
+
+            <div class="fieldset__item">
+                <label for="numero">Número:</label>
+                <input type="text" name="numero" id="numero" required>
+            </div>
+
+            <div class="fieldset__item">
+                <label for="complemento">Complemento:</label>
+                <input type="text" name="complemento" id="complemento">
+            </div>
+
+            <div class="fieldset__item">
+                <label for="bairro">Bairro:</label>
+                <input type="text" name="bairro" id="bairro" readonly required>
+            </div>
+
+            <div class="fieldset__item">
+                <label for="cidade">Cidade:</label>
+                <input type="text" name="cidade" id="cidade" readonly required>
+            </div>
+
+            <div class="fieldset__item">
+                <label for="uf">UF:</label>
+                <input type="text" name="uf" id="uf" readonly required>
+            </div>
+
+            <div class="fieldset__item">
+                <label>
+                    <input type="checkbox" name="padrao" id="padrao">
+                    Definir como endereço padrão
+                </label>
+            </div>
+
+            <button type="submit">Salvar Endereço</button>
+        </fieldset>
+    </form>
+</main>
+
+<script>
+    document.getElementById('cep').addEventListener('blur', async function () {
+        const cep = this.value.replace(/\D/g, '');
+        const cepMensagem = document.getElementById('cepMensagem');
+
+        if (cep.length !== 8) {
+            cepMensagem.textContent = 'CEP inválido.';
+            cepMensagem.style.color = 'red';
+            return;
+        }
+
+        try {
+            const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const dados = await resposta.json();
+
+            if (dados.erro) {
+                cepMensagem.textContent = 'CEP não encontrado.';
+                cepMensagem.style.color = 'red';
+                return;
+            }
+
+            document.getElementById('logradouro').value = dados.logradouro;
+            document.getElementById('bairro').value = dados.bairro;
+            document.getElementById('cidade').value = dados.localidade;
+            document.getElementById('uf').value = dados.uf;
+            cepMensagem.textContent = '';
+        } catch (error) {
+            cepMensagem.textContent = 'Erro ao buscar o CEP.';
+            cepMensagem.style.color = 'orange';
+        }
+    });
+
+    document.getElementById('formEndereco').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const dados = {
+            cep: document.getElementById('cep').value,
+            logradouro: document.getElementById('logradouro').value,
+            numero: document.getElementById('numero').value,
+            complemento: document.getElementById('complemento').value,
+            bairro: document.getElementById('bairro').value,
+            cidade: document.getElementById('cidade').value,
+            uf: document.getElementById('uf').value,
+            padrao: document.getElementById('padrao').checked ? 1 : 0
+        };
+
+        try {
+            const resposta = await fetch('/clientes/endereco', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+
+            const resultado = await resposta.json();
+            alert(resultado.mensagem);
+            if (resposta.ok) {
+                window.location.reload();
+            }
+        } catch (error) {
+            alert('Erro ao salvar endereço.');
+            console.error(error);
+        }
+    });
+</script>
+</body>
+</html>

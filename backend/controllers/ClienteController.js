@@ -151,7 +151,7 @@ class ClienteController {
             }
 
             req.session.user = {
-                id: cliente.cliente_id,
+                id: cliente.id_cliente,
                 nome: cliente.nome_completo,
                 email: cliente.email
             };
@@ -185,7 +185,142 @@ class ClienteController {
         });
     }
 
+    static renderizarPaginaEditar(req, res) {
+        res.render('editar-perfil');
+    }
 
+    static async atualizarCliente(req, res) {
+        const clienteId = req.session?.user?.id;
+
+        if (!clienteId) {
+            return res.status(401).json({ mensagem: 'Você precisa estar logado para atualizar seus dados.' });
+        }
+
+        const { nome_completo, data_nascimento, genero, senha } = req.body;
+
+        const dadosParaAtualizar = {};
+
+        if (nome_completo) {
+            dadosParaAtualizar.nome_completo = nome_completo;
+        }
+
+        if (data_nascimento) {
+            dadosParaAtualizar.data_nascimento = data_nascimento;
+        }
+
+        if (genero) {
+            dadosParaAtualizar.genero = genero;
+        }
+
+        if (senha) {
+            try {
+                const senhaCriptografada = await bcrypt.hash(senha, 10);
+                dadosParaAtualizar.senha = senhaCriptografada;
+            } catch (error) {
+                console.error('Erro ao criptografar senha:', error);
+                return res.status(500).json({ mensagem: 'Erro ao processar a senha.' });
+            }
+        }
+
+        if (Object.keys(dadosParaAtualizar).length === 0) {
+            return res.status(400).json({ mensagem: 'Preencha pelo menos um campo para atualizar.' });
+        }
+
+        try {
+            await ClienteModel.atualizarCliente(clienteId, dadosParaAtualizar);
+            return res.status(200).json({ mensagem: 'Dados atualizados com sucesso!' });
+        } catch (error) {
+            console.error('Erro ao atualizar cliente:', error);
+            return res.status(500).json({ mensagem: 'Erro ao atualizar os dados do cliente.' });
+        }
+    }
+
+    static renderizarPaginaAdicionarEndereco(req, res) {
+        if (!req.session?.user?.id) {
+            return res.redirect('/clientes/login');
+        }
+
+        res.render('adicionar-endereco');
+    }
+
+    static async adicionarEnderecoEntrega(req, res) {
+        const id_cliente = req.session?.user?.id;
+
+        if (!id_cliente) {
+            return res.status(401).json({ mensagem: 'Você precisa estar logado para adicionar um endereço.' });
+        }
+
+        const {
+            cep,
+            logradouro,
+            numero,
+            complemento,
+            bairro,
+            cidade,
+            uf,
+            padrao
+        } = req.body;
+
+        try {
+            // Se o cliente marcou como padrão, removemos o status de padrão dos outros endereços
+            if (padrao === 1 || padrao === '1') {
+                await EnderecoModel.removerEnderecoPadrao(id_cliente);
+            }
+
+            const cepLimpo = req.body.cep.replace(/\D/g, '');
+
+            await EnderecoModel.adicionarEnderecoEntrega({
+                id_cliente,
+                cep: cepLimpo,
+                logradouro,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                uf,
+                padrao: padrao === 1 || padrao === '1' ? 1 : 0
+            });
+
+            return res.status(200).json({ mensagem: 'Endereço adicionado com sucesso!' });
+        } catch (error) {
+            console.error('Erro ao adicionar endereço:', error);
+            return res.status(500).json({ mensagem: 'Erro ao adicionar endereço.' });
+        }
+    }
+
+    static async listarEnderecosEntrega(req, res) {
+        const id_cliente = req.session?.user?.id;
+
+        if (!id_cliente) {
+            return res.redirect('/clientes/login');
+        }
+
+        try {
+            const enderecos = await EnderecoModel.buscarEnderecosEntrega(id_cliente);
+            res.render('listar-enderecos', { enderecos });
+        } catch (error) {
+            console.error('Erro ao listar endereços:', error);
+            res.status(500).send('Erro ao carregar endereços.');
+        }
+    }
+
+    static async definirEnderecoPadrao(req, res) {
+        const id_cliente = req.session?.user?.id;
+        const { id } = req.params;
+
+        if (!id_cliente) {
+            return res.status(401).json({ mensagem: 'Login necessário.' });
+        }
+
+        try {
+            await EnderecoModel.removerEnderecoPadrao(id_cliente);
+            await EnderecoModel.definirEnderecoComoPadrao(id, id_cliente);
+            return res.status(200).json({ mensagem: 'Endereço definido como padrão!' });
+        } catch (error) {
+            console.error('Erro ao definir endereço padrão:', error);
+            res.status(500).json({ mensagem: 'Erro interno.' });
+        }
+    }
 }
 
 module.exports = ClienteController;

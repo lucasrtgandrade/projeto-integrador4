@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Meus Endereços</title>
+    <link rel="stylesheet" href="/css/estilos-navegacao.css">
+    <style>
+        main {
+            padding: 20px;
+        }
+
+        .endereco {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .padrao {
+            color: green;
+            font-weight: bold;
+        }
+
+        .botaoPadrao {
+            margin-top: 10px;
+            padding: 6px 12px;
+        }
+    </style>
+
+    <script>
+        async function definirPadrao(id) {
+            const resposta = await fetch(`/clientes/enderecos/${id}/padrao`, {
+                method: 'PUT'
+            });
+
+            const resultado = await resposta.json();
+            alert(resultado.mensagem);
+            if (resposta.ok) window.location.reload();
+        }
+    </script>
+</head>
+<body>
+<%- include('partials/nav-cliente') %>
+
+<main>
+    <h1>Meus Endereços de Entrega</h1>
+
+    <% if (enderecos.length === 0) { %>
+        <p>Nenhum endereço cadastrado.</p>
+    <% } else { %>
+        <% enderecos.forEach(endereco => { %>
+            <div class="endereco">
+                <strong><%= endereco.logradouro %>, <%= endereco.numero %></strong><br>
+                <%= endereco.bairro %>, <%= endereco.cidade %> - <%= endereco.uf %><br>
+                CEP: <%= endereco.cep %><br>
+                <%= endereco.complemento ? 'Complemento: ' + endereco.complemento + '<br>' : '' %>
+
+                <% if (endereco.padrao) { %>
+                    <p class="padrao">Endereço Padrão</p>
+                <% } else { %>
+                    <button class="botaoPadrao" onclick="definirPadrao(<%= endereco.id_endereco %>)">
+                        Definir como padrão
+                    </button>
+                <% } %>
+            </div>
+        <% }) %>
+    <% } %>
+</main>
+</body>
+</html>

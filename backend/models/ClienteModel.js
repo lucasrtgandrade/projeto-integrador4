@@ -23,6 +23,23 @@ class ClienteModel {
         const [resultado] = await pool.query(sql, [nome_completo, email, cpf, senha, data_nascimento, genero]);
         return resultado;
     }
+
+    static async atualizarCliente(clienteId, dados) {
+        const campos = [];
+        const valores = [];
+
+        for (const campo in dados) {
+            campos.push(`${campo} = ?`);
+            valores.push(dados[campo]);
+        }
+
+        valores.push(clienteId); // último valor para o WHERE
+
+        const sql = `UPDATE clientes SET ${campos.join(', ')} WHERE id_cliente = ?`;
+
+        await pool.query(sql, valores);
+    }
+
 }
 
 module.exports = ClienteModel;

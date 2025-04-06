@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login de Clientes</title>
+    <link rel="stylesheet" href="/css/estilos-navegacao.css">
+    <link rel="stylesheet" href="/css/estilos-cadastro_cliente.css">
+</head>
+<body>
+<%- include('partials/nav-cliente') %>
+
+<h1>Editar Perfil</h1>
+<main class="main">
+    <form id="formAlterarCliente">
+        <fieldset class="fieldset">
+            <legend>Alterar Dados</legend>
+            <div class="fieldset__item">
+                <label for="alterarNome">Alterar Nome:</label>
+                <input type="text" name="nome_completo" id="alterarNome">
+                <p id="nomeMensagem"></p>
+            </div>
+            <div class="fieldset__item">
+                <label for="dataNascimento">Alterar Data de Nascimento:</label>
+                <input type="date" name="data_nascimento" id="dataNascimento">
+                <p id="dataMensagem"></p>
+            </div>
+            <div class="fieldset__item">
+                <label for="genero">Alterar Gênero:</label>
+                <select name="genero" id="genero">
+                    <option value="">Selecione</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Feminino">Feminino</option>
+                    <option value="Outro">Outro</option>
+                    <option value="Prefiro não informar">Prefiro não informar</option>
+                </select>
+                <p id="generoMensagem"></p>
+            </div>
+            <div class="fieldset__item">
+                <label for="senhaCadastro">Alterar a sua senha:</label>
+                <input type="password" name="senha" id="senhaCadastro">
+                <p id="senhaMensagem"></p>
+            </div>
+        </fieldset>
+        <button type="submit">Alterar</button>
+    </form>
+
+    <script>
+        document.getElementById('formAlterarCliente').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const nome = document.getElementById('alterarNome').value.trim();
+            const dataNascimento = document.getElementById('dataNascimento').value;
+            const genero = document.getElementById('genero').value;
+            const senha = document.getElementById('senhaCadastro').value.trim();
+
+            const nomeMensagem = document.getElementById('nomeMensagem');
+            const dataMensagem = document.getElementById('dataMensagem');
+            const generoMensagem = document.getElementById('generoMensagem');
+            const senhaMensagem = document.getElementById('senhaMensagem');
+
+            nomeMensagem.textContent = '';
+            dataMensagem.textContent = '';
+            generoMensagem.textContent = '';
+            senhaMensagem.textContent = '';
+
+            const regexNome = /^(?=(?:\b[a-zA-ZÀ-ÿ]{3,}\b\s*){2,})[a-zA-ZÀ-ÿ\s]+$/;
+
+            const dadosAtualizados = {};
+
+            // Validação do nome
+            if (nome !== '') {
+                if (!regexNome.test(nome)) {
+                    nomeMensagem.textContent = 'Nome inválido. Digite pelo menos duas palavras com no mínimo 3 letras.';
+                    nomeMensagem.style.color = 'red';
+                    return;
+                } else {
+                    dadosAtualizados.nome_completo = nome;
+                }
+            }
+
+            if (dataNascimento !== '') {
+                dadosAtualizados.data_nascimento = dataNascimento;
+            }
+
+            if (genero !== '') {
+                dadosAtualizados.genero = genero;
+            }
+
+            if (senha !== '') {
+                dadosAtualizados.senha = senha;
+            }
+
+            if (Object.keys(dadosAtualizados).length === 0) {
+                alert('Preencha pelo menos um campo para alterar seus dados.');
+                return;
+            }
+
+            try {
+                const resposta = await fetch('/clientes/editar', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dadosAtualizados)
+                });
+
+                const resultado = await resposta.json();
+                alert(resultado.mensagem || 'Dados atualizados com sucesso!');
+            } catch (erro) {
+                console.error('Erro ao atualizar cliente:', erro);
+            }
+        });
+    </script>
+
+
+</main>
+</body>
+</html>
