@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { validarCPFMiddleware } = require('../../middleware/cpfMiddleware');
 
-
 const ProdutoController = require('../../controllers/backoffice/ProdutoController');
 const CarrinhoController = require('../../controllers/CarrinhoController');
 const FreteController = require('../../controllers/FreteController');
