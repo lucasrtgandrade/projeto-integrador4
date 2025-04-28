@@ -1,4 +1,4 @@
-require('dotenv').config({ path: './.env' });
+require('dotenv').config({ path: '../.env' });
 
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
@@ -73,54 +73,54 @@ async function criarBancoDeDados(connection) {
 async function criarTabelas(connection) {
     const queriesCriarTabelas = [
         `CREATE TABLE IF NOT EXISTS cargos (
-                                               id_cargo INT PRIMARY KEY AUTO_INCREMENT,
-                                               nome VARCHAR(255) NOT NULL
-         );`,
+            id_cargo INT PRIMARY KEY AUTO_INCREMENT,
+            nome VARCHAR(255) NOT NULL
+        );`,
         `CREATE TABLE IF NOT EXISTS colaboradores (
-                                                      colaborador_id INT PRIMARY KEY AUTO_INCREMENT,
-                                                      nome VARCHAR(50) NOT NULL,
-                                                      cpf VARCHAR(11) NOT NULL,
-                                                      email VARCHAR(255) NOT NULL,
-                                                      senha VARCHAR(255) NOT NULL,
-                                                      status BOOLEAN DEFAULT TRUE,
-                                                      cargo_id INT NOT NULL,
-                                                      FOREIGN KEY (cargo_id) REFERENCES cargos(id_cargo)
-         );`,
+            colaborador_id INT PRIMARY KEY AUTO_INCREMENT,
+            nome VARCHAR(50) NOT NULL,
+            cpf VARCHAR(11) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            senha VARCHAR(255) NOT NULL,
+            status BOOLEAN DEFAULT TRUE,
+            cargo_id INT NOT NULL,
+            FOREIGN KEY (cargo_id) REFERENCES cargos(id_cargo)
+        );`,
         `CREATE TABLE IF NOT EXISTS produtos (
-                                                 produto_id INT PRIMARY KEY AUTO_INCREMENT,
-                                                 nome VARCHAR(200) NOT NULL,
-                                                 descricao VARCHAR(2000) NOT NULL,
-                                                 preco DECIMAL(10,2) NOT NULL,
-                                                 media_avaliacao DECIMAL(2,1) DEFAULT 0.0,
-                                                 total_avaliacao INT DEFAULT 0,
-                                                 qtd_estoque INT NOT NULL,
-                                                 status BOOLEAN DEFAULT TRUE,
-                                                 colaborador_id INT,
-                                                 FOREIGN KEY (colaborador_id) REFERENCES colaboradores(colaborador_id)
-         );`,
+            produto_id INT PRIMARY KEY AUTO_INCREMENT,
+            nome VARCHAR(200) NOT NULL,
+            descricao VARCHAR(2000) NOT NULL,
+            preco DECIMAL(10,2) NOT NULL,
+            media_avaliacao DECIMAL(2,1) DEFAULT 0.0,
+            total_avaliacao INT DEFAULT 0,
+            qtd_estoque INT NOT NULL,
+            status BOOLEAN DEFAULT TRUE,
+            colaborador_id INT,
+            FOREIGN KEY (colaborador_id) REFERENCES colaboradores(colaborador_id)
+        );`,
         `CREATE TABLE IF NOT EXISTS imagens (
-                                                imagem_id INT PRIMARY KEY AUTO_INCREMENT,
-                                                url VARCHAR(255),
-                                                is_principal BOOLEAN DEFAULT FALSE,
-                                                produto_id INT,
-                                                FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
-         );`,
+            imagem_id INT PRIMARY KEY AUTO_INCREMENT,
+            url VARCHAR(255),
+            is_principal BOOLEAN DEFAULT FALSE,
+            produto_id INT,
+            FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
+        );`,
         `CREATE TABLE IF NOT EXISTS avaliacoes (
-                                                   avaliacao_id INT PRIMARY KEY AUTO_INCREMENT,
-                                                   avaliacao DECIMAL(2,1) NOT NULL CHECK (avaliacao IN (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)),
-                                                   produto_id INT,
-                                                   FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
-         );`,
+            avaliacao_id INT PRIMARY KEY AUTO_INCREMENT,
+            avaliacao DECIMAL(2,1) NOT NULL CHECK (avaliacao IN (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)),
+            produto_id INT,
+            FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
+        );`,
         `CREATE TABLE IF NOT EXISTS clientes (
-                                                 id_cliente INT PRIMARY KEY AUTO_INCREMENT,
-                                                 nome_completo VARCHAR(255) NOT NULL,
-                                                 cpf VARCHAR(11) NOT NULL UNIQUE,
-                                                 email VARCHAR(255) NOT NULL UNIQUE,
-                                                 senha VARCHAR(255) NOT NULL,
-                                                 data_nascimento DATE NOT NULL,
-                                                 genero VARCHAR(20),
-                                                 status BOOLEAN DEFAULT TRUE
-         );`,
+            id_cliente INT PRIMARY KEY AUTO_INCREMENT,
+            nome_completo VARCHAR(255) NOT NULL,
+            cpf VARCHAR(11) NOT NULL UNIQUE,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            senha VARCHAR(255) NOT NULL,
+            data_nascimento DATE NOT NULL,
+            genero VARCHAR(20),
+            status BOOLEAN DEFAULT TRUE
+        );`,
         `CREATE TABLE IF NOT EXISTS enderecos (
             id_endereco INT PRIMARY KEY AUTO_INCREMENT,
             id_cliente INT NOT NULL,
@@ -134,22 +134,22 @@ async function criarTabelas(connection) {
             tipo ENUM('FATURAMENTO', 'ENTREGA') NOT NULL,
             padrao BOOLEAN DEFAULT FALSE,
             FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
-         );`,
+        );`,
         `CREATE TABLE IF NOT EXISTS fretes (
-                                               frete_id INT PRIMARY KEY AUTO_INCREMENT,
-                                               nome VARCHAR(255) NOT NULL,
-                                               descricao VARCHAR(2000),
-                                               custo DECIMAL(10,2) NOT NULL,
-                                               prazo_entrega INT
-         );`,
+            frete_id INT PRIMARY KEY AUTO_INCREMENT,
+            nome VARCHAR(255) NOT NULL,
+            descricao VARCHAR(2000),
+            custo DECIMAL(10,2) NOT NULL,
+            prazo_entrega INT
+        );`,
         `CREATE TABLE IF NOT EXISTS carrinhos (
-                                                  id_carrinho INT PRIMARY KEY AUTO_INCREMENT,
-                                                  id_cliente INT,
-                                                  id_cliente_sessao VARCHAR(255),
-                                                  frete_id INT,
-                                                  FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente),
-                                                  FOREIGN KEY (frete_id) REFERENCES fretes(frete_id)
-         );`,
+            id_carrinho INT PRIMARY KEY AUTO_INCREMENT,
+            id_cliente INT,
+            id_cliente_sessao VARCHAR(255),
+            frete_id INT,
+            FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente),
+            FOREIGN KEY (frete_id) REFERENCES fretes(frete_id)
+        );`,
         `CREATE TABLE IF NOT EXISTS itens_carrinho (
             id_item_carrinho INT PRIMARY KEY AUTO_INCREMENT,
             id_carrinho INT NOT NULL,
@@ -158,12 +158,70 @@ async function criarTabelas(connection) {
             FOREIGN KEY (id_carrinho) REFERENCES carrinhos(id_carrinho),
             FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
         );`,
-        `CREATE TABLE IF NOT EXISTS sessoes
-         (
-             id_sessao  VARCHAR(255) PRIMARY KEY,
-             id_cliente INT NOT NULL,
-             FOREIGN KEY (id_cliente) REFERENCES clientes (id_cliente)
-         );`
+        `CREATE TABLE IF NOT EXISTS sessoes (
+            id_sessao  VARCHAR(255) PRIMARY KEY,
+            id_cliente INT NOT NULL,
+            FOREIGN KEY (id_cliente) REFERENCES clientes (id_cliente)
+        );`,
+        // Novas tabelas para Sprint 5
+        `CREATE TABLE IF NOT EXISTS pedidos (
+            id_pedido INT PRIMARY KEY AUTO_INCREMENT,
+            id_cliente INT NOT NULL,
+            id_endereco_entrega INT NOT NULL,
+            id_frete INT NOT NULL,
+            data_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            valor_total DECIMAL(10,2) NOT NULL,
+            valor_frete DECIMAL(10,2) NOT NULL,
+            status ENUM(
+                'AGUARDANDO_PAGAMENTO',
+                'PAGAMENTO_APROVADO',
+                'EM_PREPARACAO',
+                'ENVIADO',
+                'ENTREGUE',
+                'CANCELADO'
+            ) DEFAULT 'AGUARDANDO_PAGAMENTO',
+            codigo_rastreio VARCHAR(100),
+            numero_pedido VARCHAR(20) UNIQUE,
+            FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente),
+            FOREIGN KEY (id_endereco_entrega) REFERENCES enderecos(id_endereco),
+            FOREIGN KEY (id_frete) REFERENCES fretes(frete_id)
+        );`,
+        `CREATE TABLE IF NOT EXISTS itens_pedido (
+            id_item_pedido INT PRIMARY KEY AUTO_INCREMENT,
+            id_pedido INT NOT NULL,
+            id_produto INT NOT NULL,
+            quantidade INT NOT NULL,
+            preco_unitario DECIMAL(10,2) NOT NULL,
+            FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido),
+            FOREIGN KEY (id_produto) REFERENCES produtos(produto_id)
+        );`,
+        `CREATE TABLE IF NOT EXISTS pagamentos (
+            id_pagamento INT PRIMARY KEY AUTO_INCREMENT,
+            id_pedido INT NOT NULL,
+            metodo ENUM('BOLETO', 'CARTAO_CREDITO') NOT NULL,
+            status ENUM(
+                'PENDENTE',
+                'APROVADO',
+                'RECUSADO',
+                'ESTORNADO'
+            ) DEFAULT 'PENDENTE',
+            valor DECIMAL(10,2) NOT NULL,
+            data_pagamento TIMESTAMP NULL,
+            codigo_transacao VARCHAR(255),
+            dados_cartao JSON,
+            FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
+        );`,
+        `CREATE TABLE IF NOT EXISTS cartoes_cliente (
+            id_cartao INT PRIMARY KEY AUTO_INCREMENT,
+            id_cliente INT NOT NULL,
+            apelido VARCHAR(50),
+            numero_cartao VARCHAR(20) NOT NULL,
+            nome_titular VARCHAR(100) NOT NULL,
+            data_validade DATE NOT NULL,
+            cpf_titular VARCHAR(11),
+            ativo BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+        );`
     ];
 
     try {
