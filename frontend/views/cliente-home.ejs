@@ -1,17 +1,49 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login de Clientes</title>
-    <link rel="stylesheet" href="/css/estilos-navegacao.css">
-    <link rel="stylesheet" href="/css/estilos-cadastro_cliente.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/navigation.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/produto.css">
+    <link rel="stylesheet" href="/css/footer.css">
 </head>
 <body>
-<%- include('partials/nav-cliente') %>
+<% if (usuario) { %>
+    <%- include('partials/nav-cliente') %>
+<% } else { %>
+    <%- include('partials/nav-user') %>
+<% } %>
 
-<h1>Pagina do cliente</h1>
+
+
+<main class="conteudo">
+    <h2 class="titulo-secundario">Bem-vindo <%= cliente.nome_completo %></h2>
+    <h1 class="titulo-principal">Produtos</h1>
+    <div class="produtos-container">
+        <% if (produtos.length > 0) { %>
+            <% produtos.forEach(produto => { %>
+                <div class="produto-card">
+                    <div class="produto-imagem">
+                        <img src="/uploads/<%= produto.imagens[0].url %>" alt="<%= produto.nome %>">
+                    </div>
+                    <div class="produto-info">
+                        <h3 class="produto-nome"><%= produto.nome %></h3>
+                        <p class="produto-preco">R$ <%= (Number(produto.preco) || 0.00).toFixed(2) %></p>
+                    </div>
+                    <button class="botao-detalhes" onclick="window.location.href='/clientes/produto/<%= produto.produto_id %>'">
+                        Detalhes
+                    </button>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p>Nenhum produto ativo encontrado.</p>
+        <% } %>
+    </div>
+</main>
 
 
 </body>

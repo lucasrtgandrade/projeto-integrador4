@@ -1,4 +1,5 @@
 const ProdutoModel = require('../models/backoffice/ProdutoModel');
+const {request} = require("express");
 
 class PaginaInicialController {
     static async renderizarPaginaInicial(req, res) {
@@ -10,7 +11,7 @@ class PaginaInicialController {
             res.render('index', {
                 title: 'Página Inicial',
                 produtos: produtos, // Pass products to the view
-                user: req.session.user || null // Pass user data if logged in
+                usuario: req.session.user
             });
         } catch (error) {
             console.error('Erro ao buscar produtos:', error);
@@ -22,7 +23,6 @@ class PaginaInicialController {
         const { id } = req.params;
 
         try {
-            // Fetch product details and images
             const produto = await ProdutoModel.buscarProdutoComImagens(id);
 
             if (!produto) {
@@ -33,7 +33,7 @@ class PaginaInicialController {
             res.render('produto-detalhes', {
                 title: `Detalhes do Produto - ${produto.nome}`,
                 produto: produto,
-                user: req.session.user || null // Pass user data if logged in
+                usuario: req.session.user
             });
         } catch (error) {
             console.error('Erro ao carregar página de detalhes:', error);

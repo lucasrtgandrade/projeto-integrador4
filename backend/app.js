@@ -3,6 +3,15 @@ const path = require('path');
 const { sessionMiddleware } = require('./middleware/sessionsMiddleware');
 const app = express();
 
+const session = require('express-session');
+app.use(sessionMiddleware);
+
+app.use((req, res, next) => {
+    console.log('Sessão ID:', req.session.id);
+    console.log('Sessão completa:', req.session);
+    next();
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

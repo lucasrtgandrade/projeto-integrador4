@@ -4,7 +4,6 @@ const fs = require('fs');
 const pool = require('../../config/db');
 
 class ProdutoController {
-    // Backoffice Methods
     static async buscarDadosProdutos(page = 1, limit = 10, search = '') {
         try {
             const result = await ProdutoModel.listarProdutos(page, limit, search);
@@ -183,7 +182,6 @@ class ProdutoController {
         }
     }
 
-    // Customer-Facing Methods
     static async listarProdutosParaHome(req, res) {
         const { page = 1, limit = 10, search = '' } = req.query;
 
@@ -201,6 +199,7 @@ class ProdutoController {
         } catch (error) {
             console.error('Erro ao buscar produtos:', error);
             res.status(500).send('Erro ao carregar a página inicial');
+
         }
     }
 
@@ -244,7 +243,8 @@ class ProdutoController {
 
             res.render('produto-detalhes', {
                 produto,
-                carrinho_id: carrinhoId
+                carrinho_id: carrinhoId,
+                usuario: req.session.user
             });
         } catch (error) {
             console.error('Erro ao carregar página de detalhes:', error);

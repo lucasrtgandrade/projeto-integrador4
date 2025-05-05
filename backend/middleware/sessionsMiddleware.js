@@ -5,7 +5,7 @@ const sessionMiddleware = session({
     // secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }, // True se estiver usando HTTPS
+    cookie: { secure: false },
 });
 
 function exigirLogin(req, res, next) {

@@ -1,64 +1,76 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
     <title>Adicionar Endereço</title>
-    <link rel="stylesheet" href="/css/estilos-navegacao.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/navigation.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/produto.css">
+    <link rel="stylesheet" href="/css/formulario.css">
+    <link rel="stylesheet" href="/css/footer.css">
 </head>
 <body>
-<%- include('partials/nav-cliente') %>
+<% if (usuario) { %>
+    <%- include('partials/nav-cliente') %>
+<% } else { %>
+    <%- include('partials/nav-user') %>
+<% } %>
 
-<main class="main">
-    <h1>Adicionar Endereço de Entrega</h1>
-
+<main class="conteudo">
+    <h1 class="titulo-principal">Adicionar Endereço de Entrega</h1>
     <form id="formEndereco">
         <fieldset class="fieldset">
-            <legend>Endereço</legend>
+            <legend class="legend">Dados do Endereço</legend>
 
             <div class="fieldset__item">
                 <label for="cep">CEP:</label>
-                <input type="text" name="cep" id="cep" required>
+                <input type="text" name="cep" id="cep" required class="fieldset__input">
                 <p id="cepMensagem"></p>
             </div>
 
             <div class="fieldset__item">
                 <label for="logradouro">Logradouro:</label>
-                <input type="text" name="logradouro" id="logradouro" readonly required>
+                <input type="text" name="logradouro" id="logradouro" readonly required class="fieldset__input">
             </div>
 
             <div class="fieldset__item">
                 <label for="numero">Número:</label>
-                <input type="text" name="numero" id="numero" required>
+                <input type="text" name="numero" id="numero" required class="fieldset__input">
             </div>
 
             <div class="fieldset__item">
                 <label for="complemento">Complemento:</label>
-                <input type="text" name="complemento" id="complemento">
+                <input type="text" name="complemento" id="complemento" class="fieldset__input">
             </div>
 
             <div class="fieldset__item">
                 <label for="bairro">Bairro:</label>
-                <input type="text" name="bairro" id="bairro" readonly required>
+                <input type="text" name="bairro" id="bairro" readonly required class="fieldset__input">
             </div>
 
             <div class="fieldset__item">
                 <label for="cidade">Cidade:</label>
-                <input type="text" name="cidade" id="cidade" readonly required>
+                <input type="text" name="cidade" id="cidade" readonly required class="fieldset__input">
             </div>
 
             <div class="fieldset__item">
                 <label for="uf">UF:</label>
-                <input type="text" name="uf" id="uf" readonly required>
+                <input type="text" name="uf" id="uf" readonly required class="fieldset__input">
             </div>
 
             <div class="fieldset__item">
                 <label>
-                    <input type="checkbox" name="padrao" id="padrao">
+                    <input type="checkbox" name="padrao" id="padrao" class="fieldset__input">
                     Definir como endereço padrão
                 </label>
             </div>
 
-            <button type="submit">Salvar Endereço</button>
+            <button type="submit" class="btn_primario">Salvar Endereço</button>
         </fieldset>
     </form>
 </main>

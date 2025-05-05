@@ -259,7 +259,6 @@ class ProdutoModel {
         }
     }
 
-
 }
 
 module.exports = ProdutoModel;

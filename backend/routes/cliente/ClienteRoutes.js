@@ -31,7 +31,7 @@ router.get('/login', ClienteController.renderizarPaginaLogin);
 
 router.post('/login', ClienteController.logar);
 
-router.get('/home', ClienteController.renderizarHome);
+router.get('/home', ClienteController.renderizarHome, ProdutoController.listarProdutosParaHome);
 
 router.post('/logout', ClienteController.logout);
 
