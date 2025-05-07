@@ -48,8 +48,11 @@
             </tbody>
             <tfoot>
             <tr>
-                <td colspan="4"><strong>Total Geral</strong></td>
-                <td><strong id="subtotal">R$ <%= totalGeral.toFixed(2) %></strong></td>
+                <td>
+                    <strong id="subtotal" data-valor="<%= totalGeral.toFixed(2) %>">
+                        R$ <%= totalGeral.toFixed(2) %>
+                    </strong>
+                </td>
             </tr>
             <tr>
                 <td colspan="4">
@@ -69,13 +72,83 @@
 
         <div class="botoes-carrinho">
             <a href="/" class="botao-voltar">Continuar Comprando</a>
-            <button disabled class="botao-finalizar">Finalizar Compra (em construção)</button>
+            <button class="botao-finalizar" onclick="finalizarCompra()">
+                Finalizar Compra
+            </button>
         </div>
     <% } else { %>
         <p>Seu carrinho está vazio.</p>
         <a href="/" class="botao-voltar">Voltar para a Loja</a>
     <% } %>
 </main>
+
+<script>
+    // async function finalizarCompra() {
+    //     try {
+    //         const selectFrete = document.getElementById('frete-select');
+    //         const id_frete = selectFrete.custo;
+    //
+    //         const resposta = await fetch('/clientes/api/pedidos/finalizar', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 body: JSON.stringify({ id_frete })
+    //             },
+    //         });
+    //
+    //         const resultado = await resposta.json();
+    //
+    //         if (resposta.status === 401) {
+    //             window.location.href = '/clientes/login?redirect=/clientes/carrinho';
+    //         } else if (resposta.ok) {
+    //             alert('Pedido finalizado com sucesso!');
+    //             window.location.href = '/clientes/pedidos';
+    //         } else {
+    //             alert('Erro ao finalizar pedido: ' + resultado.mensagem);
+    //         }
+    //     } catch (erro) {
+    //         console.error('Erro:', erro);
+    //         alert('Erro ao finalizar pedido.');
+    //     }
+    // }
+
+    async function finalizarCompra() {
+        const freteId = document.getElementById('frete-select').value;
+        const valorFrete = parseFloat(document.getElementById('frete-select').selectedOptions[0].dataset.valor);
+        const valorProdutos = parseFloat(document.getElementById('subtotal').dataset.valor);
+        const valorTotal = valorFrete + valorProdutos;
+
+        try {
+            const resposta = await fetch('/clientes/api/pedidos/finalizar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    frete_id: freteId,
+                    valor_frete: valorFrete,
+                    valor_total: valorTotal
+                })
+            });
+
+            const resultado = await resposta.json();
+
+            if (resposta.status === 401) {
+                window.location.href = '/clientes/login?redirect=/clientes/carrinho';
+            } else if (resposta.ok) {
+                alert('Pedido finalizado com sucesso!');
+                window.location.href = '/clientes/pedidos';
+            } else {
+                alert('Erro ao finalizar pedido: ' + resultado.mensagem);
+            }
+        } catch (erro) {
+            console.error('Erro:', erro);
+            alert('Erro ao finalizar pedido.');
+        }
+    }
+
+</script>
+
 
 <% const carrinhoIdJS = Number(carrinho_id) || 0; %>
 <script>
@@ -123,31 +196,48 @@
         }
     }
 
-    async function carregarFretes() {
-        try {
-            const resposta = await fetch('/clientes/api/frete');
-            const fretes = await resposta.json();
-            const select = document.getElementById('frete-select');
+    // async function carregarFretes() {
+    //     try {
+    //         const resposta = await fetch('/clientes/api/frete');
+    //         const fretes = await resposta.json();
+    //         const select = document.getElementById('frete-select');
+    //
+    //         fretes.forEach(frete => {
+    //             const option = document.createElement('option');
+    //             option.value = frete.id_frete; // usar o ID no value
+    //             option.setAttribute('data-custo', frete.custo); // salva o custo como atributo extra
+    //             option.textContent = `${frete.nome} - R$ ${frete.custo.toFixed(2)} (${frete.prazo_entrega} dias)`;
+    //             select.appendChild(option);
+    //         });
+    //     } catch (error) {
+    //         console.error('Erro ao carregar fretes:', error);
+    //     }
+    // }
 
-            fretes.forEach(frete => {
-                const option = document.createElement('option');
-                option.value = frete.custo;
-                option.textContent = `${frete.nome} - R$ ${frete.custo.toFixed(2)} (${frete.prazo_entrega} dias)`;
-                select.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Erro ao carregar fretes:', error);
-        }
+    async function carregarOpcoesFrete() {
+        const resposta = await fetch('/clientes/api/frete');
+        const opcoes = await resposta.json();
+
+        const select = document.getElementById('frete-select');
+        select.innerHTML = '<option value="">Selecione...</option>'; // limpa e adiciona default
+
+        opcoes.forEach(frete => {
+            const option = document.createElement('option');
+            option.value = frete.frete_id;
+            option.textContent = `${frete.nome} - R$ ${frete.custo.toFixed(2)}`;
+            option.setAttribute('data-valor', frete.custo);
+            select.appendChild(option);
+        });
     }
 
+    // Exemplo de cálculo total com frete
     function calcularTotalComFrete() {
-        const freteSelect = document.getElementById('frete-select');
-        const freteCusto = parseFloat(freteSelect.value || 0);
-        document.getElementById('frete-custo').innerText = `R$ ${freteCusto.toFixed(2)}`;
-        document.getElementById('total-com-frete').innerText = `R$ ${(subtotal + freteCusto).toFixed(2)}`;
+        const select = document.getElementById('frete-select');
+        const valor = select.selectedOptions[0]?.getAttribute('data-valor') || 0;
+        document.getElementById('frete-custo').textContent = `R$ ${parseFloat(valor).toFixed(2)}`;
     }
 
-    window.onload = carregarFretes;
+    window.onload = carregarOpcoesFrete;
 </script>
 </body>
 </html>

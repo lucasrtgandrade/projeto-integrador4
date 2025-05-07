@@ -4,8 +4,11 @@ const sessionMiddleware = session({
     secret: '123', // para teste
     // secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }, // True se estiver usando HTTPS
+    saveUninitialized: false,
+    // cookie: { secure: false }, // True se estiver usando HTTPS
+    cookie: {
+        maxAge:  60 * 60 * 1000 // 1 hora
+    }
 });
 
 function exigirLogin(req, res, next) {

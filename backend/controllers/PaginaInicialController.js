@@ -1,16 +1,15 @@
 const ProdutoModel = require('../models/backoffice/ProdutoModel');
+const CarrinhoModel = require('../models/CarrinhoModel');
 
 class PaginaInicialController {
     static async renderizarPaginaInicial(req, res) {
         try {
-            // Fetch products for the home page
-            const { produtos } = await ProdutoModel.listarProdutosParaHome(1, 10, ''); // Fetch first 10 products
-
-            // Render the home page with the products
+            const { produtos } = await ProdutoModel.listarProdutosParaHome(1, 10, '');
             res.render('index', {
                 title: 'Página Inicial',
                 produtos: produtos, // Pass products to the view
-                user: req.session.user || null // Pass user data if logged in
+                user: req.session.user || null, // Pass user data if logged in
+                sessaoId: req.session.id
             });
         } catch (error) {
             console.error('Erro ao buscar produtos:', error);
@@ -38,6 +37,17 @@ class PaginaInicialController {
         } catch (error) {
             console.error('Erro ao carregar página de detalhes:', error);
             res.status(500).send('Erro ao carregar página de detalhes.');
+        }
+    }
+
+    static async postarClienteCarrinho(req, res) {
+        const idSessao = req.session.id;
+        try {
+            const postarSessao = await CarrinhoModel.postarSessao(idSessao);
+            res.json({success: true, id_carrinho: postarSessao.insertId});
+        } catch (err) {
+            console.error('Erro ao criar carrinho:', err);
+            res.status(500).json({success: false, error: 'Erro ao criar carrinho'});
         }
     }
 }

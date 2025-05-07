@@ -167,7 +167,7 @@ async function criarTabelas(connection) {
         `CREATE TABLE IF NOT EXISTS pedidos (
             id_pedido INT PRIMARY KEY AUTO_INCREMENT,
             id_cliente INT NOT NULL,
-            id_endereco_entrega INT NOT NULL,
+            id_endereco_entrega INT,
             id_frete INT NOT NULL,
             data_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             valor_total DECIMAL(10,2) NOT NULL,

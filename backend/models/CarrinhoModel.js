@@ -28,6 +28,13 @@ class CarrinhoModel {
             );
         }
     }
+    static async postarSessao(idSessao) {
+        const [resultado] = await pool.query(
+            'INSERT INTO carrinhos (id_cliente_sessao) VALUES (?)',
+            [idSessao]
+        );
+        return resultado;
+    }
 
     static async listarItensDoCarrinho(carrinhoId) {
         const [linhas] = await pool.query(

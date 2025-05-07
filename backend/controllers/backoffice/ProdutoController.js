@@ -115,8 +115,6 @@ class ProdutoController {
             const produto = await ProdutoModel.buscarProdutoPorId(produto_id);
             const imagens = await ProdutoModel.buscarImagensPorProduto(produto_id);
 
-            console.log("Imagens carregadas para o produto:", imagens); // 🛠 Debug log
-
             res.render('backoffice/administrador/alterar-produto', { produto, imagens });
         } catch (error) {
             console.error('Erro ao buscar produto:', error);
