@@ -48,8 +48,11 @@
             </tbody>
             <tfoot>
             <tr>
-                <td colspan="4"><strong>Total Geral</strong></td>
-                <td><strong id="subtotal">R$ <%= totalGeral.toFixed(2) %></strong></td>
+                <td>
+                    <strong id="subtotal" data-valor="<%= totalGeral.toFixed(2) %>">
+                        R$ <%= totalGeral.toFixed(2) %>
+                    </strong>
+                </td>
             </tr>
             <tr>
                 <td colspan="4">
@@ -110,12 +113,10 @@
     // }
 
     async function finalizarCompra() {
-        const freteId = document.getElementById('frete-select').value; // Pega o id do frete selecionado
-
-        if (!freteId) {
-            alert("Por favor, selecione uma opção de frete.");
-            return;
-        }
+        const freteId = document.getElementById('frete-select').value;
+        const valorFrete = parseFloat(document.getElementById('frete-select').selectedOptions[0].dataset.valor);
+        const valorProdutos = parseFloat(document.getElementById('subtotal').dataset.valor);
+        const valorTotal = valorFrete + valorProdutos;
 
         try {
             const resposta = await fetch('/clientes/api/pedidos/finalizar', {
@@ -124,7 +125,9 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    frete_id: freteId
+                    frete_id: freteId,
+                    valor_frete: valorFrete,
+                    valor_total: valorTotal
                 })
             });
 
@@ -143,6 +146,7 @@
             alert('Erro ao finalizar pedido.');
         }
     }
+
 </script>
 
 

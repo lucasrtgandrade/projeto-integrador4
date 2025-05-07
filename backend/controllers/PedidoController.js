@@ -45,17 +45,23 @@ class PedidoController  {
     static async finalizarPedido(req, res) {
         const cliente = req.session.user?.id;
         const id_carrinho = req.session.idCarrinho;
-        const { id_frete } = req.body;
+        const { frete_id, valor_total, valor_frete } = req.body;
 
         if (!cliente) {
             return res.status(401).json({ mensagem: 'Usuário não autenticado.' });
+        }
+
+        if (!frete_id || !valor_total || !valor_frete) {
+            return res.status(400).json({ mensagem: 'Dados incompletos para finalizar o pedido.' });
         }
 
         try {
             const novoPedido = await PedidoModel.criarPedido({
                 id_cliente: cliente,
                 id_carrinho: id_carrinho,
-                id_frete: id_frete,
+                id_frete: frete_id,
+                valor_total,
+                valor_frete
             });
 
             return res.status(200).json({ mensagem: 'Pedido finalizado com sucesso!' });
@@ -64,6 +70,7 @@ class PedidoController  {
             return res.status(500).json({ mensagem: 'Erro ao finalizar pedido.' });
         }
     }
+
 }
 
 module.exports = PedidoController;

@@ -16,6 +16,8 @@ router.post('/api/carrinho/:carrinho_id/itens', CarrinhoController.postarCliente
 
 router.post('/api/pedidos/finalizar', PedidoController.finalizarPedido);
 
+router.get('/api/pedidos/finalizar_endereco', PedidoController.renderizarPaginaEnderecoCheckout);
+
 router.post('/api/carrinhos/:carrinho_id/itens', CarrinhoController.adicionarItem);
 
 router.put('/api/carrinhos/:carrinho_id/itens/:item_id', CarrinhoController.atualizarQuantidadeItem);
