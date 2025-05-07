@@ -6,10 +6,15 @@ const ProdutoController = require('../../controllers/backoffice/ProdutoControlle
 const CarrinhoController = require('../../controllers/CarrinhoController');
 const FreteController = require('../../controllers/FreteController');
 const ClienteController = require("../../controllers/ClienteController");
+const PedidoController = require("../../controllers/PedidoController");
 
 router.get('/produto/:id', ProdutoController.renderizarPaginaDetalhesProduto);
 
 router.get('/carrinho', CarrinhoController.exibirCarrinho);
+
+router.post('/api/carrinho/:carrinho_id/itens', CarrinhoController.postarClienteCarrinho)
+
+router.post('/api/pedidos/finalizar', PedidoController.finalizarPedido);
 
 router.post('/api/carrinhos/:carrinho_id/itens', CarrinhoController.adicionarItem);
 

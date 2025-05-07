@@ -23,11 +23,11 @@ class CarrinhoController {
 
     static async exibirCarrinho(req, res) {
         const carrinhoId = req.session.idCarrinho;
+        const cliente = req.session.user;
 
         try {
             const itens = await CarrinhoModel.listarItensDoCarrinho(carrinhoId);
 
-            // Calcula o totalGeral
             const totalGeral = itens.reduce((soma, item) => {
                 return soma + (item.preco * item.quantidade);
             }, 0);
@@ -35,7 +35,9 @@ class CarrinhoController {
             res.render('carrinho', {
                 carrinho_id: carrinhoId,
                 itens,
-                totalGeral
+                totalGeral,
+                clienteLogado: !!cliente,
+                cliente
             });
         } catch (erro) {
             console.error('Erro ao exibir carrinho:', erro);
@@ -66,6 +68,43 @@ class CarrinhoController {
         } catch (erro) {
             console.error('Erro ao remover item do carrinho:', erro);
             res.status(500).json({ sucesso: false, mensagem: 'Erro ao remover item.' });
+        }
+    }
+
+    static async postarClienteCarrinho(req, res) {
+        const idSessao = req.session.id;
+        const { produto_id, quantidade } = req.body;
+
+        try {
+            // 1. Cria o carrinho com o ID da sessão
+            const resultadoCarrinho = await CarrinhoModel.postarSessao(idSessao);
+            const novoIdCarrinho = resultadoCarrinho.insertId;
+
+            // 2. Salva esse id_carrinho na session (para futuras ações)
+            req.session.id_carrinho = novoIdCarrinho;
+
+            // 3. Verifica se o produto existe
+            const produto = await ProdutoModel.buscarProdutoAtivoPorId(produto_id);
+            if (!produto) {
+                return res.status(404).json({ sucesso: false, mensagem: 'Produto não encontrado.' });
+            }
+
+            // 4. Adiciona o item ao carrinho recém criado
+            await CarrinhoModel.adicionarItemAoCarrinho(novoIdCarrinho, produto_id, quantidade);
+
+            // 5. Retorna resposta
+            res.status(200).json({
+                sucesso: true,
+                mensagem: 'Carrinho criado e item adicionado com sucesso.',
+                id_carrinho: novoIdCarrinho
+            });
+
+        } catch (err) {
+            console.error('Erro ao criar carrinho e adicionar item:', err);
+            res.status(500).json({
+                sucesso: false,
+                mensagem: 'Erro ao criar carrinho e adicionar item.'
+            });
         }
     }
 

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Carrinho</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/estilos-navegacao.css">
+    <link rel="stylesheet" href="/css/estilos-carrinho.css">
+</head>
+<body>
+<%- include('partials/nav-cliente') %>
+
+<main>
+    <h1>Meus Pedidos</h1>
+    <% if (pedido.length > 0) { %>
+        <table>
+            <thead>
+            <tr>
+                <th>Número do Pedido</th>
+                <th>Data</th>
+                <th>Valor Total</th>
+                <th>Status</th>
+                <th>Detalhes</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% pedido.forEach(item => { %>
+                <tr>
+                    <td><%= item.id_pedido %></td>
+                    <td><%= new Date(item.data_pedido).toLocaleDateString('pt-BR') %></td>
+                    <td>R$ <%= parseFloat(item.valor_total).toFixed(2) %></td>
+                    <td><%= item.status %></td>
+                    <td><a href="/clientes/pedidos/<%= item.id_pedido %>">Ver detalhes</a></td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>Você ainda não fez nenhum pedido.</p>
+    <% } %>
+</main>
+
+</body>
+</html>

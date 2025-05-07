@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Checkout - Escolher o endereço de entrega</title>
+</head>
+<body>
+<h1>Escolher endereço de entrega</h1>
+<fieldset>
+    <legend>Meus Endereços</legend>
+    <label for="selectEndCadastradoOptions">Escolha um endereço:</label>
+        <select name="enderecos" id="selectEndCadastradoOptions">
+            <% enderecos.forEach(endereco => { %>
+                <option value="<%= endereco.id_endereco %>">
+                    <%= endereco.logradouro %>
+                </option>
+        <% }) %>
+        </select>
+    <button type="button" id="btnEnderecoSelecionado">Endereço Selecionado</button>
+    <script>
+        document.getElementById('btnEnderecoSelecionado').addEventListener('click', async () => {
+            const endEntregaSelecionado = document.getElementById('selectEndCadastradoOptions').value;
+            if (!endEntregaSelecionado) {
+                alert('Você deve selecionar um endereço de entrega');
+                return;
+            }
+            const idPedido = <%= id_pedido %>;
+            try {
+                const resposta = await fetch('/pedidos/endereco', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id_pedido: idPedido,
+                        id_endereco_entrega: endEntregaSelecionado
+                    })
+                });
+
+                const resultado = await resposta.json();
+                alert(resultado);
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    </script>
+
+</fieldset>
+</body>
+</html>

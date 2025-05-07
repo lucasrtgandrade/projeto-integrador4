@@ -15,6 +15,33 @@
 <!-- Conteúdo da Página -->
 <main>
     <h1>Produtos em Destaque</h1>
+    <p>Esse é o id da sessao do cliente: <%= sessaoId %></p>
+    <button id="criarCarrinho">Criar Carrinho</button>
+    <p id="resposta"></p>
+    <script>
+        document.getElementById('criarCarrinho').addEventListener('click', async () => {
+            try {
+                const resposta = await fetch('/api/carrinho', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const dados = await resposta.json();
+
+                if (dados.success) {
+                    document.getElementById('resposta').textContent = `Carrinho criado! Id: ${dados.id_carrinho}`;
+                } else {
+                    document.getElementById('resposta').textContent = 'Erro ao criar carrinho.';
+                }
+            } catch (error) {
+                console.error(error);
+                document.getElementById('resposta').textContent = 'Erro na requisição.';
+            }
+        });
+
+    </script>
 
     <!-- Product Cards -->
     <div class="produtos-container">
