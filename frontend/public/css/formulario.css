@@ -65,3 +65,10 @@
     font-weight: 400;
     color: #313131;
 }
+
+.produto-preco {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700;
+    color: #313131;
+    font-size: 1.5rem;
+}

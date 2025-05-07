@@ -25,10 +25,6 @@ class CarrinhoController {
         const carrinhoId = req.session.idCarrinho;
         const usuario = req.session.user;
 
-        if (!usuario || !usuario.id) {
-            return res.redirect('/clientes/login?redirect=/clientes/carrinho');
-        }
-
         try {
             const itens = await CarrinhoModel.listarItensDoCarrinho(carrinhoId);
 
