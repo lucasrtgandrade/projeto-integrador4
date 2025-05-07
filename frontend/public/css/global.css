@@ -1,0 +1,31 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+img {
+    display: block;
+}
+
+.conteudo {
+    max-width: 960px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Título */
+.titulo-principal {
+    font-family: "Open Sans Condensed", sans-serif;
+    font-weight: 800;
+    font-size: 61px;
+    color: #313131;
+}
+
+.titulo-secundario {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #313131;
+
+}

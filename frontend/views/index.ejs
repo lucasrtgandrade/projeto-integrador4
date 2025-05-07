@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página Inicial</title>
-    <link rel="stylesheet" href="/css/estilos-navegacao.css">
-    <link rel="stylesheet" href="/css/estilos-produtos.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/navigation.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/produto.css">
+    <link rel="stylesheet" href="/css/footer.css">
 </head>
 <body>
 
@@ -13,37 +18,8 @@
 <%- include('partials/nav-user') %>
 
 <!-- Conteúdo da Página -->
-<main>
-    <h1>Produtos em Destaque</h1>
-    <p>Esse é o id da sessao do cliente: <%= sessaoId %></p>
-    <button id="criarCarrinho">Criar Carrinho</button>
-    <p id="resposta"></p>
-    <script>
-        document.getElementById('criarCarrinho').addEventListener('click', async () => {
-            try {
-                const resposta = await fetch('/api/carrinho', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const dados = await resposta.json();
-
-                if (dados.success) {
-                    document.getElementById('resposta').textContent = `Carrinho criado! Id: ${dados.id_carrinho}`;
-                } else {
-                    document.getElementById('resposta').textContent = 'Erro ao criar carrinho.';
-                }
-            } catch (error) {
-                console.error(error);
-                document.getElementById('resposta').textContent = 'Erro na requisição.';
-            }
-        });
-
-    </script>
-
-    <!-- Product Cards -->
+<main class="conteudo">
+    <h1 class="titulo-principal">Produtos em Destaque</h1>
     <div class="produtos-container">
         <% if (produtos.length > 0) { %>
             <% produtos.forEach(produto => { %>
@@ -70,6 +46,8 @@
         <% } %>
     </div>
 </main>
+
+<%- include('partials/footer') %>
 
 <!-- Scripts -->
 <script>

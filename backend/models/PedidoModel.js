@@ -6,10 +6,14 @@ class PedidoModel {
         await pool.query(sql, [idEndereco, idPedido]);
     }
 
-    static async buscarPedidosCliente(id_cliente) {
-        const sql = `SELECT * FROM pedidos WHERE id_cliente = ?`;
-        const [pedidos] = await pool.query(sql, [id_cliente]);
-        return pedidos;
+    static async buscarPedidosPorCliente(id_cliente) {
+        const sql = `
+        SELECT * FROM pedidos
+        WHERE id_cliente = ?
+        ORDER BY data_pedido DESC
+    `;
+        const [result] = await pool.query(sql, [id_cliente]);
+        return result;
     }
 
     static async atribuirPedidoCliente(id_cliente, id_carrinho, id_frete, valor_total, custo) {
@@ -51,6 +55,28 @@ class PedidoModel {
         `, [id_cliente, id_endereco_entrega, id_frete, valor_total, valor_frete, numero_pedido]);
 
         return resultado;
+    }
+
+    static async buscarPedidoMaisRecentePorCliente(id_cliente) {
+        const [rows] = await pool.query(`
+            SELECT * FROM pedidos
+            WHERE id_cliente = ?
+            ORDER BY id_pedido DESC
+            LIMIT 1
+        `, [id_cliente]);
+
+        return rows[0] || null;
+    }
+
+    static async buscarCarrinhoMaisRecentePorCliente(id_cliente) {
+        const [rows] = await pool.query(`
+            SELECT * FROM carrinhos
+            WHERE id_cliente = ?
+            ORDER BY id_carrinho DESC
+            LIMIT 1
+        `, [id_cliente]);
+
+        return rows[0] || null;
     }
 
 }

@@ -1,80 +1,87 @@
-<nav class="navBarra">
-    <!-- Logo -->
-    <a href="/clientes/home" class="logoNavegacao">
-        <img src="/imagens/logo-horizontal.svg" alt="Logo do site">
-    </a>
+<style>
+    .modal-logout {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-    <!-- Links de Navegação -->
-    <div class="linksNavegacao">
-        <a href="/clientes/carrinho" class="carrinhoLink">
-            <img src="/imagens/icone-carrinho.svg" alt="Carrinho de Compras" class="iconeCarrinho">
+    .modal-conteudo {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .oculto {
+        display: none;
+    }
+
+    .modal-conteudo button {
+        margin: 10px;
+        padding: 10px 20px;
+        cursor: pointer;
+    }
+</style>
+<div class="header">
+    <nav class="header__nav">
+        <a href="/clientes/home" class="navv__logo">
+            <img src="/imagens/logo-horizontal.svg" alt="Logo do site" />
         </a>
+        <ul class="nav__list">
+            <li class="nav__item">
+                <a href="/clientes/editar-perfil" class="nav__link">Editar Perfil</a>
+            </li>
+            <li class="nav__item">
+                <a href="/clientes/adicionar-endereco" class="nav__link">Adicionar Endereço</a>
+            </li>
+            <li class="nav__item">
+                <a href="/clientes/enderecos" class="nav__link">Meus Endereços</a>
+            </li>
+            <li class="nav__item">
+                <a href="/clientes/listar-pedidos" class="nav__link">Listar Pedidos</a>
+            </li>
+            <li class="nav__item">
+                <a href="/clientes/carrinho" class="carrinho">
+                    <p>Carrinho</p>
+                    <img src="/imagens/icone-carrinho.svg" alt="Ícone do carrinho" class="carrinho__icon" />
+                </a>
+            </li>
+            <li class="nav__item">
+                <button id="botaoLogout" class="logoutLink">Sair</button>
+            </li>
+        </ul>
+    </nav>
+</div>
 
-        <a href="/clientes/editar-perfil" class="editarLink">Editar Pefil</a>
-
-        <a href="/clientes/adicionar-endereco" class="enderecoLink">Adicionar Endereço</a>
-
-        <a href="/clientes/enderecos" class="enderecosLink">Meus Endereços</a>
-
-
-        <button id="botaoLogout" class="logoutLink">Sair</button>
+<!-- Modal de confirmação -->
+<div id="modalLogout" class="modal-logout oculto">
+    <div class="modal-conteudo">
+        <p>Deseja realmente sair?</p>
+        <form action="/clientes/logout" method="POST">
+            <button type="submit">Sim, quero sair</button>
+            <button type="button" id="cancelarLogout">Cancelar</button>
+        </form>
     </div>
+</div>
 
-    <!-- Modal de confirmação -->
-    <div id="modalLogout" class="modal-logout oculto">
-        <div class="modal-conteudo">
-            <p>Deseja realmente sair?</p>
-            <form action="/clientes/logout" method="POST">
-                <button type="submit">Sim, quero sair</button>
-                <button type="button" id="cancelarLogout">Cancelar</button>
-            </form>
-        </div>
-    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const botaoLogout = document.getElementById('botaoLogout');
+        const modal = document.getElementById('modalLogout');
+        const cancelar = document.getElementById('cancelarLogout');
 
-    <style>
-        .modal-logout {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-conteudo {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .oculto {
-            display: none;
-        }
-
-        .modal-conteudo button {
-            margin: 10px;
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-    </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const botaoLogout = document.getElementById('botaoLogout');
-            const modal = document.getElementById('modalLogout');
-            const cancelar = document.getElementById('cancelarLogout');
-
-            botaoLogout.addEventListener('click', () => {
-                modal.classList.remove('oculto');
-            });
-
-            cancelar.addEventListener('click', () => {
-                modal.classList.add('oculto');
-            });
+        botaoLogout.addEventListener('click', () => {
+            modal.classList.remove('oculto');
         });
-    </script>
-</nav>
+
+        cancelar.addEventListener('click', () => {
+            modal.classList.add('oculto');
+        });
+    });
+</script>

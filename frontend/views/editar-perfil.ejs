@@ -1,34 +1,60 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/navigation.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/produto.css">
+    <link rel="stylesheet" href="/css/formulario.css">
+    <link rel="stylesheet" href="/css/footer.css">
     <title>Login de Clientes</title>
-    <link rel="stylesheet" href="/css/estilos-navegacao.css">
-    <link rel="stylesheet" href="/css/estilos-cadastro_cliente.css">
 </head>
 <body>
-<%- include('partials/nav-cliente') %>
+<% if (usuario) { %>
+    <%- include('partials/nav-cliente') %>
+<% } else { %>
+    <%- include('partials/nav-user') %>
+<% } %>
 
-<h1>Editar Perfil</h1>
-<main class="main">
-    <form id="formAlterarCliente">
+<main class="conteudo">
+    <h1 class="titulo-principal">Editar Perfil</h1>
+    <fieldset class="fieldset">
+        <legend class="legend">Dados Atuais</legend>
+        <div class="fieldset__item">
+            <h3 class="header_dados">Nome:</h3>
+            <p class="p_dados"><%= cliente.nome_completo %></p>
+        </div>
+        <div class="fieldset__item">
+            <h3 class="header_dados">Gênero:</h3>
+            <p class="p_dados"><%= cliente.genero %></p>
+        </div>
+        <div>
+            <h3 class="header_dados">Data de Nascimento:</h3>
+            <p class="p_dados"><%= cliente.data_nascimento_formatada %></p>
+        </div>
+    </fieldset>
+
+    <form id="formAlterarCliente" class="form">
         <fieldset class="fieldset">
-            <legend>Alterar Dados</legend>
+            <legend class="legend">Alterar Dados</legend>
             <div class="fieldset__item">
                 <label for="alterarNome">Alterar Nome:</label>
-                <input type="text" name="nome_completo" id="alterarNome">
+                <input type="text" name="nome_completo" id="alterarNome" class="fieldset__input" placeholder="Digite seu nome">
                 <p id="nomeMensagem"></p>
             </div>
             <div class="fieldset__item">
                 <label for="dataNascimento">Alterar Data de Nascimento:</label>
-                <input type="date" name="data_nascimento" id="dataNascimento">
+                <input type="date" name="data_nascimento" id="dataNascimento" class="fieldset__input">
                 <p id="dataMensagem"></p>
             </div>
             <div class="fieldset__item">
                 <label for="genero">Alterar Gênero:</label>
-                <select name="genero" id="genero">
+                <select name="genero" id="genero" class="fieldset__input">
                     <option value="">Selecione</option>
                     <option value="Masculino">Masculino</option>
                     <option value="Feminino">Feminino</option>
@@ -39,11 +65,11 @@
             </div>
             <div class="fieldset__item">
                 <label for="senhaCadastro">Alterar a sua senha:</label>
-                <input type="password" name="senha" id="senhaCadastro">
+                <input type="password" name="senha" id="senhaCadastro" class="fieldset__input">
                 <p id="senhaMensagem"></p>
             </div>
         </fieldset>
-        <button type="submit">Alterar</button>
+        <button class="btn_primario" type="submit">Alterar</button>
     </form>
 
     <script>
@@ -111,8 +137,7 @@
             }
         });
     </script>
-
-
 </main>
+<%- include('partials/footer') %>
 </body>
 </html>

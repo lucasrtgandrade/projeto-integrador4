@@ -23,7 +23,11 @@ class CarrinhoController {
 
     static async exibirCarrinho(req, res) {
         const carrinhoId = req.session.idCarrinho;
-        const cliente = req.session.user;
+        const usuario = req.session.user;
+
+        if (!usuario || !usuario.id) {
+            return res.redirect('/clientes/login?redirect=/clientes/carrinho');
+        }
 
         try {
             const itens = await CarrinhoModel.listarItensDoCarrinho(carrinhoId);
@@ -36,14 +40,14 @@ class CarrinhoController {
                 carrinho_id: carrinhoId,
                 itens,
                 totalGeral,
-                clienteLogado: !!cliente,
-                cliente
+                usuario
             });
         } catch (erro) {
             console.error('Erro ao exibir carrinho:', erro);
             res.status(500).send('Erro ao carregar o carrinho.');
         }
     }
+
 
 
     static async atualizarQuantidadeItem(req, res) {

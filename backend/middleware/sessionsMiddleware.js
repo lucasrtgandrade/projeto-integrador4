@@ -34,4 +34,15 @@ function exigirEstoquista(req, res, next) {
     return res.status(403).json({ success: false, message: 'Acesso negado' });
 }
 
-module.exports = { sessionMiddleware, exigirLogin, exigirAdministrador, exigirEstoquista };
+function verificarClienteLogado(req, res, next) {
+    const cliente = req.session?.user;
+    if (!cliente) {
+        return res.redirect('/clientes/login');
+    }
+    req.cliente = cliente;
+    next();
+}
+
+
+
+module.exports = { sessionMiddleware, exigirLogin, exigirAdministrador, exigirEstoquista, verificarClienteLogado };

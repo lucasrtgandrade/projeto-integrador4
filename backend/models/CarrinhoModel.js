@@ -66,6 +66,23 @@ class CarrinhoModel {
         await pool.query(query, [itemId, carrinhoId]);
     }
 
+    static async buscarCarrinhoMaisRecentePorCliente(id_cliente) {
+        try {
+            const [linhas] = await pool.query(`
+            SELECT * FROM pedidos 
+            WHERE id_cliente = ? 
+              AND status = 'aberto'
+            ORDER BY data_pedido DESC 
+            LIMIT 1
+        `, [id_cliente]);
+
+            return linhas[0] || null;
+        } catch (erro) {
+            console.error('Erro ao buscar carrinho mais recente:', erro);
+            throw erro;
+        }
+    }
+
 }
 
 module.exports = CarrinhoModel;

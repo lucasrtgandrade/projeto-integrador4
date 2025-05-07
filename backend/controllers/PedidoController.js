@@ -2,18 +2,20 @@ const PedidoModel = require('../models/PedidoModel');
 const CarrinhoModel = require('../models/CarrinhoModel');
 
 class PedidoController  {
-    static async visualizarPedidos(req, res) {
-        try {
-            const id_cliente = req.session?.user?.id;
-            if (!id_cliente) {
-                return res.redirect('/clientes/login');
-            }
+    static async listarPedidosCliente(req, res) {
+        const id_cliente = req.session?.user?.id; // Pegando o id do cliente da sessão
 
-            const pedido = await PedidoModel.buscarPedidosCliente(id_cliente);
-            res.render('listar-pedidos', { pedido });
+        if (!id_cliente) {
+            return res.status(401).redirect('/login'); // Caso o cliente não esteja logado
+        }
+
+        try {
+            const pedidos = await PedidoModel.buscarPedidosPorCliente(id_cliente);
+
+            return res.render('listar-pedidos', { pedido: pedidos });
         } catch (erro) {
-            console.log('Erro ao renderizar página de pedidos', erro);
-            return res.status(500).send(erro);
+            console.error('Erro ao listar pedidos:', erro);
+            return res.status(500).json({ erro: 'Erro interno ao listar pedidos' });
         }
     }
 
@@ -68,6 +70,33 @@ class PedidoController  {
         } catch (erro) {
             console.error('Erro ao finalizar pedido:', erro);
             return res.status(500).json({ mensagem: 'Erro ao finalizar pedido.' });
+        }
+    }
+
+    static async salvarEnderecoEntrega(req, res) {
+        try {
+            const id_cliente = req.session?.user?.id;
+
+            if (!id_cliente) {
+                return res.status(401).json({ sucesso: false, mensagem: 'Não autenticado.' });
+            }
+
+            const { cep, logradouro, numero, complemento, bairro, cidade, uf } = req.body;
+
+            req.session.enderecoEntrega = {
+                cep,
+                logradouro,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                uf
+            };
+
+            return res.status(200).json({ sucesso: true, mensagem: 'Endereço salvo com sucesso.' });
+        } catch (erro) {
+            console.error('Erro ao salvar endereço:', erro);
+            return res.status(500).json({ sucesso: false, mensagem: 'Erro interno ao salvar endereço.' });
         }
     }
 

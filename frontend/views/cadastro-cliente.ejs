@@ -1,48 +1,56 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+            rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/navigation.css" />
+    <link rel="stylesheet" href="/css/global.css" />
+    <link rel="stylesheet" href="/css/produto.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
+    <link rel="stylesheet" href="/css/formulario.css">
     <title>Cadastro de Clientes</title>
-    <link rel="stylesheet" href="/css/estilos-navegacao.css">
-    <link rel="stylesheet" href="/css/estilos-cadastro_cliente.css">
 </head>
 <body>
 <%- include('partials/nav-user') %>
-<main class="main">
-    <h1>Cadastro</h1>
+<main class="conteudo">
+    <h1 class="titulo-principal">Cadastro</h1>
     <form id="formCadastroCliente" class="form">
         <fieldset class="fieldset">
-            <legend>Dados do Cliente</legend>
+            <legend class="legend">Dados do Cliente</legend>
             <div class="fieldset__item">
                 <label for="email_cadastro">Digite o seu e-mail:</label>
-                <input type="email" name="email" id="email_cadastro" required>
+                <input type="email" name="email" id="email_cadastro" required class="fieldset__input">
                 <p id="emailMensagem"></p>
             </div>
             <div class="fieldset__item">
                 <label for="nome_cadastro">Digite o seu nome:</label>
-                <input type="text" name="nome_completo" id="nome_cadastro" required>
+                <input type="text" name="nome_completo" id="nome_cadastro" required class="fieldset__input">
                 <p id="nomeMensagem"></p>
             </div>
             <div class="fieldset__item">
                 <label for="cpf_cadastro">Digite o seu CPF:</label>
-                <input type="text" name="cpf" id="cpf_cadastro" required>
+                <input type="text" name="cpf" id="cpf_cadastro" required class="fieldset__input">
                 <p id="cpfMensagem"></p>
             </div>
             <div class="fieldset__item">
                 <label for="senha_cadastro">Digite a sua senha:</label>
-                <input type="password" name="senha" id="senha_cadastro" required>
+                <input type="password" name="senha" id="senha_cadastro" required class="fieldset__input">
                 <p id="senhaMensagem"></p>
             </div>
             <div class="fieldset__item">
                 <label for="data_nascimento">Data de nascimento:</label>
-                <input type="date" name="data_nascimento" id="data_nascimento" required>
+                <input type="date" name="data_nascimento" id="data_nascimento" required class="fieldset__input">
                 <p id="dataMensagem"></p>
             </div>
             <div class="fieldset__item">
                 <label for="genero">Gênero:</label>
-                <select name="genero" id="genero" required>
+                <select name="genero" id="genero" required class="fieldset__input">
                     <option value="">Selecione</option>
                     <option value="Masculino">Masculino</option>
                     <option value="Feminino">Feminino</option>
@@ -53,44 +61,44 @@
             </div>
         </fieldset>
         <fieldset class="fieldset">
-            <legend>Endereço de Faturamento</legend>
+            <legend class="legend">Endereço de Faturamento</legend>
             <div class="fieldset__item">
                 <label for="cep_faturamento">CEP:</label>
-                <input type="text" id="cep_faturamento" name="cep" required>
+                <input type="text" id="cep_faturamento" name="cep" required class="fieldset__input">
                 <p id="cepMensagem"></p>
             </div>
 
             <div class="fieldset__item">
                 <label for="logradouro">Logradouro:</label>
-                <input type="text" id="logradouro" name="logradouro" readonly>
+                <input type="text" id="logradouro" name="logradouro" readonly class="fieldset__input">
             </div>
 
             <div class="fieldset__item">
                 <label for="numero">Número:</label>
-                <input type="text" id="numero" name="numero" required>
+                <input type="text" id="numero" name="numero" required class="fieldset__input">
             </div>
 
             <div class="fieldset__item">
                 <label for="complemento">Complemento:</label>
-                <input type="text" id="complemento" name="complemento">
+                <input type="text" id="complemento" name="complemento" class="fieldset__input">
             </div>
 
             <div class="fieldset__item">
                 <label for="bairro">Bairro:</label>
-                <input type="text" id="bairro" name="bairro" readonly>
+                <input type="text" id="bairro" name="bairro" readonly class="fieldset__input">
             </div>
 
             <div class="fieldset__item">
                 <label for="cidade">Cidade:</label>
-                <input type="text" id="cidade" name="cidade" readonly>
+                <input type="text" id="cidade" name="cidade" readonly class="fieldset__input">
             </div>
 
             <div class="fieldset__item">
                 <label for="uf">UF:</label>
-                <input type="text" id="uf" name="uf" readonly>
+                <input type="text" id="uf" name="uf" readonly class="fieldset__input">
             </div>
         </fieldset>
-        <button type="submit">Cadastrar</button>
+        <button type="submit" class="btn_primario">Cadastrar</button>
     </form>
 
     <script>

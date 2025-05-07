@@ -163,7 +163,6 @@ async function criarTabelas(connection) {
             id_cliente INT NOT NULL,
             FOREIGN KEY (id_cliente) REFERENCES clientes (id_cliente)
         );`,
-        // Novas tabelas para Sprint 5
         `CREATE TABLE IF NOT EXISTS pedidos (
             id_pedido INT PRIMARY KEY AUTO_INCREMENT,
             id_cliente INT NOT NULL,
