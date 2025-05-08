@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const checkoutMiddleware = require('../../middleware/checkoutMiddleware');
 const { validarCPFMiddleware } = require('../../middleware/cpfMiddleware');
 const { verificarClienteLogado } = require('../../middleware/sessionsMiddleware');
 
@@ -13,7 +14,9 @@ router.get('/produto/:id', ProdutoController.renderizarPaginaDetalhesProduto);
 
 router.get('/carrinho', CarrinhoController.exibirCarrinho);
 
-router.post('/api/carrinho/:carrinho_id/itens', CarrinhoController.postarClienteCarrinho)
+router.get('/teste', checkoutMiddleware,ClienteController.testeCheckoutMiddleware)
+
+router.post('/api/carrinho/:carrinho_id/itens', CarrinhoController.postarClienteCarrinho);
 
 router.post('/api/pedidos/finalizar', PedidoController.finalizarPedido);
 
@@ -59,6 +62,6 @@ router.post('/pedidos/endereco', PedidoController.salvarEnderecoEntrega);
 
 router.get('/listar-pedidos', PedidoController.listarPedidosCliente);
 
-router.get('/checkout-pagamentos', PedidoController.renderizarPaginaPagamentos);
+router.get('/checkout-pagamentos/:idPedido', PedidoController.renderizarPaginaPagamentos);
 
 module.exports = router;

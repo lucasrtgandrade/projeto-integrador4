@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+</head>
+<body>
+<h1>Dados da Sessão Checkout</h1>
+
+<h2>Cliente</h2>
+<pre><%= JSON.stringify(checkout.cliente, null, 2) %></pre>
+
+<h2>Endereço de Entrega</h2>
+<pre><%= JSON.stringify(checkout.enderecoEntrega, null, 2) %></pre>
+
+<h2>Carrinho</h2>
+<pre><%= JSON.stringify(checkout.carrinho, null, 2) %></pre>
+
+<h2>Pagamento</h2>
+<pre><%= JSON.stringify(checkout.pagamento, null, 2) %></pre>
+
+<h2>Resumo</h2>
+<pre><%= JSON.stringify(checkout.resumo, null, 2) %></pre>
+</body>
+</html>

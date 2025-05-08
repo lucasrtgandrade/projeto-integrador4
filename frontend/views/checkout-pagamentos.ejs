@@ -16,7 +16,73 @@
 </head>
 <body>
 <%- include('partials/nav-user') %>
+<main class="conteudo">
+    <h1 class="titulo-principal">Pagamento</h1>
+    <fieldset class="fieldset">
+        <legend class="legend">Selecionar uma forma de pagamento</legend>
+        <div class="fieldset__item radio">
+            <input type="radio" id="pagamentoBoleto" name="metodo" value="BOLETO">
+            <label class="p_dados" for="pagamentoBoleto">Boleto</label>
+        </div>
+        <div class="fieldset__item radio">
+            <input type="radio" id="pagamentoCartaoCredito" name="metodo" value="CARTAO_CREDITO">
+            <label class="p_dados" for="pagamentoCartaoCredito">Cartão de crédito</label>
+        </div>
+    </fieldset>
+    <fieldset class="fieldset" id="exibirDadosCartao">
+        <legend class="legend">Dados do Cartão:</legend>
+        <div class="fieldset__item">
+            <label for="numeroCartao">Número</label>
+            <input type="number" class="fieldset__input" id="numeroCartao" value="numero_cartao">
+        </div>
+        <div class="fieldset__item">
+            <label for="cartaoNomeCompleto">Nome Completo:</label>
+            <input type="text" id="cartaoNomeCompleto" class="fieldset__input" value="nome_titular" placeholder="Digite seu nome completo">
+        </div>
+        <div class="fieldset__item">
+            <label for="cartaoCVV">CVV:</label>
+            <input id="cartaoCVV" type="number" name="cvv" class="fieldset__input">
+        </div>
+        <div class="fieldset__item">
+            <label for="cartaoDataVencimento">Data de Vencimento</label>
+            <input type="date" id="cartaoDataVencimento" class="fieldset__input" value="data_validade">
+        </div>
+        <div class="fieldset__item">
+            <label for="cartaoParcelas">Qtd. Parcelas</label>
+            <select name="parcelas" id="cartaoParcelas" class="fieldset__input">
+                <option value="">Escolher quantidade de parcelas</option>
+                <option value="1">À vista</option>
+                <option value="2">2 parcelas</option>
+                <option value="3">3 parcelas</option>
+            </select>
+        </div>
+    </fieldset>
+    <div class="fieldset__item">
+        <button class="btn_primario" type="submit">Escolher forma de pagamento</button>
+    </div>
+</main>
 
-<h1>Pagamento</h1>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const dadosCartao = document.getElementById("exibirDadosCartao");
+        const radioBoleto = document.getElementById("pagamentoBoleto");
+        const radioCartao = document.getElementById("pagamentoCartaoCredito");
+
+        dadosCartao.style.display = "none";
+
+        function atualizarExibicaoCartao() {
+            if (radioCartao.checked) {
+                dadosCartao.style.display = "block";
+            } else {
+                dadosCartao.style.display = "none";
+            }
+        }
+
+        radioBoleto.addEventListener("change", atualizarExibicaoCartao);
+        radioCartao.addEventListener("change", atualizarExibicaoCartao);
+    });
+</script>
+
+
 </body>
 </html>

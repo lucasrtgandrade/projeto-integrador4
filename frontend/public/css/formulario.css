@@ -29,6 +29,11 @@
     gap: .5rem;
 }
 
+.radio {
+    display: flex;
+    flex-direction: row;
+}
+
 .fieldset__input {
     padding: .3rem;
     border: 2px solid #313131;

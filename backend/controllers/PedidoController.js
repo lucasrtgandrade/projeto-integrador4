@@ -81,7 +81,6 @@ class PedidoController  {
             }
 
             const { id_pedido, id_endereco_entrega } = req.body;
-            console.log("Id Pedido:", id_pedido, "Id Endereço Entrega:", id_endereco_entrega);
 
             const encontrarPedido = await PedidoModel.encontrarPedidoCliente(id_pedido, id_cliente);
 
@@ -102,8 +101,26 @@ class PedidoController  {
         }
     }
 
+    // if (!id_cliente) {
+    //     return res.status(401).json({ sucesso: false, mensagem: 'Não autenticado.' });
+    // }
+
     static async renderizarPaginaPagamentos(req, res){
-        res.render('checkout-pagamentos');
+        try {
+            const id_cliente = req.session?.user?.id;
+            const { id_pedido, id_carrinho } = req.params;
+
+            console.log("Id Cliente:", id_cliente, "Id Carrinho:", id_carrinho, "Id Pedido: ", id_pedido);
+
+        res.render('checkout-pagamentos', {
+            id_pedido,
+            id_carrinho,
+            id_cliente
+        });
+    } catch (error) {
+            console.error('Erro ao salvar endereço:', error);
+            return res.status(500).json({ sucesso: false, mensagem: 'Erro interno pegar a pagina de pagamento.' });
+        }
     }
 
 }
