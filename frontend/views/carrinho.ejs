@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/navigation.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/produto.css">
+    <link rel="stylesheet" href="/css/footer.css">
     <title>Meu Carrinho</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/estilos-navegacao.css">
-    <link rel="stylesheet" href="/css/estilos-carrinho.css">
 </head>
 <body>
-<%- include('partials/nav-user') %>
+<% if (usuario) { %>
+    <%- include('partials/nav-cliente') %>
+<% } else { %>
+    <%- include('partials/nav-user') %>
+<% } %>
 
-<main>
-    <h1>Meu Carrinho</h1>
+<main class="conteudo">
+    <h1 class="titulo-principal">Meu Carrinho</h1>
 
     <% if (itens.length > 0) { %>
         <table class="tabela-carrinho">
@@ -83,35 +93,6 @@
 </main>
 
 <script>
-    // async function finalizarCompra() {
-    //     try {
-    //         const selectFrete = document.getElementById('frete-select');
-    //         const id_frete = selectFrete.custo;
-    //
-    //         const resposta = await fetch('/clientes/api/pedidos/finalizar', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 body: JSON.stringify({ id_frete })
-    //             },
-    //         });
-    //
-    //         const resultado = await resposta.json();
-    //
-    //         if (resposta.status === 401) {
-    //             window.location.href = '/clientes/login?redirect=/clientes/carrinho';
-    //         } else if (resposta.ok) {
-    //             alert('Pedido finalizado com sucesso!');
-    //             window.location.href = '/clientes/pedidos';
-    //         } else {
-    //             alert('Erro ao finalizar pedido: ' + resultado.mensagem);
-    //         }
-    //     } catch (erro) {
-    //         console.error('Erro:', erro);
-    //         alert('Erro ao finalizar pedido.');
-    //     }
-    // }
-
     async function finalizarCompra() {
         const freteId = document.getElementById('frete-select').value;
         const valorFrete = parseFloat(document.getElementById('frete-select').selectedOptions[0].dataset.valor);
@@ -136,8 +117,7 @@
             if (resposta.status === 401) {
                 window.location.href = '/clientes/login?redirect=/clientes/carrinho';
             } else if (resposta.ok) {
-                alert('Pedido finalizado com sucesso!');
-                window.location.href = '/clientes/pedidos';
+                window.location.href = '/clientes/checkout-endereco-entrega';
             } else {
                 alert('Erro ao finalizar pedido: ' + resultado.mensagem);
             }
@@ -196,24 +176,6 @@
         }
     }
 
-    // async function carregarFretes() {
-    //     try {
-    //         const resposta = await fetch('/clientes/api/frete');
-    //         const fretes = await resposta.json();
-    //         const select = document.getElementById('frete-select');
-    //
-    //         fretes.forEach(frete => {
-    //             const option = document.createElement('option');
-    //             option.value = frete.id_frete; // usar o ID no value
-    //             option.setAttribute('data-custo', frete.custo); // salva o custo como atributo extra
-    //             option.textContent = `${frete.nome} - R$ ${frete.custo.toFixed(2)} (${frete.prazo_entrega} dias)`;
-    //             select.appendChild(option);
-    //         });
-    //     } catch (error) {
-    //         console.error('Erro ao carregar fretes:', error);
-    //     }
-    // }
-
     async function carregarOpcoesFrete() {
         const resposta = await fetch('/clientes/api/frete');
         const opcoes = await resposta.json();
@@ -239,5 +201,6 @@
 
     window.onload = carregarOpcoesFrete;
 </script>
+<%- include('partials/footer') %>
 </body>
 </html>

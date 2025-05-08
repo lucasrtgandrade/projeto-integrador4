@@ -2,6 +2,9 @@ const ClienteModel = require('../models/ClienteModel');
 const EnderecoModel = require('../models/EnderecoModel');
 const bcrypt = require('bcrypt');
 const { validarCPF } = require('../middleware/cpfMiddleware');
+const ProdutoModel = require("../models/backoffice/ProdutoModel");
+const PedidoModel = require('../models/PedidoModel');
+const CarrinhoModel = require('../models/CarrinhoModel');
 
 
 class ClienteController {
@@ -164,14 +167,31 @@ class ClienteController {
         }
     }
 
-    static renderizarHome(req, res) {
-        if (!req.session.user) {
-            return res.redirect('/clientes/login');
-        }
+    static async renderizarHome(req, res) {
+        try {
+            if (!req.session.user) {
+                return res.redirect('/clientes/login');
+            }
 
-        res.render('cliente-home', {
-            nomeCliente: req.session.user.nome
-        });
+            const { produtos } = await ProdutoModel.listarProdutosParaHome(1, 10)
+
+            const id_cliente = req.session.user.id;
+            const [cliente] = await ClienteModel.encontrarCliente(id_cliente);
+
+            if (!cliente) {
+                return res.status(404).send('Cliente não encontrado');
+            }
+
+            res.render('cliente-home', {
+                nomeCliente: req.session.user.nome,
+                produtos: produtos,
+                usuario: req.session.user,
+                cliente
+            });
+        } catch (error) {
+            console.error('Erro ao buscar produtos:', error);
+            res.status(500).send('Erro ao carregar a página inicial');
+        }
     }
 
     static logout(req, res) {
@@ -185,8 +205,37 @@ class ClienteController {
         });
     }
 
-    static renderizarPaginaEditar(req, res) {
-        res.render('editar-perfil');
+    static async renderizarPaginaEditar(req, res) {
+        try {
+            if (!req.session.user) {
+                return res.redirect('/clientes/login');
+            }
+
+            const id_cliente = req.session.user.id;
+
+            const [cliente] = await ClienteModel.encontrarCliente(id_cliente);
+
+            if (!cliente) {
+                return res.status(404).send('Cliente não encontrado');
+            }
+
+            if (cliente?.data_nascimento) {
+                const data = new Date(cliente.data_nascimento);
+                const dia = String(data.getDate()).padStart(2, '0');
+                const mes = String(data.getMonth() + 1).padStart(2, '0');
+                const ano = data.getFullYear();
+                cliente.data_nascimento_formatada = `${dia}/${mes}/${ano}`;
+            }
+
+            res.render('editar-perfil', {
+                usuario: req.session.user,
+                cliente
+            });
+
+        } catch (error) {
+            console.error('Erro ao buscar informações:', error);
+            res.status(500).send('Erro ao carregar endereços.');
+        }
     }
 
     static async atualizarCliente(req, res) {
@@ -236,11 +285,8 @@ class ClienteController {
     }
 
     static renderizarPaginaAdicionarEndereco(req, res) {
-        if (!req.session?.user?.id) {
-            return res.redirect('/clientes/login');
-        }
-
-        res.render('adicionar-endereco');
+        const cliente = req.cliente;
+        res.render('adicionar-endereco', { cliente });
     }
 
     static async adicionarEnderecoEntrega(req, res) {
@@ -319,6 +365,27 @@ class ClienteController {
         } catch (error) {
             console.error('Erro ao definir endereço padrão:', error);
             res.status(500).json({ mensagem: 'Erro interno.' });
+        }
+    }
+
+    static async renderizarPaginaCheckoutEndereco(req, res) {
+        const id_cliente = req.session?.user?.id;
+
+        try {
+            const enderecos = await EnderecoModel.buscarEnderecosEntrega(id_cliente);
+
+            const pedido = await PedidoModel.buscarPedidoMaisRecentePorCliente(id_cliente);
+            const carrinho = await CarrinhoModel.buscarCarrinhoMaisRecentePorCliente(id_cliente);
+
+            res.render('checkout-endereco-entrega', {
+                enderecos,
+                idPedido: pedido?.id_pedido || null,
+                idCarrinho: carrinho?.id_carrinho || null,
+                idCliente: id_cliente
+            });
+        } catch (error) {
+            console.error('Erro ao carregar a página de checkout (endereços):', error);
+            res.status(500).send('Erro ao carregar endereços.');
         }
     }
 }

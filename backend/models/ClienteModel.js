@@ -40,6 +40,12 @@ class ClienteModel {
         await pool.query(sql, valores);
     }
 
+    static async encontrarCliente(id_cliente) {
+        const sql = `SELECT * FROM clientes WHERE id_cliente = ?`;
+        const [dados] = await pool.query(sql, [id_cliente]);
+        return dados;
+    }
+
 }
 
 module.exports = ClienteModel;

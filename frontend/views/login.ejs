@@ -1,31 +1,37 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/navigation.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/produto.css">
+    <link rel="stylesheet" href="/css/formulario.css">
+    <link rel="stylesheet" href="/css/footer.css">
     <title>Login de Clientes</title>
-    <link rel="stylesheet" href="/css/estilos-navegacao.css">
-    <link rel="stylesheet" href="/css/estilos-cadastro_cliente.css">
 </head>
 <body>
 <%- include('partials/nav-user') %>
-<main class="main">
-    <h1>Login</h1>
-    <form id="formLoginCliente" method="POST">
+<main class="conteudo">
+    <h1 class="titulo-principal">Login</h1>
+    <form id="formLoginCliente" method="POST" class="form">
         <fieldset class="fieldset">
-            <legend>Dados para login</legend>
+            <legend class="legend">Dados para login:</legend>
             <div class="fieldset__item">
                 <label for="email_login">Digite o seu E-mail:</label>
-                <input type="email" name="email" id="email_login" required>
+                <input type="email" name="email" id="email_login" required class="fieldset__input">
                 <p id="emailMensagem"></p>
             </div>
             <div class="fieldset__item">
                 <label for="senha_login">Digite a sua senha:</label>
-                <input type="password" name="senha" id="senha_login" required>
+                <input type="password" name="senha" id="senha_login" required class="fieldset__input">
                 <p id="senhaMensagem"></p>
             </div>
-            <button type="submit">Entrar</button>
+            <button class="btn_primario" type="submit">Entrar</button>
         </fieldset>
     </form>
 
@@ -95,5 +101,7 @@
         });
     </script>
 </main>
+
+<%- include('partials/footer') %>
 </body>
 </html>

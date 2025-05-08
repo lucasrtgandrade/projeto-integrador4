@@ -23,7 +23,7 @@ class CarrinhoController {
 
     static async exibirCarrinho(req, res) {
         const carrinhoId = req.session.idCarrinho;
-        const cliente = req.session.user;
+        const usuario = req.session.user;
 
         try {
             const itens = await CarrinhoModel.listarItensDoCarrinho(carrinhoId);
@@ -32,18 +32,20 @@ class CarrinhoController {
                 return soma + (item.preco * item.quantidade);
             }, 0);
 
+            console.log(carrinhoId, usuario);
+
             res.render('carrinho', {
                 carrinho_id: carrinhoId,
                 itens,
                 totalGeral,
-                clienteLogado: !!cliente,
-                cliente
+                usuario
             });
         } catch (erro) {
             console.error('Erro ao exibir carrinho:', erro);
             res.status(500).send('Erro ao carregar o carrinho.');
         }
     }
+
 
 
     static async atualizarQuantidadeItem(req, res) {

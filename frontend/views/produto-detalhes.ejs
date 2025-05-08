@@ -4,18 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes do Produto</title>
-    <link rel="stylesheet" href="/css/estilos-navegacao.css">
+    <link rel="stylesheet" href="/css/navigation.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/produto.css">
+    <link rel="stylesheet" href="/css/footer.css">
     <link rel="stylesheet" href="/css/estilos-produto-detalhes.css">
+    <link rel="stylesheet" href="/css/formulario.css">
+    <link rel="stylesheet" href="/css/carousel.css">
+
+    <title>Detalhes do Produto</title>
 </head>
 <body>
 <%- include('partials/nav-user') %>
 
-<main>
-    <h1><%= produto.nome %></h1>
-
+<main class="conteudo">
+    <h1 class="titulo-principal">Detalhes do Produto</h1>
     <div id="carouselContainer">
-        <button id="prevSlide" onclick="mudarSlide(-1)">&#10094;</button>
+
+        <button id="prevSlide" class="btn_carousel" onclick="mudarSlide(-1)">&#10094;</button>
         <div id="carousel">
             <script>
                 let imagensProduto = <%- JSON.stringify(produto.imagens) %>;
@@ -35,15 +41,16 @@
                 });
             </script>
         </div>
-        <button id="nextSlide" onclick="mudarSlide(1)">&#10095;</button>
+        <button id="nextSlide" class="btn_carousel" onclick="mudarSlide(1)">&#10095;</button>
+        <div class="produto-info-carosel">
+            <h2 class="titulo-secundario"><%= produto.nome %></h2>
+            <p class="p_dados"><%= produto.descricao %></p>
+            <p class="produto-preco">R$ <%= (Number(produto.preco) || 0.00).toFixed(2) %></p>
+            <button class="btn_primario" onclick="adicionarAoCarrinho(<%= produto.produto_id %>)">
+                Comprar
+            </button>
+        </div>
     </div>
-
-    <p><%= produto.descricao %></p>
-    <p class="produto-preco">R$ <%= (Number(produto.preco) || 0.00).toFixed(2) %></p>
-
-    <button class="botao-comprar" onclick="adicionarAoCarrinho(<%= produto.produto_id %>)">
-        Comprar
-    </button>
 </main>
 
 <script>
@@ -78,5 +85,6 @@
         }
     }
 </script>
+<%- include('partials/footer') %>
 </body>
 </html>

@@ -1,22 +1,21 @@
-<nav class="navBarra">
-    <!-- Logo -->
-    <a href="/" class="logoNavegacao">
-        <img src="/imagens/logo-horizontal.svg" alt="Logo do site">
-    </a>
-
-    <!-- Links de Navegação -->
-    <div class="linksNavegacao">
-        <!-- Carrinho -->
-        <a href="/clientes/carrinho" class="carrinhoLink">
-            <img src="/imagens/icone-carrinho.svg" alt="Carrinho de Compras" class="iconeCarrinho">
+<div class="header">
+    <nav class="header__nav">
+        <a href="/" class="nav__logo">
+            <img src="/imagens/logo-horizontal.svg" alt="Logo do site" />
         </a>
-
-        <!-- Login -->
-        <a href="/clientes/login" class="loginLink">Login</a>
-
-        <!-- Cadastro -->
-        <a href="/clientes/cadastro" class="cadastroLink">Cadastre-se</a>
-
-        <a href="/backoffice/auth/">Acessar Backoffice</a>
-    </div>
-</nav>
+        <ul class="nav__list">
+            <li class="nav__item">
+                <a href="/clientes/cadastro" class="nav__link">Cadastre-se</a>
+            </li>
+            <li class="nav__item">
+                <a href="/clientes/login" class="nav__link">Login</a>
+            </li>
+            <li class="nav__item">
+                <a href="/clientes/carrinho" class="carrinho">
+                    <p>Carrinho</p>
+                    <img src="/imagens/icone-carrinho.svg" alt="Ícone do carrinho" class="carrinho__icon" />
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
