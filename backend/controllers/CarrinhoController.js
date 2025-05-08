@@ -32,6 +32,8 @@ class CarrinhoController {
                 return soma + (item.preco * item.quantidade);
             }, 0);
 
+            console.log(carrinhoId, usuario);
+
             res.render('carrinho', {
                 carrinho_id: carrinhoId,
                 itens,

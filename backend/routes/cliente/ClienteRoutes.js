@@ -55,8 +55,10 @@ router.put('/enderecos/:id/padrao', ClienteController.definirEnderecoPadrao);
 
 router.get('/checkout-endereco-entrega', ClienteController.renderizarPaginaCheckoutEndereco);
 
-router.post('/endereco', PedidoController.salvarEnderecoEntrega);
+router.post('/pedidos/endereco', PedidoController.salvarEnderecoEntrega);
 
-router.get('listar-pedidos', PedidoController.listarPedidosCliente)
+router.get('/listar-pedidos', PedidoController.listarPedidosCliente);
+
+router.get('/checkout-pagamentos', PedidoController.renderizarPaginaPagamentos);
 
 module.exports = router;

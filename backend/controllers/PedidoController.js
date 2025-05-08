@@ -3,15 +3,14 @@ const CarrinhoModel = require('../models/CarrinhoModel');
 
 class PedidoController  {
     static async listarPedidosCliente(req, res) {
-        const id_cliente = req.session?.user?.id; // Pegando o id do cliente da sessão
+        const id_cliente = req.session?.user?.id;
 
         if (!id_cliente) {
-            return res.status(401).redirect('/login'); // Caso o cliente não esteja logado
+            return res.status(401).redirect('/login');
         }
 
         try {
             const pedidos = await PedidoModel.buscarPedidosPorCliente(id_cliente);
-
             return res.render('listar-pedidos', { pedido: pedidos });
         } catch (erro) {
             console.error('Erro ao listar pedidos:', erro);
@@ -30,7 +29,7 @@ class PedidoController  {
         }
 
         try {
-            const carrinho = await CarrinhoModel.buscarPorId(carrinho_id);
+            const carrinho = await CarrinhoModel.buscarCarrinhoMaisRecentePorCliente(carrinho_id);
             if (!carrinho) {
                 return res.status(404).json({ sucesso: false, mensagem: 'Carrinho não encontrado.' });
             }
@@ -81,23 +80,30 @@ class PedidoController  {
                 return res.status(401).json({ sucesso: false, mensagem: 'Não autenticado.' });
             }
 
-            const { cep, logradouro, numero, complemento, bairro, cidade, uf } = req.body;
+            const { id_pedido, id_endereco_entrega } = req.body;
+            console.log("Id Pedido:", id_pedido, "Id Endereço Entrega:", id_endereco_entrega);
 
-            req.session.enderecoEntrega = {
-                cep,
-                logradouro,
-                numero,
-                complemento,
-                bairro,
-                cidade,
-                uf
-            };
+            const encontrarPedido = await PedidoModel.encontrarPedidoCliente(id_pedido, id_cliente);
 
-            return res.status(200).json({ sucesso: true, mensagem: 'Endereço salvo com sucesso.' });
+            if (!encontrarPedido) {
+                return res.status(404).json({ sucesso: false, mensagem: "Pedido não encontrado." })
+            }
+
+            const atualizado = await PedidoModel.atribuirEndEntregaPedido(id_endereco_entrega, id_pedido, id_cliente);
+
+            if (!atualizado) {
+                return res.status(500).json({ sucesso: false, mensagem: 'Não foi possível atualizar o endereço do pedido.' });
+            }
+
+            return res.status(200).json({ sucesso: true, mensagem: 'Endereço atualizado no pedido com sucesso.' });
         } catch (erro) {
             console.error('Erro ao salvar endereço:', erro);
             return res.status(500).json({ sucesso: false, mensagem: 'Erro interno ao salvar endereço.' });
         }
+    }
+
+    static async renderizarPaginaPagamentos(req, res){
+        res.render('checkout-pagamentos');
     }
 
 }

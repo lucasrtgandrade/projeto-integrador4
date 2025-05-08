@@ -79,6 +79,19 @@ class PedidoModel {
         return rows[0] || null;
     }
 
+    static async encontrarPedidoCliente(id_pedido, id_cliente) {
+        const [linhas] = await pool.query(`
+            SELECT * FROM pedidos WHERE id_pedido = ? AND id_cliente = ?`, [id_pedido, id_cliente]);
+        return linhas[0] || null;
+    }
+
+    static async atribuirEndEntregaPedido( id_endereco_entrega, id_pedido, id_cliente) {
+        const [resultado] = await pool.query(`
+            UPDATE pedidos SET id_endereco_entrega = ? WHERE id_pedido = ? AND id_cliente = ?`,
+            [id_endereco_entrega, id_pedido, id_cliente]);
+        return resultado.affectedRows > 0;
+    }
+
 }
 
 module.exports = PedidoModel;

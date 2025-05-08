@@ -209,9 +209,6 @@ class ProdutoModel {
         const [produtos] = await pool.query(query, termoPesquisa ? [`%${termoPesquisa}%`, limite, offset] : [limite, offset]);
         const [total] = await pool.query(queryContagem, termoPesquisa ? [`%${termoPesquisa}%`] : []);
 
-        // Log the preco values for debugging
-        console.log('Produtos:', produtos);
-
         // Add a default image if imagem_principal is null
         const produtosComImagens = produtos.map(produto => ({
             ...produto,
