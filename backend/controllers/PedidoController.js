@@ -1,7 +1,8 @@
 const PedidoModel = require('../models/PedidoModel');
 const CarrinhoModel = require('../models/CarrinhoModel');
 
-class PedidoController  {
+class PedidoController {
+    // Listar pedidos do cliente
     static async listarPedidosCliente(req, res) {
         const id_cliente = req.session?.user?.id;
 
@@ -11,16 +12,16 @@ class PedidoController  {
 
         try {
             const pedidos = await PedidoModel.buscarPedidosPorCliente(id_cliente);
-            return res.render('listar-pedidos', { pedido: pedidos });
+            return res.render('listar-pedidos', { pedidos });
         } catch (erro) {
             console.error('Erro ao listar pedidos:', erro);
             return res.status(500).json({ erro: 'Erro interno ao listar pedidos' });
         }
     }
 
+    // Criar novo pedido
     static async criarPedido(req, res) {
         const id_cliente_sessao = req.session?.user?.id;
-
         const { carrinho_id, cliente_id } = req.params;
         const { id_frete, valor_total, custo } = req.body;
 
@@ -35,7 +36,6 @@ class PedidoController  {
             }
 
             await PedidoModel.atribuirPedidoCliente(cliente_id, carrinho_id, id_frete, valor_total, custo);
-
             return res.redirect('/clientes/listar-pedidos');
         } catch (error) {
             console.error('Erro ao criar o pedido:', error);
@@ -43,6 +43,7 @@ class PedidoController  {
         }
     }
 
+    // Finalizar pedido
     static async finalizarPedido(req, res) {
         const cliente = req.session.user?.id;
         const id_carrinho = req.session.idCarrinho;
@@ -67,9 +68,14 @@ class PedidoController  {
 
             const pedidoId = resultado.insertId;
 
-            // Armazena o pedido na sessão
             req.session.pedidoId = pedidoId;
             req.session.valorTotalPedido = valor_total;
+
+            const itensCarrinho = await CarrinhoModel.buscarItensCarrinho(id_carrinho);
+
+            for (let item of itensCarrinho) {
+                await PedidoModel.adicionarItemAoPedido(pedidoId, item.id_produto, item.quantidade, item.preco_unitario);
+            }
 
             console.log("Pedido ID salvo na sessão:", pedidoId);
 
@@ -84,7 +90,7 @@ class PedidoController  {
         }
     }
 
-
+    // Salvar endereço de entrega
     static async salvarEnderecoEntrega(req, res) {
         try {
             const id_cliente = req.session?.user?.id;
@@ -98,7 +104,7 @@ class PedidoController  {
             const encontrarPedido = await PedidoModel.encontrarPedidoCliente(id_pedido, id_cliente);
 
             if (!encontrarPedido) {
-                return res.status(404).json({ sucesso: false, mensagem: "Pedido não encontrado." })
+                return res.status(404).json({ sucesso: false, mensagem: "Pedido não encontrado." });
             }
 
             const atualizado = await PedidoModel.atribuirEndEntregaPedido(id_endereco_entrega, id_pedido, id_cliente);
@@ -119,6 +125,7 @@ class PedidoController  {
         }
     }
 
+    // Renderizar página de pagamentos
     static async renderizarPaginaPagamentos(req, res) {
         try {
             const clienteId = req.session?.user?.id;
@@ -126,17 +133,11 @@ class PedidoController  {
             const carrinhoId = req.session.idCarrinho;
             const valorTotal = req.session.valorTotalPedido;
 
-            console.log(clienteId, pedidoId, "carrinho Id:", carrinhoId);
-
-            const pedido = await PedidoModel.encontrarPedidoCliente(pedidoId, clienteId );
+            const pedido = await PedidoModel.encontrarPedidoCliente(pedidoId, clienteId);
 
             if (!pedido) {
                 return res.status(404).send('Pedido não encontrado.');
             }
-
-            console.log("Cliente:", clienteId);
-            console.log("Pedido:", pedidoId);
-            console.log("Carrinho:", carrinhoId);
 
             res.render('checkout-pagamentos', {
                 clienteId,
@@ -154,24 +155,21 @@ class PedidoController  {
         }
     }
 
+    // Salvar forma de pagamento
     static async salvarFormaPagamento(req, res) {
         const { metodo, cartao } = req.body;
         const cliente = req.session.user?.id;
         const pedidoId = req.session.pedidoId;
         const valorTotal = req.session.valorTotalPedido;
 
-        req.session.pagamento = {
-            metodo: metodo
-        };
+        req.session.pagamento = { metodo };
 
-        // Se for cartão de crédito, salvar as informações necessárias
         if (metodo === 'CARTAO_CREDITO' && cartao) {
             req.session.pagamento.cartao = {
                 parcelas: cartao.parcelas
             };
         }
 
-        // Verifique se todos os dados obrigatórios estão presentes
         if (metodo === 'CARTAO_CREDITO' && (!cartao.numero || !cartao.nome || !cartao.cvv || !cartao.validade || !cartao.parcelas)) {
             return res.status(400).json({ mensagem: 'Todos os campos do cartão de crédito são obrigatórios.' });
         }
@@ -181,12 +179,11 @@ class PedidoController  {
         }
 
         try {
-            // 1. Inserir o pagamento na tabela de pedidos (sem dados do cartão)
             const inserirPagamento = await PedidoModel.inserirFormaPagamento(
                 pedidoId,
                 metodo,
                 valorTotal,
-                cartao?.parcelas || 1 // Se for cartão, salvar as parcelas; senão, valor padrão
+                cartao?.parcelas || 1
             );
 
             if (!inserirPagamento) {
@@ -201,10 +198,65 @@ class PedidoController  {
         }
     }
 
+    // Renderizar página de resumo do pedido
     static async renderizarPaginaResumoPedido(req, res) {
-        res.render('checkout-resumo')
+        const idCliente = req.session.user?.id;
+        const idPedido = req.session.pedidoId;
+
+        if (!idPedido) {
+            return res.status(400).send('Pedido não encontrado na sessão.');
+        }
+
+        try {
+            const resumo = await PedidoModel.buscarResumoPedido(idPedido, idCliente);
+
+            if (!resumo) {
+                return res.status(404).send('Resumo do pedido não encontrado.');
+            }
+
+            res.render('checkout-resumo', {
+                pedido: resumo.pedido,
+                itens: resumo.itens,
+                pagamento: resumo.pagamento,
+                resumo
+            });
+        } catch (erro) {
+            console.error(erro);
+            res.status(500).send('Erro ao buscar dados do pedido.');
+        }
     }
 
+    static async concluirCompra(req, res) {
+        const id_pedido = req.params.id_pedido;
+
+        function gerarNumeroPedido() {
+            const data = new Date().toISOString().slice(0,10).replace(/-/g, '');
+            const codigoAleatorio = Math.random().toString(36).substring(2, 7).toUpperCase();
+            return `PED-${data}-${codigoAleatorio}`;
+        }
+
+
+        try {
+            const numero_pedido = gerarNumeroPedido();
+
+            await PedidoModel.definirNumeroPedido(id_pedido, numero_pedido);
+
+            res.render('compra-concluida', { numero_pedido });
+        } catch (erro) {
+            console.error('Erro ao concluir compra:', erro);
+            res.status(500).send('Erro ao concluir compra.');
+        }
+    }
+
+    static async listarPedidos(req, res) {
+        try {
+            const pedidos = await PedidoModel.listarPedidosAguardandoPagamento();
+            res.render('listar-pedidos', { pedidos });
+        } catch (error) {
+            console.error('Erro ao listar pedidos:', error);
+            res.status(500).send('Erro interno');
+        }
+    }
 }
 
 module.exports = PedidoController;

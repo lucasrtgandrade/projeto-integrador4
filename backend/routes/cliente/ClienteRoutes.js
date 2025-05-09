@@ -64,6 +64,10 @@ router.get('/listar-pedidos', PedidoController.listarPedidosCliente);
 
 router.get('/checkout-pagamentos/:idPedido',PedidoController.renderizarPaginaPagamentos);
 
-router.get('/checkout-resumo/', PedidoController.renderizarPaginaResumoPedido)
+router.get('/checkout-resumo', PedidoController.renderizarPaginaResumoPedido);
+
+router.post('/concluir-compra/:id_pedido', PedidoController.concluirCompra);
+
+router.get('/listar', PedidoController.listarPedidos);
 
 module.exports = router;

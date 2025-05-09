@@ -1,49 +1,54 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/navigation.css">
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/produto.css">
+    <link rel="stylesheet" href="/css/formulario.css">
     <link rel="stylesheet" href="/css/footer.css">
-    <title>Meu Carrinho</title>
+    <link rel="stylesheet" href="/css/tabelas.css">
+    <title>Pedidos Aguardando Pagamento</title>
 </head>
 <body>
 <%- include('partials/nav-cliente') %>
-
 <main class="conteudo">
-    <h1>Meus Pedidos</h1>
-    <% if (pedido.length > 0) { %>
-        <table>
-            <thead>
-            <tr>
+    <h1 class="titulo-principal">Pedidos Aguardando Pagamento</h1>
+    <% if (pedidos.length > 0) { %>
+        <table class="table">
+            <thead class="table_header">
+            <tr class="table_row">
                 <th>Número do Pedido</th>
                 <th>Data</th>
                 <th>Valor Total</th>
                 <th>Status</th>
-                <th>Detalhes</th>
             </tr>
             </thead>
-            <tbody>
-            <% pedido.forEach(item => { %>
-                <tr>
-                    <td><%= item.id_pedido %></td>
-                    <td><%= new Date(item.data_pedido).toLocaleDateString('pt-BR') %></td>
-                    <td>R$ <%= parseFloat(item.valor_total).toFixed(2) %></td>
-                    <td><%= item.status %></td>
-                    <td><a href="/clientes/pedidos/<%= item.id_pedido %>">Ver detalhes</a></td>
-                </tr>
+            <tbody class="table_body">
+            <% pedidos.forEach(pedido => { %>
+                <% if (pedido.status === 'AGUARDANDO_PAGAMENTO') { %>
+                    <tr>
+                        <td><%= pedido.numero_pedido %></td>
+                        <td><%= new Date(pedido.data_pedido).toLocaleDateString() %></td>
+                        <td>
+                            R$
+                            <%= Number(pedido.valor_total).toFixed(2).replace('.', ',') %>
+                        </td>
+                        <td><%= pedido.status %></td>
+                    </tr>
+                <% } %>
             <% }) %>
             </tbody>
         </table>
     <% } else { %>
-        <p>Você ainda não fez nenhum pedido.</p>
+        <p>Nenhum pedido aguardando pagamento.</p>
     <% } %>
 </main>
+<%- include('partials/footer') %>
 </body>
 </html>

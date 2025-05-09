@@ -103,23 +103,17 @@
             let dadosCartaoInfo = {};
 
             if (formaPagamento === "CARTAO_CREDITO") {
-                /** @type {HTMLInputElement|null} */ const numeroEl = document.getElementById("numeroCartao");
-                /** @type {HTMLInputElement|null} */ const nomeEl = document.getElementById("cartaoNomeCompleto");
-                /** @type {HTMLInputElement|null} */ const cvvEl = document.getElementById("cartaoCVV");
-                /** @type {HTMLInputElement|null} */ const validadeEl = document.getElementById("cartaoDataVencimento");
-                /** @type {HTMLSelectElement|null} */ const parcelasEl = document.getElementById("cartaoParcelas");
+                const numeroEl = document.getElementById("numeroCartao");
+                const nomeEl = document.getElementById("cartaoNomeCompleto");
+                const cvvEl = document.getElementById("cartaoCVV");
+                const validadeEl = document.getElementById("cartaoDataVencimento");
+                const parcelasEl = document.getElementById("cartaoParcelas");
 
                 const numero = numeroEl?.value.trim();
                 const nome = nomeEl?.value.trim();
                 const cvv = cvvEl?.value.trim();
                 const validade = validadeEl?.value.trim();
                 const parcelas = parcelasEl?.value.trim();
-
-                console.log("Número:", numero);
-                console.log("Nome:", nome);
-                console.log("CVV:", cvv);
-                console.log("Validade:", validade);
-                console.log("Parcelas:", parcelas);
 
                 if (!numero || !nome || !cvv || !validade || !parcelas) {
                     alert("Preencha todos os campos do cartão.");
@@ -130,6 +124,8 @@
             }
 
             try {
+                const idPedido = '<%= pedidoId %>';
+
                 const resposta = await fetch("/clientes/pagamento/salvar", {
                     method: "POST",
                     headers: {
@@ -137,15 +133,15 @@
                     },
                     body: JSON.stringify({
                         metodo: formaPagamento,
-                        cartao: dadosCartaoInfo
+                        cartao: dadosCartaoInfo,
+                        pedidoId: idPedido
                     })
                 });
 
                 const resultado = await resposta.json();
 
                 if (resposta.ok) {
-                    alert("Forma de pagamento salva!");
-                    window.location.href = `/clientes/checkout-resumo`;
+                    window.location.href = '/clientes/checkout-resumo';
                 } else {
                     alert("Erro: " + resultado.mensagem);
                 }

@@ -172,14 +172,14 @@ async function criarTabelas(connection) {
             valor_total DECIMAL(10,2) NOT NULL,
             valor_frete DECIMAL(10,2) NOT NULL,
             status ENUM(
+                'PENDENTE',
                 'AGUARDANDO_PAGAMENTO',
                 'PAGAMENTO_APROVADO',
                 'EM_PREPARACAO',
                 'ENVIADO',
                 'ENTREGUE',
                 'CANCELADO'
-            ) DEFAULT 'AGUARDANDO_PAGAMENTO',
-            codigo_rastreio VARCHAR(100),
+            ) DEFAULT 'PENDENTE',
             numero_pedido VARCHAR(20) UNIQUE,
             FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente),
             FOREIGN KEY (id_endereco_entrega) REFERENCES enderecos(id_endereco),
