@@ -1,0 +1,19 @@
+.table {
+    border: 1px solid black;
+}
+
+.table_header {
+    font-family: "Open Sans Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    background-color: #313131;
+    color: #E6E6E6;
+}
+
+.table_body {
+    text-align: center;
+    color: #313131;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.938rem;
+    font-weight: 500;
+}

@@ -18,7 +18,48 @@
 <%- include('partials/nav-cliente') %>
 
 <main class="conteudo">
-    <h1 class="titulo-principal">Resumo</h1>
+    <h2>Resumo do Pedido</h2>
+    <p><strong>Número do Pedido:</strong> <%= pedido.id_pedido %></p>
+    <p><strong>Status:</strong> <%= pedido.pedido_status %></p>
+
+    <h3>Endereço de Entrega</h3>
+    <p><%= pedido.logradouro %>, <%= pedido.numero %>, <%= pedido.bairro %>, <%= pedido.cidade %> - <%= pedido.uf %></p>
+
+    <h3>Frete</h3>
+    <p><%= pedido.nome_frete %> - Custo: R$ <%= pedido.valor_frete %> - Prazo de entrega: <%= pedido.prazo_entrega %> dias</p>
+
+    <h3>Itens do Pedido</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Preço Unitário</th>
+            <th>Preço Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% resumo.itens.forEach(function(item) { %>
+            <tr>
+                <td><%= item.nome %></td>
+                <td><%= item.quantidade %></td>
+                <td>R$ <%= parseFloat(item.preco_unitario).toFixed(2) %></td>
+                <td>R$ <%= (item.preco_unitario * item.quantidade).toFixed(2) %></td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+
+    <h3>Pagamento</h3>
+    <p><strong>Forma de Pagamento:</strong> <%= pagamento.metodo %></p>
+    <p><strong>Valor Total:</strong> R$ <%= pagamento.valor %></p>
+
+
+    <form action="/clientes/concluir-compra/<%= resumo.pedido.id_pedido %>" method="POST">
+        <button type="submit" class="btn btn-primary">Concluir Compra</button>
+    </form>
+
+    <a href="/clientes/carrinho" class="btn btn-secondary">Voltar</a>
 </main>
 </body>
 </html>
