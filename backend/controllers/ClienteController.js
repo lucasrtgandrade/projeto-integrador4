@@ -388,6 +388,12 @@ class ClienteController {
             res.status(500).send('Erro ao carregar endereços.');
         }
     }
+
+    static async testeCheckoutMiddleware(req, res) {
+        res.render('teste', {
+            checkout: req.session.checkout
+        });
+    }
 }
 
 module.exports = ClienteController;

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const checkoutMiddleware = require('../../middleware/checkoutMiddleware');
 const { validarCPFMiddleware } = require('../../middleware/cpfMiddleware');
 const { verificarClienteLogado } = require('../../middleware/sessionsMiddleware');
 
@@ -13,7 +14,7 @@ router.get('/produto/:id', ProdutoController.renderizarPaginaDetalhesProduto);
 
 router.get('/carrinho', CarrinhoController.exibirCarrinho);
 
-router.post('/api/carrinho/:carrinho_id/itens', CarrinhoController.postarClienteCarrinho)
+router.post('/api/carrinho/:carrinho_id/itens', CarrinhoController.postarClienteCarrinho);
 
 router.post('/api/pedidos/finalizar', PedidoController.finalizarPedido);
 
@@ -55,10 +56,14 @@ router.put('/enderecos/:id/padrao', ClienteController.definirEnderecoPadrao);
 
 router.get('/checkout-endereco-entrega', ClienteController.renderizarPaginaCheckoutEndereco);
 
-router.post('/pedidos/endereco', PedidoController.salvarEnderecoEntrega);
+router.post('/pedidos/endereco' ,PedidoController.salvarEnderecoEntrega);
+
+router.post('/pagamento/salvar', PedidoController.salvarFormaPagamento)
 
 router.get('/listar-pedidos', PedidoController.listarPedidosCliente);
 
-router.get('/checkout-pagamentos', PedidoController.renderizarPaginaPagamentos);
+router.get('/checkout-pagamentos/:idPedido',PedidoController.renderizarPaginaPagamentos);
+
+router.get('/checkout-resumo/', PedidoController.renderizarPaginaResumoPedido)
 
 module.exports = router;
