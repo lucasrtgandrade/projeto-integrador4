@@ -166,7 +166,7 @@ async function criarTabelas(connection) {
         `CREATE TABLE IF NOT EXISTS pedidos (
             id_pedido INT PRIMARY KEY AUTO_INCREMENT,
             id_cliente INT NOT NULL,
-            id_endereco_entrega INT NOT NULL,
+            id_endereco_entrega INT,
             id_frete INT NOT NULL,
             data_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             valor_total DECIMAL(10,2) NOT NULL,
@@ -195,34 +195,29 @@ async function criarTabelas(connection) {
             FOREIGN KEY (id_produto) REFERENCES produtos(produto_id)
         );`,
         `CREATE TABLE IF NOT EXISTS pagamentos (
-            id_pagamento INT PRIMARY KEY AUTO_INCREMENT,
-            id_pedido INT NOT NULL,
-            metodo ENUM('BOLETO', 'CARTAO_CREDITO') NOT NULL,
-            status ENUM(
-                'PENDENTE',
-                'APROVADO',
-                'RECUSADO',
-                'ESTORNADO'
-            ) DEFAULT 'PENDENTE',
-            valor DECIMAL(10,2) NOT NULL,
-            data_pagamento TIMESTAMP NULL,
-            codigo_transacao VARCHAR(255),
-            parcelas INT DEFAULT 1,
-            dados_cartao JSON,
-            FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
-        );`,
-        `CREATE TABLE IF NOT EXISTS cartoes_cliente (
-            id_cartao INT PRIMARY KEY AUTO_INCREMENT,
-            id_cliente INT NOT NULL,
-            apelido VARCHAR(50),
-            numero_cartao VARCHAR(20) NOT NULL,
-            nome_titular VARCHAR(100) NOT NULL,
-            data_validade DATE NOT NULL,
-            cvv VARCHAR(3) NOT NULL,
-            cpf_titular VARCHAR(11),
-            ativo BOOLEAN DEFAULT TRUE,
-            FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
-        );`
+           id_pagamento INT PRIMARY KEY AUTO_INCREMENT,
+           id_pedido INT NOT NULL,
+           metodo ENUM('BOLETO', 'CARTAO_CREDITO') NOT NULL,
+           status ENUM(
+               'PENDENTE',
+               'APROVADO',
+               'RECUSADO',
+               'ESTORNADO'
+               ) DEFAULT 'PENDENTE',
+           valor DECIMAL(10,2) NOT NULL,
+           data_pagamento TIMESTAMP NULL,
+           parcelas INT DEFAULT 1,
+           FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
+         );`
+        // `CREATE TABLE IF NOT EXISTS cartoes_cliente (
+        //     id_cartao INT PRIMARY KEY AUTO_INCREMENT,
+        //     id_cliente INT NOT NULL,
+        //     numero_cartao VARCHAR(20) NOT NULL,
+        //     nome_titular VARCHAR(100) NOT NULL,
+        //     data_validade DATE NOT NULL,
+        //     cvv VARCHAR(3) NOT NULL,
+        //     FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+        // );`
     ];
 
     try {

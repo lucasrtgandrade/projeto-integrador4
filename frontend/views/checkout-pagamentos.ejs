@@ -1,51 +1,61 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/navigation.css">
-    <link rel="stylesheet" href="/css/global.css">
-    <link rel="stylesheet" href="/css/produto.css">
-    <link rel="stylesheet" href="/css/formulario.css">
-    <link rel="stylesheet" href="/css/footer.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed&family=Open+Sans&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/navigation.css" />
+    <link rel="stylesheet" href="/css/global.css" />
+    <link rel="stylesheet" href="/css/produto.css" />
+    <link rel="stylesheet" href="/css/formulario.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
     <title>Checkout - Pagamentos</title>
 </head>
 <body>
-<%- include('partials/nav-user') %>
+<%- include('partials/nav-cliente') %>
+
 <main class="conteudo">
     <h1 class="titulo-principal">Pagamento</h1>
+    <p>Total do Pedido: R$ <%= valorTotal %></p>
+
     <fieldset class="fieldset">
         <legend class="legend">Selecionar uma forma de pagamento</legend>
         <div class="fieldset__item radio">
-            <input type="radio" id="pagamentoBoleto" name="metodo" value="BOLETO">
+            <input type="radio" id="pagamentoBoleto" name="metodo" value="BOLETO" />
             <label class="p_dados" for="pagamentoBoleto">Boleto</label>
         </div>
         <div class="fieldset__item radio">
-            <input type="radio" id="pagamentoCartaoCredito" name="metodo" value="CARTAO_CREDITO">
+            <input type="radio" id="pagamentoCartaoCredito" name="metodo" value="CARTAO_CREDITO" />
             <label class="p_dados" for="pagamentoCartaoCredito">Cartão de crédito</label>
         </div>
     </fieldset>
+
     <fieldset class="fieldset" id="exibirDadosCartao">
         <legend class="legend">Dados do Cartão:</legend>
         <div class="fieldset__item">
             <label for="numeroCartao">Número</label>
-            <input type="number" class="fieldset__input" id="numeroCartao" value="numero_cartao">
+            <input type="text"
+                   inputmode="numeric"
+                   pattern="[0-9\s]{13,19}"
+                   class="fieldset__input"
+                   id="numeroCartao"
+                   name="numero_cartao"
+                   placeholder="Digite o número do cartão"/>
         </div>
         <div class="fieldset__item">
             <label for="cartaoNomeCompleto">Nome Completo:</label>
-            <input type="text" id="cartaoNomeCompleto" class="fieldset__input" value="nome_titular" placeholder="Digite seu nome completo">
+            <input type="text" id="cartaoNomeCompleto" class="fieldset__input" name="nome_titular" placeholder="Digite seu nome completo" />
         </div>
         <div class="fieldset__item">
             <label for="cartaoCVV">CVV:</label>
-            <input id="cartaoCVV" type="number" name="cvv" class="fieldset__input">
+            <input id="cartaoCVV" type="number" name="cvv" class="fieldset__input" />
         </div>
         <div class="fieldset__item">
             <label for="cartaoDataVencimento">Data de Vencimento</label>
-            <input type="date" id="cartaoDataVencimento" class="fieldset__input" value="data_validade">
+            <input type="date" id="cartaoDataVencimento" class="fieldset__input" name="data_validade" />
         </div>
         <div class="fieldset__item">
             <label for="cartaoParcelas">Qtd. Parcelas</label>
@@ -57,6 +67,7 @@
             </select>
         </div>
     </fieldset>
+
     <div class="fieldset__item">
         <button class="btn_primario" type="submit">Escolher forma de pagamento</button>
     </div>
@@ -71,18 +82,79 @@
         dadosCartao.style.display = "none";
 
         function atualizarExibicaoCartao() {
-            if (radioCartao.checked) {
-                dadosCartao.style.display = "block";
-            } else {
-                dadosCartao.style.display = "none";
-            }
+            dadosCartao.style.display = radioCartao.checked ? "block" : "none";
         }
 
         radioBoleto.addEventListener("change", atualizarExibicaoCartao);
         radioCartao.addEventListener("change", atualizarExibicaoCartao);
+
+        const btnPagamento = document.querySelector(".btn_primario");
+
+        btnPagamento.addEventListener("click", async function (e) {
+            e.preventDefault();
+
+            const metodoSelecionado = document.querySelector("input[name='metodo']:checked");
+            if (!metodoSelecionado) {
+                alert("Escolha uma forma de pagamento.");
+                return;
+            }
+
+            const formaPagamento = metodoSelecionado.value;
+            let dadosCartaoInfo = {};
+
+            if (formaPagamento === "CARTAO_CREDITO") {
+                /** @type {HTMLInputElement|null} */ const numeroEl = document.getElementById("numeroCartao");
+                /** @type {HTMLInputElement|null} */ const nomeEl = document.getElementById("cartaoNomeCompleto");
+                /** @type {HTMLInputElement|null} */ const cvvEl = document.getElementById("cartaoCVV");
+                /** @type {HTMLInputElement|null} */ const validadeEl = document.getElementById("cartaoDataVencimento");
+                /** @type {HTMLSelectElement|null} */ const parcelasEl = document.getElementById("cartaoParcelas");
+
+                const numero = numeroEl?.value.trim();
+                const nome = nomeEl?.value.trim();
+                const cvv = cvvEl?.value.trim();
+                const validade = validadeEl?.value.trim();
+                const parcelas = parcelasEl?.value.trim();
+
+                console.log("Número:", numero);
+                console.log("Nome:", nome);
+                console.log("CVV:", cvv);
+                console.log("Validade:", validade);
+                console.log("Parcelas:", parcelas);
+
+                if (!numero || !nome || !cvv || !validade || !parcelas) {
+                    alert("Preencha todos os campos do cartão.");
+                    return;
+                }
+
+                dadosCartaoInfo = { numero, nome, cvv, validade, parcelas };
+            }
+
+            try {
+                const resposta = await fetch("/clientes/pagamento/salvar", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        metodo: formaPagamento,
+                        cartao: dadosCartaoInfo
+                    })
+                });
+
+                const resultado = await resposta.json();
+
+                if (resposta.ok) {
+                    alert("Forma de pagamento salva!");
+                    window.location.href = `/clientes/checkout-resumo`;
+                } else {
+                    alert("Erro: " + resultado.mensagem);
+                }
+            } catch (erro) {
+                console.error("Erro ao salvar pagamento:", erro);
+                alert("Erro ao processar pagamento.");
+            }
+        });
     });
 </script>
-
-
 </body>
 </html>

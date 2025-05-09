@@ -229,7 +229,6 @@ class ProdutoController {
                 return res.status(404).send('Produto não encontrado.');
             }
 
-            // Garante que o carrinho está na sessão
             let carrinhoId = req.session.idCarrinho;
             if (!carrinhoId) {
                 const [resultado] = await pool.query(
@@ -249,7 +248,6 @@ class ProdutoController {
             res.status(500).send('Erro ao carregar página de detalhes.');
         }
     }
-
 }
 
 module.exports = ProdutoController;

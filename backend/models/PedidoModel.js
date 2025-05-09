@@ -29,7 +29,7 @@ class PedidoModel {
             );
         } else {
             await pool.query(
-                'INSERT INTO pedidos (id_cliente, id_carrinho, id_frete, valor_total, valor_frete) VALUES (?, ?, ?, ?, ?)',
+                'INSERT INTO pedidos (id_cliente, id_carrinho ,id_frete, valor_total, valor_frete) VALUES (?, ?, ?, ?, ?)',
                 [id_cliente, id_carrinho, id_frete, valor_total, custo]
             );
         }
@@ -79,7 +79,7 @@ class PedidoModel {
         return rows[0] || null;
     }
 
-    static async encontrarPedidoCliente(id_pedido, id_cliente) {
+    static async encontrarPedidoCliente(id_pedido, id_cliente ) {
         const [linhas] = await pool.query(`
             SELECT * FROM pedidos WHERE id_pedido = ? AND id_cliente = ?`, [id_pedido, id_cliente]);
         return linhas[0] || null;
@@ -92,6 +92,19 @@ class PedidoModel {
         return resultado.affectedRows > 0;
     }
 
+    static async inserirFormaPagamento(pedidoId, metodo, valorTotal, parcelas) {
+        const query = `
+        INSERT INTO pagamentos (id_pedido, metodo, valor, parcelas)
+        VALUES (?, ?, ?, ?)
+    `;
+        try {
+            const [result] = await pool.query(query, [pedidoId, metodo, valorTotal, parcelas]);
+            return result.affectedRows > 0;
+        } catch (erro) {
+            console.error('Erro ao inserir pagamento:', erro);
+            throw erro;
+        }
+    }
 }
 
 module.exports = PedidoModel;
