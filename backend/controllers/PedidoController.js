@@ -229,6 +229,7 @@ class PedidoController {
     static async concluirCompra(req, res) {
         const id_pedido = req.params.id_pedido;
 
+
         function gerarNumeroPedido() {
             const data = new Date().toISOString().slice(0,10).replace(/-/g, '');
             const codigoAleatorio = Math.random().toString(36).substring(2, 7).toUpperCase();
@@ -240,8 +241,8 @@ class PedidoController {
             const numero_pedido = gerarNumeroPedido();
 
             await PedidoModel.definirNumeroPedido(id_pedido, numero_pedido);
-
-            res.render('compra-concluida', { numero_pedido });
+            const valorTotal = req.session.valorTotalPedido;
+            res.render('compra-concluida', { numero_pedido, valorTotal });
         } catch (erro) {
             console.error('Erro ao concluir compra:', erro);
             res.status(500).send('Erro ao concluir compra.');

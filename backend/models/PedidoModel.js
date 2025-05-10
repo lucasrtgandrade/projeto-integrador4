@@ -164,7 +164,7 @@ class PedidoModel {
     static async definirNumeroPedido (id_pedido, numero_pedido) {
     await pool.query(`
         UPDATE pedidos 
-        SET numero_pedido = ?, status = 'PENDENTE', data_pedido = NOW()
+        SET numero_pedido = ?, status = 'AGUARDANDO_PAGAMENTO', data_pedido = NOW()
         WHERE id_pedido = ?
     `, [numero_pedido, id_pedido]);
     };

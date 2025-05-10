@@ -27,6 +27,7 @@
                 <th>Data</th>
                 <th>Valor Total</th>
                 <th>Status</th>
+                <th>Detalhes</th>
             </tr>
             </thead>
             <tbody class="table_body">
@@ -40,6 +41,7 @@
                             <%= Number(pedido.valor_total).toFixed(2).replace('.', ',') %>
                         </td>
                         <td><%= pedido.status %></td>
+                        <td><button disabled>Detalhes</button></td>
                     </tr>
                 <% } %>
             <% }) %>

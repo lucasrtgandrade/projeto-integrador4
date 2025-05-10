@@ -10,6 +10,14 @@ class CarrinhoModel {
         return resultado.insertId;
     }
 
+    static async postarSessao(idSessao) {
+        const [resultado] = await pool.query(
+            'INSERT INTO carrinhos (id_cliente_sessao) VALUES (?)',
+            [idSessao]
+        );
+        return resultado;
+    }
+
     static async buscarItensCarrinho(id_carrinho) {
         const sql = `
             SELECT

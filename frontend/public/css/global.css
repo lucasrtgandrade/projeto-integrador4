@@ -19,14 +19,14 @@ img {
 
 /* Título */
 .titulo-principal {
-    font-family: "Open Sans Condensed", sans-serif;
+    font-family: "Barlow Condensed", sans-serif;
     font-weight: 800;
     font-size: 61px;
     color: #313131;
 }
 
 .titulo-secundario {
-    font-family: "Open Sans", sans-serif;
+    font-family: "Barlow Condensed", sans-serif;
     font-weight: 600;
     font-size: 1rem;
     color: #313131;

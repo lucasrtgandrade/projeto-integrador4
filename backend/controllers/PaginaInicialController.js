@@ -9,7 +9,6 @@ class PaginaInicialController {
                 title: 'Página Inicial',
                 produtos: produtos, // Pass products to the view
                 user: req.session.user || null, // Pass user data if logged in
-                sessaoId: req.session.id
             });
         } catch (error) {
             console.error('Erro ao buscar produtos:', error);
