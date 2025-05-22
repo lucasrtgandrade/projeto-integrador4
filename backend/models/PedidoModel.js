@@ -164,7 +164,7 @@ class PedidoModel {
     static async definirNumeroPedido (id_pedido, numero_pedido) {
     await pool.query(`
         UPDATE pedidos 
-        SET numero_pedido = ?, status = 'AGUARDANDO_PAGAMENTO', data_pedido = NOW()
+        SET numero_pedido = ?, status = 'Aguardando Pagamento', data_pedido = NOW()
         WHERE id_pedido = ?
     `, [numero_pedido, id_pedido]);
     };
@@ -174,9 +174,36 @@ class PedidoModel {
             `SELECT p.numero_pedido, p.data_pedido, p.valor_total, c.status AS cliente
          FROM pedidos p
          JOIN clientes c ON p.id_cliente = c.id_cliente
-         WHERE p.status = 'AGUARDANDO_PAGAMENTO'
+         WHERE p.status = 'Aguardando Pagamento'
          ORDER BY p.data_pedido DESC`
         );
+        return rows;
+    }
+
+    static async atualizarStatusPedido(id_pedido, novo_status) {
+        const [result] = await pool.query(`
+        UPDATE pedidos
+        SET status = ?
+        WHERE id_pedido = ?
+    `, [novo_status, id_pedido]);
+
+        return result.affectedRows > 0;
+    }
+
+    static async listarPedidosGerais() {
+        const [rows] = await pool.query(`
+        SELECT id_pedido, numero_pedido, data_pedido, valor_total, status
+        FROM pedidos
+        WHERE status != 'PENDENTE'
+        ORDER BY data_pedido DESC
+    `);
+        return rows;
+    }
+
+    static async buscarTodosPedidos() {
+        const [rows] = await pool.query(`
+        SELECT * FROM pedidos ORDER BY data_pedido DESC
+    `);
         return rows;
     }
 }
