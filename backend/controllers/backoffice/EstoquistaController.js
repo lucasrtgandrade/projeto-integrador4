@@ -1,4 +1,5 @@
 const ProdutoModel = require('../../models/backoffice/ProdutoModel');
+const PedidoModel = require('../../models/PedidoModel');
 
 class EstoquistaController {
     static async listarProdutosAPI(req, res) {
@@ -82,7 +83,31 @@ class EstoquistaController {
         }
     }
 
+    static async listarPedidos(req, res) {
+        try {
+            const pedidos = await PedidoModel.listarPedidosGerais();
+            res.render('backoffice/estoquista/listar-pedidos', { pedidos });
+        } catch (error) {
+            console.error('Erro ao listar pedidos:', error);
+            res.status(500).send('Erro ao carregar pedidos');
+        }
+    }
 
+    static async alterarStatusPedido(req, res) {
+        const { id_pedido, novo_status } = req.body;
+
+        try {
+            const sucesso = await PedidoModel.atualizarStatusPedido(id_pedido, novo_status);
+            if (sucesso) {
+                res.json({ sucesso: true });
+            } else {
+                res.status(400).json({ sucesso: false, mensagem: 'Pedido não encontrado ou não atualizado' });
+            }
+        } catch (erro) {
+            console.error('Erro ao atualizar status do pedido:', erro);
+            res.status(500).json({ sucesso: false, mensagem: 'Erro interno' });
+        }
+    }
 
 }
 

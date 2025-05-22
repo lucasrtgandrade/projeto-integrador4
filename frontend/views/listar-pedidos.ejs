@@ -32,7 +32,8 @@
             </thead>
             <tbody class="table_body">
             <% pedidos.forEach(pedido => { %>
-                <% if (pedido.status === 'AGUARDANDO_PAGAMENTO') { %>
+                <% if (pedido.status === 'Aguardando Pagamento' || 'Pagamento Rejeitado' || 'Pagamento com sucesso' || 'Aguardando retirada' ||
+                        'Em transito' || 'Entregue') { %>
                     <tr>
                         <td><%= pedido.numero_pedido %></td>
                         <td><%= new Date(pedido.data_pedido).toLocaleDateString() %></td>

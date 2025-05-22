@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Listar Produtos - Estoquista</title>
+    <link rel="stylesheet" href="/css/estilos-globais.css">
+    <link rel="stylesheet" href="/css/estilos-listar-produtos.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navBarra">
+    <a href="/backoffice/estoquista/" class="logoNavegacao">
+        <img src="/imagens/logo-horizontal.svg" alt="Logo do site">
+    </a>
+</nav>
+
+<main>
+    <h1>Lista de Pedidos</h1>
+    <% if (pedidos.length > 0) { %>
+        <table class="table">
+            <thead class="table_header">
+            <tr class="table_row">
+                <th>Número do Pedido</th>
+                <th>Data</th>
+                <th>Valor Total</th>
+                <th>Status Atual</th>
+                <th>Alterar Status</th>
+            </tr>
+            </thead>
+            <tbody class="table_body">
+            <% pedidos.forEach(pedido => { %>
+                <tr>
+                    <td><%= pedido.numero_pedido %></td>
+                    <td><%= new Date(pedido.data_pedido).toLocaleDateString() %></td>
+                    <td>R$ <%= Number(pedido.valor_total).toFixed(2).replace('.', ',') %></td>
+                    <td><%= pedido.status %></td>
+                    <td>
+                        <select id="status-select-<%= pedido.id_pedido %>" data-id="<%= pedido.id_pedido %>" disabled>
+                            <% ['Aguardando Pagamento', 'Pagamento Rejeitado', 'Pagamento com sucesso', 'Aguardando retirada', 'Em transito', 'Entregue'].forEach(status => { %>
+                                <option value="<%= status %>" <%= pedido.status === status ? 'selected' : '' %>><%= status %></option>
+                            <% }) %>
+                        </select>
+                        <button type="button" class="btn-editar" data-id="<%= pedido.id_pedido %>">Editar Pedido</button>
+                    </td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>Nenhum pedido disponível.</p>
+    <% } %>
+</main>
+
+<script>
+    document.querySelectorAll('.btn-editar').forEach(botao => {
+        botao.addEventListener('click', async () => {
+            const id = botao.dataset.id;
+            const select = document.getElementById(`status-select-${id}`);
+
+            if (botao.textContent === 'Editar Pedido') {
+                // Habilita o select e troca texto do botão
+                select.disabled = false;
+                botao.textContent = 'Salvar';
+            } else {
+                const novo_status = select.value;
+
+                try {
+                    const resposta = await fetch('/backoffice/estoquista/alterar-status-pedido', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ id_pedido: id, novo_status })
+                    });
+
+                    const resultado = await resposta.json();
+                    if (resultado.sucesso) {
+                        alert('Status atualizado com sucesso!');
+                        select.disabled = true;
+                        botao.textContent = 'Editar Pedido';
+                        location.reload();
+                    } else {
+                        alert('Erro ao atualizar status: ' + resultado.mensagem);
+                    }
+                } catch (erro) {
+                    console.error(erro);
+                    alert('Erro ao atualizar o status.');
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
