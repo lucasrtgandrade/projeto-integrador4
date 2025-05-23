@@ -51,7 +51,7 @@
 
     <h3>Pagamento</h3>
     <p><strong>Forma de Pagamento:</strong> <%= pagamento.metodo %></p>
-    <p><strong>Valor Total:</strong> R$ <%= pagamento.valor %></p>
+    <p><strong>Valor Geral:</strong> R$ <%= pagamento.valor %></p>
 
 
     <form action="/clientes/concluir-compra/<%= resumo.pedido.id_pedido %>" method="POST">

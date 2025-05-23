@@ -58,6 +58,21 @@
     border-radius: 3rem;
 }
 
+.btn_secundario {
+    background-color: #e6e6e6;
+    border: 3px solid #313131;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #313131;
+    display: flex;
+    padding: .2rem .8rem;
+    width: 100%;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 3rem;
+}
+
 .header_dados {
     font-family: "Open Sans Condensed", sans-serif;
     font-size: 1rem;

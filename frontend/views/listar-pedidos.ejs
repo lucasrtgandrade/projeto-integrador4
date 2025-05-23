@@ -32,8 +32,14 @@
             </thead>
             <tbody class="table_body">
             <% pedidos.forEach(pedido => { %>
-                <% if (pedido.status === 'Aguardando Pagamento' || 'Pagamento Rejeitado' || 'Pagamento com sucesso' || 'Aguardando retirada' ||
-                        'Em transito' || 'Entregue') { %>
+                <% if (
+                        pedido.status === 'Aguardando Pagamento' ||
+                        pedido.status === 'Pagamento Rejeitado' ||
+                        pedido.status === 'Pagamento com sucesso' ||
+                        pedido.status === 'Aguardando retirada' ||
+                        pedido.status === 'Em transito' ||
+                        pedido.status === 'Entregue'
+                ) { %>
                     <tr>
                         <td><%= pedido.numero_pedido %></td>
                         <td><%= new Date(pedido.data_pedido).toLocaleDateString() %></td>
@@ -42,7 +48,10 @@
                             <%= Number(pedido.valor_total).toFixed(2).replace('.', ',') %>
                         </td>
                         <td><%= pedido.status %></td>
-                        <td><button disabled>Detalhes</button></td>
+                        <td>
+                            <a href="/clientes/detalhes-pedido/<%= pedido.id_pedido %>" class="btn_secundario">Detalhes</a>
+                        </td>
+
                     </tr>
                 <% } %>
             <% }) %>

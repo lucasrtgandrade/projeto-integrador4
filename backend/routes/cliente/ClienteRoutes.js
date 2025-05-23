@@ -62,6 +62,10 @@ router.post('/pagamento/salvar', PedidoController.salvarFormaPagamento)
 
 router.get('/listar-pedidos', PedidoController.listarPedidosCliente);
 
+router.get('/pedido/:id', PedidoController.detalharPedido);
+
+router.get('/detalhes-pedido/:id', PedidoController.mostrarDetalhesPedido);
+
 router.get('/checkout-pagamentos/:idPedido',PedidoController.renderizarPaginaPagamentos);
 
 router.get('/checkout-resumo', PedidoController.renderizarPaginaResumoPedido);

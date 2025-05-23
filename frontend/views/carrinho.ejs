@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/produto.css">
     <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/formulario.css">
     <title>Meu Carrinho</title>
 </head>
 <body>
@@ -52,7 +53,7 @@
                 <td>R$ <%= preco.toFixed(2) %></td>
                 <td id="total-item-<%= item.id_item_carrinho %>">R$ <%= totalItem.toFixed(2) %></td>
                 <td>
-                    <button onclick="removerItem(<%= item.id_item_carrinho %>)" class="botao-remover">Remover</button>
+                    <button onclick="removerItem(<%= item.id_item_carrinho %>)" class="btn_primario">Remover</button>
                 </td>
             </tr>
             <% }) %>
@@ -82,14 +83,14 @@
         </table>
 
         <div class="botoes-carrinho">
-            <a href="/" class="botao-voltar">Continuar Comprando</a>
-            <button class="botao-finalizar" onclick="finalizarCompra()">
+            <a href="/" class="btn_secundario">Continuar Comprando</a>
+            <button class="btn_primario" onclick="finalizarCompra()">
                 Finalizar Compra
             </button>
         </div>
     <% } else { %>
         <p>Seu carrinho está vazio.</p>
-        <a href="/" class="botao-voltar">Voltar para a Loja</a>
+        <a href="/" class="btn_secundario">Voltar para a Loja</a>
     <% } %>
 </main>
 
@@ -195,9 +196,15 @@
 
     function calcularTotalComFrete() {
         const select = document.getElementById('frete-select');
-        const valor = select.selectedOptions[0]?.getAttribute('data-valor') || 0;
-        document.getElementById('frete-custo').textContent = `R$ ${parseFloat(valor).toFixed(2)}`;
+        const valorFrete = parseFloat(select.selectedOptions[0]?.getAttribute('data-valor') || 0);
+        const valorSubtotal = parseFloat(document.getElementById('subtotal').getAttribute('data-valor') || 0);
+
+        const totalComFrete = valorSubtotal + valorFrete;
+
+        document.getElementById('frete-custo').textContent = `R$ ${valorFrete.toFixed(2)}`;
+        document.getElementById('total-com-frete').textContent = `R$ ${totalComFrete.toFixed(2)}`;
     }
+
 
     window.onload = carregarOpcoesFrete;
 </script>

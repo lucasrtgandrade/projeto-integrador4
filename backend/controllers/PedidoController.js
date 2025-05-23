@@ -258,6 +258,37 @@ class PedidoController {
             res.status(500).send('Erro interno');
         }
     }
+
+    static async detalharPedido(req, res) {
+        const id_cliente = req.session?.user?.id;
+        const id_pedido = req.params.id;
+
+        if (!id_cliente) {
+            return res.status(401).redirect('/login');
+        }
+
+        try {
+            const pedidoDetalhado = await PedidoModel.buscarDetalhesPedido(id_pedido, id_cliente);
+            return res.render('detalhes-pedido', { pedido: pedidoDetalhado });
+        } catch (erro) {
+            console.error('Erro ao buscar detalhes do pedido:', erro);
+            return res.status(500).send('Erro interno');
+        }
+    }
+
+    static async mostrarDetalhesPedido(req, res) {
+        const { id } = req.params;
+        try {
+            const pedido = await PedidoModel.buscarDetalhesPedido(id);
+            if (!pedido) {
+                return res.status(404).send('Pedido não encontrado');
+            }
+            res.render('detalhes-pedido', { pedido });
+        } catch (err) {
+            console.error(err);
+            res.status(500).send('Erro ao carregar os detalhes do pedido');
+        }
+    }
 }
 
 module.exports = PedidoController;

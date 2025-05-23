@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/navigation.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/produto.css">
+    <link rel="stylesheet" href="/css/formulario.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/tabelas.css">
+    <title>Detalhes do Pedido</title>
+</head>
+<body>
+<%- include('partials/nav-cliente') %>
+<main class="conteudo">
+    <h1 class="titulo-principal">Detalhes do Pedido</h1>
+
+    <section class="fieldset">
+        <h2 class="header_dados">Pedido número <%= pedido.numero_pedido %></h2>
+        <p class="p_dados">Status: <%= pedido.status %></p>
+        <p class="p_dados">Data do Pedido: <%= new Date(pedido.data_pedido).toLocaleDateString('pt-BR') %></p>
+        <p class="p_dados">Forma de Pagamento: <%= pedido.forma_pagamento %></p>
+    </section>
+
+    <section class="fieldset">
+        <h2 class="header_dados">Produtos</h2>
+        <ul class="fieldset">
+            <% pedido.itens.forEach(item => { %>
+                <li class="fieldset__input">
+                    <strong><%= item.nome %></strong>
+                    Quantidade: <%= item.quantidade %>
+                    Preço unitário: R$ <%= item.preco_unitario.toFixed(2) %>
+                    Total: R$ <%= (item.preco_unitario * item.quantidade).toFixed(2) %>
+                </li>
+            <% }) %>
+        </ul>
+    </section>
+
+    <section class="fieldset">
+        <h2 class="header_dados">Valores</h2>
+        <p class="p_dados">Valor Frete: R$ <%= pedido.valor_frete.toFixed(2) %></p>
+        <p class="p_dados"><strong>Valor Total do Pedido: R$ <%= pedido.valor_total.toFixed(2) %></strong></p>
+    </section>
+
+    <section class="fieldset">
+        <h2 class="header_dados">Endereço de Entrega</h2>
+        <p class="p_dados"><%= pedido.endereco.logradouro %>, <%= pedido.endereco.numero %> <%= pedido.endereco.complemento %></p>
+        <p class="p_dados"><%= pedido.endereco.bairro %>, <%= pedido.endereco.cidade %> - <%= pedido.endereco.uf %></p>
+        <p class="p_dados">CEP: <%= pedido.endereco.cep %></p>
+    </section>
+
+
+    <a class="btn_primario" href="/clientes/listar-pedidos">Voltar</a>
+</main>
+<%- include('partials/footer') %>
+</body>
+</html>

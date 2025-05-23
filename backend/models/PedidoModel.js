@@ -206,6 +206,70 @@ class PedidoModel {
     `);
         return rows;
     }
+
+    static async buscarDetalhesPedido(pedidoId) {
+        const sql = `
+            SELECT
+                p.id_pedido,
+                p.numero_pedido,
+                p.data_pedido,
+                p.status,
+                p.valor_total,
+                p.valor_frete,
+                e.cep,
+                e.logradouro,
+                e.numero,
+                e.complemento,
+                e.bairro,
+                e.cidade,
+                e.uf,
+                ip.id_item_pedido,
+                pr.nome AS nome_produto,
+                ip.quantidade,
+                ip.preco_unitario,
+                pag.metodo AS forma_pagamento
+            FROM pedidos p
+                     LEFT JOIN enderecos e ON p.id_endereco_entrega = e.id_endereco
+                     LEFT JOIN itens_pedido ip ON p.id_pedido = ip.id_pedido
+                     LEFT JOIN produtos pr ON ip.id_produto = pr.produto_id
+                     LEFT JOIN pagamentos pag ON p.id_pedido = pag.id_pedido
+            WHERE p.id_pedido = ?;
+        `;
+
+        const [rows] = await pool.query(sql, [pedidoId]);
+
+        if (rows.length === 0) return null;
+
+        const pedido = {
+            id_pedido: rows[0].id_pedido,
+            numero_pedido: rows[0].numero_pedido,
+            data_pedido: rows[0].data_pedido,
+            status: rows[0].status,
+            valor_total: rows[0].valor_total,
+            valor_frete: rows[0].valor_frete,
+            forma_pagamento: rows[0].forma_pagamento,
+            endereco: {
+                cep: rows[0].cep,
+                logradouro: rows[0].logradouro,
+                numero: rows[0].numero,
+                complemento: rows[0].complemento,
+                bairro: rows[0].bairro,
+                cidade: rows[0].cidade,
+                uf: rows[0].uf,
+            },
+            itens: rows.map(row => ({
+                id_item_pedido: row.id_item_pedido,
+                nome: row.nome_produto,
+                quantidade: row.quantidade,
+                preco_unitario: parseFloat(row.preco_unitario),
+            })),
+        };
+
+        pedido.valor_total = parseFloat(pedido.valor_total);
+        pedido.valor_frete = parseFloat(pedido.valor_frete);
+
+        return pedido;
+    }
 }
 
 module.exports = PedidoModel;
