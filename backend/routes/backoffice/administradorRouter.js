@@ -24,7 +24,8 @@ router.get('/listar-produtos/api', exigirLogin, exigirAdministrador, ProdutoCont
 
 router.post('/alternar-status-produto/:produto_id', exigirLogin, exigirAdministrador, ProdutoController.alternarStatusProduto);
 
-router.get('/cadastrar-produto', exigirLogin, exigirAdministrador, ProdutoController.renderizarPaginaCadastrarProduto);
+// router.get('/cadastrar-produto', exigirLogin, exigirAdministrador, ProdutoController.renderizarPaginaCadastrarProduto);
+router.get('/cadastrar-produto', ProdutoController.renderizarPaginaCadastrarProduto);
 router.post('/cadastrar-produto', upload.array('imagens'), ProdutoController.cadastrarProduto);
 //router.post('/cadastrar-produto', exigirLogin, exigirAdministrador, upload.array('imagens'), ProdutoController.cadastrarProduto);
 
