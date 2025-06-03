@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "body-parser": "^1.20.3",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
@@ -31,6 +32,7 @@
     "@cucumber/cucumber": "^9.2.0",
     "chai": "^5.2.0",
     "cypress": "^13.6.4",
+    "cypress-file-upload": "^5.0.8",
     "jest": "^29.7.0",
     "supertest": "^6.3.3"
   }
