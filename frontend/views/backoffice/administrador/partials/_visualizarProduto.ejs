@@ -2,10 +2,10 @@
 <div id="modalVisualizar" class="modal" style="display: none;">
     <div class="modal-content">
         <span class="close" onclick="fecharModalVisualizar()">&times;</span>
-        <h2>Pré-visualização do Produto</h2>
 
         <!-- Product Name -->
         <h3 id="previewNome"></h3>
+        <p id="previewDescricao"></p>
 
         <!-- Image Carousel -->
         <div id="carouselContainer">
@@ -16,10 +16,13 @@
             <button id="nextSlide" onclick="mudarSlide(1)">&#10095;</button>
         </div>
 
-        <!-- Star Ratings -->
-        <p>Avaliação: <span id="previewAvaliacao"></span></p>
+        <div>
+            <strong>Avaliação:</strong>
+            <div id="previewAvaliacao"></div>
+        </div>
 
         <!-- Stock Quantity -->
+        <p>Preço: R$ <span id="previewPreco"></span></p>
         <p>Quantidade em Estoque: <span id="previewEstoque"></span></p>
 
         <!-- Disabled "Comprar" Button -->

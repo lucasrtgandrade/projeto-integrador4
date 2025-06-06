@@ -8,13 +8,64 @@
     <link rel="stylesheet" href="/css/estilos-dashboard.css">
 </head>
 <body>
+<style>
+    ul {
+        list-style-type: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0 auto;
+        max-width: 800px;
+    }
+
+    .modal-logout {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .oculto {
+        display: none;
+    }
+
+    .modal-conteudo {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+    }
+</style>
 
 <!-- Barra de Navegação -->
 <nav class="navBarra">
-    <a href="/backoffice/administrador/" class="logoNavegacao">
-        <img src="/imagens/logo-horizontal.svg" alt="Logo do site">
-    </a>
+    <ul class="nav__list">
+        <li>
+            <a href="/backoffice/administrador/" class="logoNavegacao">
+                <img src="/imagens/logo-horizontal.svg" alt="Logo do site">
+            </a>
+        </li>
+        <li>
+            <button id="botaoLogout" class="logoutLink">Sair</button>
+        </li>
+    </ul>
+
 </nav>
+
+<div id="modalLogout" class="modal-logout oculto">
+    <div class="modal-conteudo">
+        <p>Deseja realmente sair?</p>
+        <form action="/backoffice/administrador/logout" method="POST">
+            <button type="submit">Sim, quero sair</button>
+            <button type="button" id="cancelarLogout">Cancelar</button>
+        </form>
+    </div>
+</div>
 
 <div class="containerDashboard">
     <h1>Painel do Administrador</h1>
@@ -25,6 +76,20 @@
         <a href="/backoffice/administrador/listar-produtos" class="botaoDashboard">Listar Produtos</a>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const botaoLogout = document.getElementById('botaoLogout');
+        const modal = document.getElementById('modalLogout');
+        const cancelar = document.getElementById('cancelarLogout');
 
+        botaoLogout.addEventListener('click', () => {
+            modal.classList.remove('oculto');
+        });
+
+        cancelar.addEventListener('click', () => {
+            modal.classList.add('oculto');
+        });
+    });
+</script>
 </body>
 </html>

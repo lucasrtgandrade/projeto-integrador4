@@ -2,57 +2,79 @@
 let imagensProduto = [];
 let indiceAtual = 0;
 
-function exibirAvaliacao(avaliacao) {
-    const estrelaCheia = '★'; // Full star
-    const estrelaVazia = '☆'; // Empty star
-    const maxEstrelas = 5;
-    let estrelas = '';
-
-    for (let i = 1; i <= maxEstrelas; i++) {
-        if (i <= avaliacao) {
-            estrelas += estrelaCheia; // Full star if within the rating
-        } else {
-            estrelas += estrelaVazia; // Empty star if above the rating
-        }
-    }
-
-    return estrelas;
-}
-
 
 async function visualizarProduto(produtoId) {
+
     try {
         const response = await fetch(`/backoffice/administrador/produto/${produtoId}`);
-        if (!response.ok) throw new Error('Erro ao carregar detalhes do produto.');
+        if (!response.ok) {
+            throw new Error('Erro ao carregar detalhes do produto.');
+        }
 
         const produto = await response.json();
 
-        // Check if elements exist before updating
-        const previewNome = document.getElementById('previewNome');
-        const previewAvaliacao = document.getElementById('previewAvaliacao');
-        const previewEstoque = document.getElementById('previewEstoque');
+        document.getElementById('previewNome').innerText = produto.nome;
 
-        if (!previewNome || !previewAvaliacao || !previewEstoque) {
-            throw new Error('Elementos do modal não encontrados no DOM.');
+        const preco = parseFloat(produto.preco);
+        if (!isNaN(preco)) {
+            document.getElementById('previewPreco').innerText = preco.toFixed(2).replace('.', ',');
+        } else {
+            document.getElementById('previewPreco').innerText = 'N/A';
         }
 
-        previewNome.innerText = produto.nome;
-        previewAvaliacao.innerText = produto.media_avaliacao !== undefined
-            ? produto.media_avaliacao.toFixed(1)
-            : 'N/A';
-        previewEstoque.innerText = produto.qtd_estoque;
+        if (produto.avaliacao !== undefined && !isNaN(parseFloat(produto.avaliacao))) {
+            const nota = parseFloat(produto.avaliacao);
+            document.getElementById('previewAvaliacao').innerHTML =
+                exibirAvaliacao(nota) + ` <span class="avaliacao-nota">(${nota.toFixed(1)})</span>`;
+        } else {
+            document.getElementById('previewAvaliacao').innerText = 'N/A';
+        }
 
-        imagensProduto = produto.imagens;
+        document.getElementById('previewEstoque').innerText = produto.qtd_estoque;
+
+        // Reordenar imagens (colocar imagem principal primeiro)
+        imagensProduto = Array.isArray(produto.imagens) ? [...produto.imagens] : [];
+        const principalIndex = imagensProduto.findIndex(img => img.is_principal);
+        if (principalIndex > -1) {
+            const principalImage = imagensProduto.splice(principalIndex, 1)[0];
+            imagensProduto.unshift(principalImage);
+        }
+
         indiceAtual = 0;
         atualizarCarrossel();
 
         document.getElementById('modalVisualizar').style.display = 'flex';
-
     } catch (error) {
         console.error(error);
         alert('Erro ao visualizar produto.');
     }
+
+    function exibirAvaliacao(avaliacao) {
+        const maxEstrelas = 5;
+        let estrelasHTML = '';
+
+        for (let i = 1; i <= maxEstrelas; i++) {
+            if (i <= Math.floor(avaliacao)) {
+                // Estrela cheia
+                estrelasHTML += '<span class="full">★</span>';
+            } else if (i - 0.5 <= avaliacao) {
+                // Meia estrela
+                estrelasHTML += '<span class="half">★</span>';
+            } else {
+                // Estrela vazia
+                estrelasHTML += '<span>★</span>';
+            }
+        }
+
+        return estrelasHTML;
+    }
+
+
 }
+
+
+
+
 
 function fecharModalVisualizar() {
     document.getElementById('modalVisualizar').style.display = 'none';

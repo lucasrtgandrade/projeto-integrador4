@@ -43,6 +43,25 @@
     background-color: #FFFFFF;
 }
 
+.botoes-carrinho {
+    display: flex;
+    gap: 1rem;
+}
+
+tr {
+    padding: .3rem;
+    border: 2px solid #313131;
+    border-radius: .2rem;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 1rem;
+}
+
+.table_foot {
+    border: 2px solid #313131;
+    color: #313131;
+    padding: .5rem;
+}
+
 .btn_primario {
     background-color: #313131;
     font-family: "JetBrains Mono", monospace;

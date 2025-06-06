@@ -46,15 +46,15 @@
 
         <label for="avaliacao">Avaliação:</label>
         <select id="avaliacao" name="avaliacao" required>
-            <option value="1.0" <%= produto.avaliacao == 1.0 ? "selected" : "" %>>1.0</option>
-            <option value="1.5" <%= produto.avaliacao == 1.5 ? "selected" : "" %>>1.5</option>
-            <option value="2.0" <%= produto.avaliacao == 2.0 ? "selected" : "" %>>2.0</option>
-            <option value="2.5" <%= produto.avaliacao == 2.5 ? "selected" : "" %>>2.5</option>
-            <option value="3.0" <%= produto.avaliacao == 3.0 ? "selected" : "" %>>3.0</option>
-            <option value="3.5" <%= produto.avaliacao == 3.5 ? "selected" : "" %>>3.5</option>
-            <option value="4.0" <%= produto.avaliacao == 4.0 ? "selected" : "" %>>4.0</option>
-            <option value="4.5" <%= produto.avaliacao == 4.5 ? "selected" : "" %>>4.5</option>
-            <option value="5.0" <%= produto.avaliacao == 5.0 ? "selected" : "" %>>5.0</option>
+            <option value=1.0 <%= produto.avaliacao == 1.0 ? "selected" : "" %>>1.0</option>
+            <option value=1.5 <%= produto.avaliacao == 1.5 ? "selected" : "" %>>1.5</option>
+            <option value=2.0 <%= produto.avaliacao == 2.0 ? "selected" : "" %>>2.0</option>
+            <option value=2.5 <%= produto.avaliacao == 2.5 ? "selected" : "" %>>2.5</option>
+            <option value=3.0 <%= produto.avaliacao == 3.0 ? "selected" : "" %>>3.0</option>
+            <option value=3.5 <%= produto.avaliacao == 3.5 ? "selected" : "" %>>3.5</option>
+            <option value=4.0 <%= produto.avaliacao == 4.0 ? "selected" : "" %>>4.0</option>
+            <option value=4.5 <%= produto.avaliacao == 4.5 ? "selected" : "" %>>4.5</option>
+            <option value=5.0 <%= produto.avaliacao == 5.0 ? "selected" : "" %>>5.0</option>
         </select>
 
         <!-- Image Upload -->
@@ -83,8 +83,8 @@
         formData.append('nome', document.getElementById('nome').value);
         formData.append('descricao', document.getElementById('descricao').value);
         formData.append('preco', document.getElementById('preco').value);
-        formData.append('qtd_estoque', document.getElementById('qtd_estoque').value);
         formData.append('avaliacao', document.getElementById('avaliacao').value);
+        formData.append('qtd_estoque', document.getElementById('qtd_estoque').value);
         formData.append('imagem_principal', document.querySelector('input[name="imagem_principal"]:checked').value);
 
         const imagens = document.getElementById('novaImagem').files;

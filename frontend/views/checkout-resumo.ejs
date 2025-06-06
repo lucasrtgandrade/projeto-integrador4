@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed&family=Open+Sans&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet" />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+            rel="stylesheet"
+    />
     <link rel="stylesheet" href="/css/navigation.css" />
     <link rel="stylesheet" href="/css/global.css" />
     <link rel="stylesheet" href="/css/produto.css" />
@@ -18,16 +20,15 @@
 <%- include('partials/nav-cliente') %>
 
 <main class="conteudo">
-    <h2>Resumo do Pedido</h2>
-    <p><strong>Status:</strong> <%= pedido.pedido_status %></p>
+    <h1 class="titulo-principal">Resumo do Pedido</h1>
 
-    <h3>Endereço de Entrega</h3>
-    <p><%= pedido.logradouro %>, <%= pedido.numero %>, <%= pedido.bairro %>, <%= pedido.cidade %> - <%= pedido.uf %></p>
+    <h3 class="titulo-secundario">Endereço de Entrega</h3>
+    <p class="p_dados"><%= pedido.logradouro %>, <%= pedido.numero %>, <%= pedido.bairro %>, <%= pedido.cidade %> - <%= pedido.uf %></p>
 
-    <h3>Frete</h3>
-    <p><%= pedido.nome_frete %> - Custo: R$ <%= pedido.valor_frete %> - Prazo de entrega: <%= pedido.prazo_entrega %> dias</p>
+    <h3 class="titulo-secundario">Frete</h3>
+    <p class="p_dados"><%= pedido.nome_frete %> - Custo: R$ <%= pedido.valor_frete %> - Prazo de entrega: <%= pedido.prazo_entrega %> dias</p>
 
-    <h3>Itens do Pedido</h3>
+    <h3 class="titulo-secundario">Itens do Pedido</h3>
     <table>
         <thead>
         <tr>
@@ -49,16 +50,16 @@
         </tbody>
     </table>
 
-    <h3>Pagamento</h3>
-    <p><strong>Forma de Pagamento:</strong> <%= pagamento.metodo %></p>
-    <p><strong>Valor Geral:</strong> R$ <%= pagamento.valor %></p>
+    <h3 class="titulo-secundario">Pagamento</h3>
+    <p class="p_dados"><strong>Forma de Pagamento:</strong> <%= pagamento.metodo %></p>
+    <p class="p_dados"><strong>Valor Geral:</strong> R$ <%= pagamento.valor %></p>
 
 
     <form action="/clientes/concluir-compra/<%= resumo.pedido.id_pedido %>" method="POST">
-        <button type="submit" class="btn btn-primary">Concluir Compra</button>
+        <button type="submit" class="btn_primario">Concluir Compra</button>
     </form>
 
-    <a href="/clientes/checkout-pagamentos/<%= pedido.id_pedido %>" class="btn btn-secondary">Voltar</a>
+    <a href="/clientes/checkout-pagamentos/<%= pedido.id_pedido %>" class="btn_secundario">Voltar</a>
 </main>
 </body>
 </html>

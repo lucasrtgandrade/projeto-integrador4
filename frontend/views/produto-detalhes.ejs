@@ -18,7 +18,7 @@
 <%- include('partials/nav-user') %>
 
 <main class="conteudo">
-    <h1 class="titulo-principal">Detalhes do Produto</h1>
+    <h1 class="titulo-principal"><%= produto.nome %></h1>
     <div id="carouselContainer">
 
         <button id="prevSlide" class="btn_carousel" onclick="mudarSlide(-1)">&#10094;</button>
@@ -45,6 +45,7 @@
         <div class="produto-info-carosel">
             <h2 class="titulo-secundario"><%= produto.nome %></h2>
             <p class="p_dados"><%= produto.descricao %></p>
+            <p class="p_dados">Avaliação: <%= produto.avaliacao %> estrelas</p>
             <p class="produto-preco">R$ <%= (Number(produto.preco) || 0.00).toFixed(2) %></p>
             <button class="btn_primario" onclick="adicionarAoCarrinho(<%= produto.produto_id %>)">
                 Comprar

@@ -24,13 +24,19 @@ router.get('/listar-produtos/api', exigirLogin, exigirAdministrador, ProdutoCont
 
 router.post('/alternar-status-produto/:produto_id', exigirLogin, exigirAdministrador, ProdutoController.alternarStatusProduto);
 
-router.get('/cadastrar-produto', exigirLogin, exigirAdministrador, ProdutoController.renderizarPaginaCadastrarProduto);
-router.post('/cadastrar-produto', exigirLogin, exigirAdministrador, upload.array('imagens'), ProdutoController.cadastrarProduto);
+// router.get('/cadastrar-produto', exigirLogin, exigirAdministrador, ProdutoController.renderizarPaginaCadastrarProduto);
+router.get('/cadastrar-produto', ProdutoController.renderizarPaginaCadastrarProduto);
+router.post('/cadastrar-produto', upload.array('imagens'), ProdutoController.cadastrarProduto);
+//router.post('/cadastrar-produto', exigirLogin, exigirAdministrador, upload.array('imagens'), ProdutoController.cadastrarProduto);
+
+router.post('/logout', AdministradorController.logout)
 
 router.get('/alterar-produto/:produto_id', ProdutoController.renderizarPaginaAlterarProduto);
 router.post('/alterar-produto/:produto_id', upload.single('novaImagem'), ProdutoController.alterarProduto);
 
-router.get('/produto/:produto_id', exigirLogin, exigirAdministrador, ProdutoController.getProdutoDetalhes);
+//router.get('/produto/:produto_id', exigirLogin, exigirAdministrador, ProdutoController.getProdutoDetalhes);
+router.get('/produto/:produto_id', ProdutoController.getProdutoDetalhes);
+
 
 
 module.exports = router;

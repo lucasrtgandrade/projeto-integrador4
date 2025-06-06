@@ -143,6 +143,17 @@ class AdministradorController {
             res.status(500).json({ success: false, message: 'Erro ao listar produtos' });
         }
     }
+
+    static async logout (req, res) {
+        req.session.destroy( err => {
+            if (err) {
+                console.error('Erro ao encerrar a sessão', err);
+                return res.status(500).send('Erro ao encerrar a sessão')
+            }
+
+            res.redirect('/backoffice/auth');
+        });
+    }
 }
 
 module.exports = AdministradorController;

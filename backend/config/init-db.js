@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: './.env' });
 
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
@@ -87,27 +87,20 @@ async function criarTabelas(connection) {
             FOREIGN KEY (cargo_id) REFERENCES cargos(id_cargo)
         );`,
         `CREATE TABLE IF NOT EXISTS produtos (
-            produto_id INT PRIMARY KEY AUTO_INCREMENT,
-            nome VARCHAR(200) NOT NULL,
-            descricao VARCHAR(2000) NOT NULL,
-            preco DECIMAL(10,2) NOT NULL,
-            media_avaliacao DECIMAL(2,1) DEFAULT 0.0,
-            total_avaliacao INT DEFAULT 0,
-            qtd_estoque INT NOT NULL,
-            status BOOLEAN DEFAULT TRUE,
-            colaborador_id INT,
-            FOREIGN KEY (colaborador_id) REFERENCES colaboradores(colaborador_id)
-        );`,
+             produto_id INT PRIMARY KEY AUTO_INCREMENT,
+             nome VARCHAR(200) NOT NULL,
+             descricao VARCHAR(2000) NOT NULL,
+             preco DECIMAL(10,2) NOT NULL,
+             avaliacao DECIMAL(2,1) DEFAULT NULL CHECK (avaliacao IN (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)),
+             qtd_estoque INT NOT NULL,
+             status BOOLEAN DEFAULT TRUE,
+             colaborador_id INT,
+             FOREIGN KEY (colaborador_id) REFERENCES colaboradores(colaborador_id)
+         );`,
         `CREATE TABLE IF NOT EXISTS imagens (
             imagem_id INT PRIMARY KEY AUTO_INCREMENT,
             url VARCHAR(255),
             is_principal BOOLEAN DEFAULT FALSE,
-            produto_id INT,
-            FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
-        );`,
-        `CREATE TABLE IF NOT EXISTS avaliacoes (
-            avaliacao_id INT PRIMARY KEY AUTO_INCREMENT,
-            avaliacao DECIMAL(2,1) NOT NULL CHECK (avaliacao IN (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)),
             produto_id INT,
             FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
         );`,

@@ -58,7 +58,7 @@
             </tr>
             <% }) %>
             </tbody>
-            <tfoot>
+            <tfoot class="table_foot">
             <tr>
                 <td>
                     <strong id="subtotal" data-valor="<%= totalGeral.toFixed(2) %>">
@@ -69,7 +69,7 @@
             <tr>
                 <td colspan="4">
                     <label for="frete-select"><strong>Escolher Frete:</strong></label>
-                    <select id="frete-select" onchange="calcularTotalComFrete()">
+                    <select id="frete-select" onchange="calcularTotalComFrete()" class="fieldset__input">
                         <option value="">Selecione...</option>
                     </select>
                 </td>

@@ -6,11 +6,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function exibirAvaliacao(avaliacao) {
         const estrelaCheia = '★';
+        const estrelaMeia = '⯪'; // ou 🌓, ou ✬, ou uma imagem SVG
         const estrelaVazia = '☆';
 
         let estrelas = '';
         for (let i = 1; i <= 5; i++) {
-            estrelas += i <= Math.floor(avaliacao) ? estrelaCheia : estrelaVazia;
+            if (i <= Math.floor(avaliacao)) {
+                estrelas += estrelaCheia;
+            } else if (i - avaliacao <= 0.5) {
+                estrelas += estrelaMeia;
+            } else {
+                estrelas += estrelaVazia;
+            }
         }
 
         return estrelas;
@@ -24,8 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const produto = await response.json();
 
             document.getElementById('previewNome').innerText = produto.nome;
-            document.getElementById('previewAvaliacao').innerHTML = exibirAvaliacao(produto.avaliacao);
+            document.getElementById('previewAvaliacao').innerHTML = exibirAvaliacao(produto.media_avaliacao);
             document.getElementById('previewEstoque').innerText = produto.qtd_estoque;
+
+
 
             imagensProduto = produto.imagens;
             atualizarCarrossel();
@@ -36,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Erro ao visualizar produto.');
         }
     }
+
 
     function fecharModalVisualizar() {
         document.getElementById('modalVisualizar').style.display = 'none';

@@ -6,7 +6,7 @@ class ProdutoModel {
 
         // Base query to fetch products (remove the status filter)
         let query = `
-            SELECT produto_id, nome, descricao, CAST(preco AS DECIMAL(10,2)) as preco, qtd_estoque, status
+            SELECT produto_id, nome, descricao, CAST(preco AS DECIMAL(10,2)) as preco, avaliacao, qtd_estoque, status
             FROM produtos
             WHERE 1=1
         `;
@@ -41,19 +41,12 @@ class ProdutoModel {
         };
     }
 
-    static async cadastrarProduto(nome, descricao, preco, qtd_estoque) {
+    static async cadastrarProduto(nome, descricao, preco, avaliacao, qtd_estoque) {
         const [result] = await pool.query(
-            'INSERT INTO produtos (nome, descricao, preco, qtd_estoque, status) VALUES (?, ?, ?, ?, ?)',
-            [nome, descricao, preco, qtd_estoque, 1] // Status 1 = Ativo
+            'INSERT INTO produtos (nome, descricao, preco, avaliacao, qtd_estoque, status) VALUES (?, ?, ?, ?, ?, ?)',
+            [nome, descricao, preco, avaliacao, qtd_estoque, 1]
         );
         return result.insertId; // Return the ID of the newly inserted product
-    }
-
-    static async cadastrarAvaliacao(produtoId, avaliacao) {
-        await pool.query(
-            'INSERT INTO avaliacoes (avaliacao, produto_id) VALUES (?, ?)',
-            [avaliacao, produtoId]
-        );
     }
 
     static async cadastrarImagens(produtoId, imagens, imagemPrincipalIndex) {
@@ -82,10 +75,10 @@ class ProdutoModel {
     static async buscarProdutoPorId(produtoId) {
         try {
             const [produto] = await pool.query(
-                'SELECT produto_id, nome, descricao, preco, qtd_estoque FROM produtos WHERE produto_id = ?',
+                'SELECT produto_id, nome, descricao, preco, avaliacao, qtd_estoque FROM produtos WHERE produto_id = ?',
                 [produtoId]
             );
-            return produto[0]; // Return the first (and only) product
+            return produto[0];
         } catch (error) {
             console.error('Erro ao buscar produto por ID:', error);
             throw error;
@@ -95,7 +88,7 @@ class ProdutoModel {
     static async buscarProdutoAtivoPorId(produtoId) {
         try {
             const [resultado] = await pool.query(
-                'SELECT produto_id, nome, descricao, preco, qtd_estoque FROM produtos WHERE produto_id = ? AND status = 1',
+                'SELECT produto_id, nome, descricao, preco, avaliacao, qtd_estoque FROM produtos WHERE produto_id = ? AND status = 1',
                 [produtoId]
             );
             return resultado[0] || null;
@@ -105,24 +98,16 @@ class ProdutoModel {
         }
     }
 
-    // Update a product
-    static async alterarProduto(produtoId, nome, descricao, preco, qtd_estoque) {
+    static async alterarProduto(produtoId, nome, descricao, preco, avaliacao, qtd_estoque) {
         try {
             await pool.query(
-                'UPDATE produtos SET nome = ?, descricao = ?, preco = ?, qtd_estoque = ? WHERE produto_id = ?',
-                [nome, descricao, preco, qtd_estoque, produtoId]
+                'UPDATE produtos SET nome = ?, descricao = ?, preco = ?, avaliacao = ?, qtd_estoque = ? WHERE produto_id = ?',
+                [nome, descricao, preco, avaliacao, qtd_estoque, produtoId]
             );
         } catch (error) {
             console.error('Erro ao alterar produto:', error);
             throw error;
         }
-    }
-
-    static async alterarAvaliacao(produtoId, avaliacao) {
-        await pool.query(
-            'UPDATE avaliacoes SET avaliacao = ? WHERE produto_id = ?',
-            [avaliacao, produtoId]
-        );
     }
 
     static async alterarImagem(produtoId, novoNome) {
@@ -185,7 +170,7 @@ class ProdutoModel {
 
         // Base query to fetch products with their main image
         let query = `
-        SELECT p.produto_id, p.nome, p.descricao, CAST(p.preco AS DECIMAL(10,2)) as preco, p.qtd_estoque, p.status,
+        SELECT p.produto_id, p.nome, p.descricao, CAST(p.preco AS DECIMAL(10,2)) as preco, p.avaliacao, p.qtd_estoque, p.status,
                i.url as imagem_principal
         FROM produtos p
         LEFT JOIN imagens i ON p.produto_id = i.produto_id AND i.is_principal = TRUE
@@ -228,7 +213,7 @@ class ProdutoModel {
         try {
             // Fetch product details
             const [produto] = await pool.query(
-                `SELECT p.produto_id, p.nome, p.descricao, CAST(p.preco AS DECIMAL(10,2)) as preco, p.qtd_estoque, p.status
+                `SELECT p.produto_id, p.nome, p.descricao, CAST(p.preco AS DECIMAL(10,2)) as preco, p.avaliacao, p.qtd_estoque, p.status
                  FROM produtos p
                  WHERE p.produto_id = ?`,
                 [produtoId]

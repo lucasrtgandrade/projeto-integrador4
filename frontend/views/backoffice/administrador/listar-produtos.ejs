@@ -97,6 +97,35 @@
         .botao-alterar:hover {
             background-color: #0056b3;
         }
+
+        #previewAvaliacao {
+            font-size: 1.4rem;
+            color: #ffc107;
+        }
+
+        #previewAvaliacao span {
+            font-size: 1.4rem;
+            color: #ccc; /* Estrela vazia padrão */
+        }
+
+        #previewAvaliacao .full {
+            color: #ffc107; /* Estrela cheia (amarelo) */
+        }
+
+        #previewAvaliacao .half {
+            color: #ffc107;
+            position: relative;
+            display: inline-block;
+        }
+
+        #previewAvaliacao .half::before {
+            content: '★';
+            color: #ccc;
+            position: absolute;
+            left: 0;
+            width: 50%;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
@@ -150,7 +179,7 @@
     </div>
 </div>
 
-<%- include('./partials/_visualizarProduto') %>
+
 
 
 
@@ -327,7 +356,14 @@
 
             // Set product details in modal
             document.getElementById('previewNome').innerText = produto.nome;
-            document.getElementById('previewAvaliacao').innerText = `${produto.avaliacao} ★`;
+            document.getElementById('previewDescricao').innerText = produto.descricao;
+            const preco = parseFloat(produto.preco);
+            if (!isNaN(preco)) {
+                document.getElementById('previewPreco').innerText = preco.toFixed(2).replace('.', ',');
+            } else {
+                document.getElementById('previewPreco').innerText = 'N/A';
+            }
+            document.getElementById('previewAvaliacao').innerText = produto.avaliacao;
             document.getElementById('previewEstoque').innerText = produto.qtd_estoque;
 
             // Reorder images: Move `imagem_principal` to the first position
@@ -384,5 +420,6 @@
         atualizarCarrossel();
     }
 </script>
+<%- include('./partials/_visualizarProduto') %>
 </body>
 </html>

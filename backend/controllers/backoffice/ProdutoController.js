@@ -11,14 +11,15 @@ class ProdutoController {
 
             const produtos = result.produtos.map(produto => ({
                 ...produto,
-                preco: Number(produto.preco)
+                preco: parseFloat(produto.preco)
             }));
 
             return {
                 produtos,
                 paginaAtual: result.pagina,
                 totalPaginas: result.totalPaginas,
-                termoPesquisa: search
+                termoPesquisa: search,
+                preco: parseFloat(result.preco)
             };
         } catch (error) {
             console.error('Erro ao buscar dados dos produtos:', error);
@@ -61,21 +62,16 @@ class ProdutoController {
     }
 
     static async cadastrarProduto(req, res) {
-        const { nome, descricao, preco, qtd_estoque, avaliacao, imagem_principal } = req.body;
+        const { nome, descricao, preco, avaliacao, qtd_estoque, imagem_principal } = req.body;
         const imagens = req.files;
 
-        if (!nome || !descricao || !preco || !qtd_estoque || !avaliacao || !imagens || !imagem_principal) {
+        if (!nome || !descricao || !preco  || !avaliacao || !qtd_estoque  || !imagens || !imagem_principal) {
             return res.status(400).send('Todos os campos são obrigatórios');
         }
 
         try {
-            // Step 1: Insert the product into the database
-            const produtoId = await ProdutoModel.cadastrarProduto(nome, descricao, preco, qtd_estoque);
+            const produtoId = await ProdutoModel.cadastrarProduto(nome, descricao, preco, avaliacao, qtd_estoque );
 
-            // Step 2: Insert the product rating into the `avaliacoes` table
-            await ProdutoModel.cadastrarAvaliacao(produtoId, avaliacao);
-
-            // Step 3: Rename and save images
             const imagensRenomeadas = imagens.map((imagem, index) => {
                 const extensao = path.extname(imagem.originalname);
                 const novoNome = `${nome.replace(/\s+/g, '-').toLowerCase()}-${produtoId}-${index + 1}${extensao}`;
@@ -124,13 +120,12 @@ class ProdutoController {
 
     static async alterarProduto(req, res) {
         const { produto_id } = req.params;
-        const { nome, descricao, preco, qtd_estoque, avaliacao, imagem_principal } = req.body;
-        const novasImagens = req.files; // Uploaded files
+        const { nome, descricao, preco, avaliacao, qtd_estoque, imagem_principal } = req.body;
+        const novasImagens = req.files;
 
         try {
             // Update product details
-            await ProdutoModel.alterarProduto(produto_id, nome, descricao, preco, qtd_estoque);
-            await ProdutoModel.alterarAvaliacao(produto_id, avaliacao);
+            await ProdutoModel.alterarProduto(produto_id, nome, descricao, preco, avaliacao, qtd_estoque);
 
             // Update the main image selection
             if (imagem_principal) {
@@ -171,7 +166,9 @@ class ProdutoController {
 
             res.json({
                 nome: produto.nome,
-                media_avaliacao: produto.media_avaliacao, //
+                descricao: produto.descricao,
+                preco: parseFloat(produto.preco),
+                avaliacao: parseFloat(produto.avaliacao),
                 qtd_estoque: produto.qtd_estoque,
                 imagens
             });

@@ -2,16 +2,12 @@ const express = require('express');
 const app = express();
 const path = require('path');
 
-// Mock de middlewares de sessão e autenticação
-jest.mock('../../middleware/sessionsMiddleware', () => ({
-    exigirLogin: (req, res, next) => next(),
-    exigirEstoquista: (req, res, next) => next()
-}));
-
-
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../../../frontend/views'));
 app.use(express.urlencoded({ extended: false }));
+
+const administradorRouter = require('../../../backend/routes/backoffice/administradorRouter');
+app.use('/backoffice/administrador', administradorRouter);
 
 const estoquistaRoutes = require('../../../backend/routes/backoffice/estoquistaRouter');
 app.use('/backoffice/estoquista', estoquistaRoutes);

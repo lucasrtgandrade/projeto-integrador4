@@ -17,11 +17,12 @@
 <body>
 <%- include('partials/nav-cliente') %>
 <main class="conteudo">
-    <h1>Compra concluída com sucesso!</h1>
-    <p>Seu número de pedido é: <strong><%= numero_pedido %></strong></p>
-    <p>Total do Pedido: R$ <%= valorTotal %></p>
+    <h1 class="titulo-principal">Compra concluída com sucesso!</h1>
+    <p class="p_dados">Seu número de pedido é: <strong><%= numero_pedido %></strong></p>
+    <p class="p_dados">Total do Pedido: R$ <%= valorTotal %></p>
 
-    <a href="/clientes/home" class="btn btn-success">Voltar à página inicial</a>
+    <a href="/clientes/home" class="btn_primario">Voltar à página inicial</a>
 </main>
+<%- include('partials/footer') %>
 </body>
 </html>
